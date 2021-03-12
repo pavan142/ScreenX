@@ -19,7 +19,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_READ_STORAGE = 0;
 
     private GridView _gridView;
-    private AppgroupsAdapter _adapter;
+    private AppGroupsAdapter _adapter;
     private Logger _logger;
     private ScreenFactory _sf;
 
@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.appgroup_grid);
-        _logger = Logger.getInstance("appgroup_grid");
+        _logger = Logger.getInstance("FILES");
         _gridView = (GridView)findViewById(R.id.grid_view);
         requestStoragePermission();
         _sf = ScreenFactory.getInstance(getApplicationContext());
@@ -40,15 +40,15 @@ public class MainActivity extends AppCompatActivity {
         ArrayList<Screenshot> mascots = new ArrayList<>();
         for (AppGroup ag: _sf.appgroups.values())
             mascots.add(ag.mascot);
-//        for (Screenshot s: mascots)
-//            _files.log(s.appName,s.name,s.file.getAbsolutePath());
-        _adapter = new AppgroupsAdapter(getApplicationContext(), mascots);
+        for (Screenshot s: mascots)
+            _logger.log(s.appName,s.name,s.file.getAbsolutePath());
+        _adapter = new AppGroupsAdapter(getApplicationContext(), mascots);
         _gridView.setAdapter(_adapter);
         _gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Screenshot selected = mascots.get(i);
-                _logger.log("The item clicked is", i, selected.name, "the appName: ", selected.appName);
+                _logger.log("The app group selected is", i, "the appName: ", selected.appName);
                 Intent intent = new Intent(getBaseContext(), AppGroupActivity.class);
                 intent.putExtra("APP_GROUP_NAME", selected.appName);
                 startActivity(intent);

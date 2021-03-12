@@ -15,12 +15,12 @@ import java.util.regex.Pattern;
 class ScreenFactory {
     private static ScreenFactory _instance;
 
-    public ArrayList<Screenshot> screenshots;
-    public Map<String, AppGroup> appgroups;
+    public Map<String, AppGroup> appgroups = new HashMap<>();
+    public Map<String, Screenshot> nameToScreen = new HashMap<>();
 
     private boolean _initialized = false;
     private final Logger _logger = Logger.getInstance("ScreenFactory");
-    private final Map<String, String> _packageToAppName;
+    private final Map<String, String> _packageToAppName = new HashMap<>();
     private final PackageManager _pm;
 
     public static ScreenFactory getInstance(Context context) {
@@ -30,10 +30,7 @@ class ScreenFactory {
         return ScreenFactory._instance;
     }
     private ScreenFactory(Context context) {
-        screenshots = new ArrayList<>();
-        appgroups = new HashMap<>();
         _pm = context.getPackageManager();
-        _packageToAppName = new HashMap<>();
     }
 
     private String getAppName(String packageId) {
@@ -91,6 +88,7 @@ class ScreenFactory {
                 String filePath = path + "/" + fileName;
                 Screenshot screen = new Screenshot(fileName, filePath, appName);
                 ag.screenshots.add(screen);
+                nameToScreen.put(screen.name, screen);
             }
 
             for (AppGroup ag : appgroups.values()) {
@@ -101,6 +99,11 @@ class ScreenFactory {
             _logger.log("got an error: ", e.getMessage());
         }
     }
+
+    public Screenshot findScreenByName(String name) {
+        return nameToScreen.get(name);
+    }
+
     public void initialize() {
         if(_initialized)
             return;
