@@ -44,7 +44,7 @@ public class ImageAdapter extends BaseAdapter {
         Screenshot screen = arrayList.get(position);
         File file = screen.file;
         files.log("Loading View for", position, screen.appName,screen.name,screen.file.getAbsolutePath());
-        Glide.with(context).load(file).into(imageView);
+        Glide.with(context).load(file).thumbnail(0.1f).into(imageView);
 
         TextView appNameView = convertView.findViewById(R.id.app_name);
         appNameView.setText(screen.appName);
