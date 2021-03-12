@@ -1,4 +1,4 @@
-package com.example.screensx;
+package com.example.screenx;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -34,8 +34,6 @@ public class AppGroupActivity extends AppCompatActivity {
 
     public void displayScreens() {
         ArrayList<Screenshot> screens = _sf.appgroups.get(_appName).screenshots;
-        for (Screenshot s: screens)
-            _logger.log(s.appName,s.name,s.file.getAbsolutePath());
         _logger.log("Displaying Scrrens of Appgroup", _appName, screens.size());
         _adapter = new ScreensAdapter(getApplicationContext(), screens);
         _gridView.setAdapter(_adapter);

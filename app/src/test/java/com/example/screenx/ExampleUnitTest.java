@@ -1,4 +1,4 @@
-package com.example.screensx;
+package com.example.screenx;
 
 import org.junit.Test;
 

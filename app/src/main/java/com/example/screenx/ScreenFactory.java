@@ -1,4 +1,4 @@
-package com.example.screensx;
+package com.example.screenx;
 
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
@@ -6,7 +6,6 @@ import android.os.Environment;
 import android.content.Context;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;

@@ -1,4 +1,4 @@
-package com.example.screensx;
+package com.example.screenx;
 
 import java.util.ArrayList;
 

@@ -1,4 +1,4 @@
-package com.example.screensx;
+package com.example.screenx;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
