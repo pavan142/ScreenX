@@ -12,12 +12,12 @@ import java.io.File;
 import java.util.ArrayList;
 import com.bumptech.glide.Glide;
 
-public class ImageAdapter extends BaseAdapter {
+public class AppgroupsAdapter extends BaseAdapter {
     private Context context;
     private ArrayList<Screenshot> arrayList;
     private Logger files;
 
-    public ImageAdapter(Context context, ArrayList<Screenshot> arrayList) {
+    public AppgroupsAdapter(Context context, ArrayList<Screenshot> arrayList) {
         this.context = context;
         this.arrayList = arrayList;
         this.files = Logger.getInstance("FILES");
@@ -37,7 +37,7 @@ public class ImageAdapter extends BaseAdapter {
     @Override
     public  View getView(int position, View convertView, ViewGroup parent) {
         if (convertView ==  null) {
-            convertView = LayoutInflater.from(context).inflate(R.layout.image_item, parent, false);
+            convertView = LayoutInflater.from(context).inflate(R.layout.appgroup_preview, parent, false);
         }
         ImageView imageView;
         imageView = (ImageView) convertView.findViewById(R.id.image);

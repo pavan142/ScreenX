@@ -3,6 +3,8 @@ package com.example.screensx;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.GridView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -10,21 +12,22 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import java.util.ArrayList;
+import android.content.Intent;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final int REQUEST_READ_STORAGE = 0;
 
     private GridView _gridView;
-    private ImageAdapter _adapter;
-    private Logger _files;
+    private AppgroupsAdapter _adapter;
+    private Logger _logger;
     private ScreenFactory _sf;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        _files = Logger.getInstance("FILES");
+        setContentView(R.layout.appgroup_grid);
+        _logger = Logger.getInstance("appgroup_grid");
         _gridView = (GridView)findViewById(R.id.grid_view);
         requestStoragePermission();
         _sf = ScreenFactory.getInstance(getApplicationContext());
@@ -34,13 +37,23 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void displayAppGroups() {
-        ArrayList<Screenshot> screens = new ArrayList<>();
+        ArrayList<Screenshot> mascots = new ArrayList<>();
         for (AppGroup ag: _sf.appgroups.values())
-            screens.add(ag.mascot);
-//        for (Screenshot s: screens)
+            mascots.add(ag.mascot);
+//        for (Screenshot s: mascots)
 //            _files.log(s.appName,s.name,s.file.getAbsolutePath());
-        _adapter = new ImageAdapter(getApplicationContext(), screens);
+        _adapter = new AppgroupsAdapter(getApplicationContext(), mascots);
         _gridView.setAdapter(_adapter);
+        _gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Screenshot selected = mascots.get(i);
+                _logger.log("The item clicked is", i, selected.name, "the appName: ", selected.appName);
+                Intent intent = new Intent(getBaseContext(), AppGroupActivity.class);
+                intent.putExtra("APP_GROUP_NAME", selected.appName);
+                startActivity(intent);
+            }
+        });
     }
 
     private void requestStoragePermission() {
