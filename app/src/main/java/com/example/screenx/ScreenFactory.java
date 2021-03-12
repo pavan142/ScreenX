@@ -6,6 +6,9 @@ import android.os.Environment;
 import android.content.Context;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -16,6 +19,9 @@ class ScreenFactory {
 
     public Map<String, AppGroup> appgroups = new HashMap<>();
     public Map<String, Screenshot> nameToScreen = new HashMap<>();
+
+    private ArrayList<AppGroup> dateSorted = new ArrayList<>();
+    private ArrayList<AppGroup> alphaSorted = new ArrayList<>();
 
     private boolean _initialized = false;
     private final Logger _logger = Logger.getInstance("ScreenFactory");
@@ -91,12 +97,43 @@ class ScreenFactory {
             }
 
             for (AppGroup ag : appgroups.values()) {
-                ag.mascot = ag.screenshots.get(ag.screenshots.size()-1);
+                ag.sort();
+                ag.mascot = ag.screenshots.get(0);
+                ag.lastModified = ag.mascot.file.lastModified();
 //                _files.log(ag.print());
             }
+            sort();
         } catch (Exception e) {
             _logger.log("got an error: ", e.getMessage());
         }
+    }
+
+    public void sort() {
+        for (AppGroup i: appgroups.values()) {
+            dateSorted.add(i);
+            alphaSorted.add(i);
+        }
+        Collections.sort(dateSorted, new Comparator<AppGroup>() {
+            @Override
+            public int compare(AppGroup appGroup, AppGroup t1) {
+                long result = (t1.lastModified - appGroup.lastModified);
+                int output = (result >=0 ) ? 1: -1;
+                return output;
+            }
+        });
+
+        Collections.sort(alphaSorted, new Comparator<AppGroup>() {
+            @Override
+            public int compare(AppGroup appGroup, AppGroup t1) {
+                return appGroup.appName.compareTo(t1.appName);
+            }
+        });
+    }
+
+    public ArrayList<AppGroup> getAppGroups(Utils.SortingCriterion sort) {
+        if(sort == Utils.SortingCriterion.Date)
+            return dateSorted;
+        return alphaSorted;
     }
 
     public Screenshot findScreenByName(String name) {

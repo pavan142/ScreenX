@@ -38,7 +38,8 @@ public class MainActivity extends AppCompatActivity {
 
     public void displayAppGroups() {
         ArrayList<Screenshot> mascots = new ArrayList<>();
-        for (AppGroup ag: _sf.appgroups.values())
+        ArrayList<AppGroup> appgroups = _sf.getAppGroups(Utils.SortingCriterion.Date);
+        for (AppGroup ag: appgroups)
             mascots.add(ag.mascot);
         for (Screenshot s: mascots)
             _logger.log(s.appName,s.name,s.file.getAbsolutePath());
