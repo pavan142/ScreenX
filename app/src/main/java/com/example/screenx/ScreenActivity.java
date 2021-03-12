@@ -12,31 +12,51 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.viewpager.widget.ViewPager;
 
 import java.io.File;
+import java.util.ArrayList;
 
 public class ScreenActivity extends AppCompatActivity {
 
     private static final int REQUEST_READ_STORAGE = 0;
 
     private Logger _logger;
-    private ImageView _image;
+    private ViewPager _viewpager;
+    private ViewPagerAdapter _adapter;
     private ScreenFactory _sf;
     private Screenshot _screen;
     private String _screenName;
+    private int _screenPosition;
+    private ArrayList<Screenshot> _screens;
     private GestureDetector _clickDetector;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         hideSystemUI();
-        setContentView(R.layout.screen_expanded);
+        setContentView(R.layout.image_slider);
         _logger = Logger.getInstance("FILES");
-        _image = (ImageView)findViewById(R.id.image);
+        _viewpager = (ViewPager) findViewById(R.id.view_pager);
         _sf = ScreenFactory.getInstance(getApplicationContext());
         _sf.initialize();
         _screenName = getIntent().getStringExtra("SCREEN_NAME");
+        _screenPosition = getIntent().getIntExtra("SCREEN_POSITION", 0);
         _screen = _sf.findScreenByName(_screenName);
+        _screens = _sf.appgroups.get(_screen.appName).screenshots;
+        _adapter = new ViewPagerAdapter(getApplicationContext(), _screens);
+        _viewpager.setAdapter(_adapter);
+        _viewpager.setCurrentItem(_screenPosition);
+        setTapHandling();
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        _clickDetector.onTouchEvent(ev);
+        return super.dispatchTouchEvent(ev);
+    }
+
+    private void setTapHandling() {
         View decorView = getWindow().getDecorView();
         _clickDetector = new GestureDetector(this,
                 new GestureDetector.SimpleOnGestureListener() {
@@ -51,12 +71,6 @@ public class ScreenActivity extends AppCompatActivity {
                         return true;
                     }
                 });
-        displayScreen();
-    }
-
-    @Override
-    public boolean dispatchTouchEvent(MotionEvent ev) {
-        return _clickDetector.onTouchEvent(ev);
     }
 
     private void hideSystemUI() {
@@ -82,11 +96,5 @@ public class ScreenActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         hideSystemUI();
-    }
-
-    public void displayScreen() {
-        File file = _screen.file;
-        _logger.log("Loading View for", _screen.appName,_screen.name, _screen.file.getAbsolutePath());
-        Glide.with(getApplicationContext()).load(file).into(_image);
     }
 }

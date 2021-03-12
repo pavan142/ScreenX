@@ -44,6 +44,7 @@ public class AppGroupActivity extends AppCompatActivity {
                 _logger.log("The screen selected is", i, selected.name, "the appName: ", selected.appName);
                 Intent intent = new Intent(getBaseContext(), ScreenActivity.class);
                 intent.putExtra("SCREEN_NAME", selected.name);
+                intent.putExtra("SCREEN_POSITION", i);
                 startActivity(intent);
             }
         });
