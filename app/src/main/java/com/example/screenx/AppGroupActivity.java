@@ -14,8 +14,6 @@ import java.util.ArrayList;
 
 public class AppGroupActivity extends AppCompatActivity {
 
-    private static final int REQUEST_READ_STORAGE = 0;
-
     private GridView _gridView;
     private ScreensAdapter _adapter;
     private Logger _logger;

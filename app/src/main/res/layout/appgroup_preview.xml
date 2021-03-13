@@ -2,18 +2,25 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="#F7F7F7">
 
-    <androidx.cardview.widget.CardView
+    <soup.neumorphism.NeumorphCardView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:cardElevation="5dp"
-        app:cardCornerRadius="20dp"
-        android:layout_margin="0dp"
-        app:cardBackgroundColor="#FFFFFF"
-        app:cardMaxElevation="7dp"
-        app:cardPreventCornerOverlap="true"
-        app:cardUseCompatPadding="true">
+        app:neumorph_lightSource="leftTop"
+        app:neumorph_shapeType="flat"
+        app:neumorph_shadowElevation="6dp">
+<!--    <androidx.cardview.widget.CardView-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent"-->
+<!--        app:cardElevation="7dp"-->
+<!--        app:cardMaxElevation="9dp"-->
+<!--        app:cardCornerRadius="20dp"-->
+<!--        android:layout_margin="0dp"-->
+<!--        app:cardBackgroundColor="#FFFFFF"-->
+<!--        app:cardPreventCornerOverlap="true"-->
+<!--        app:cardUseCompatPadding="true">-->
 
         <com.example.screenx.SquareImageView
             android:id="@+id/image"
@@ -32,6 +39,6 @@
             android:layout_gravity="bottom"
             android:background="#99000000"
             android:textColor="@android:color/white" />
-
-    </androidx.cardview.widget.CardView>
+    </soup.neumorphism.NeumorphCardView>
+<!--    </androidx.cardview.widget.CardView>-->
 </FrameLayout>
