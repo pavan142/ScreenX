@@ -97,6 +97,10 @@ class ScreenFactory {
             }
 
             for (AppGroup ag : appgroups.values()) {
+                if (ag.screenshots.size() == 0) {
+                    appgroups.remove(ag.appName);
+                    continue;
+                }
                 ag.sort();
                 ag.mascot = ag.screenshots.get(0);
                 ag.lastModified = ag.mascot.file.lastModified();
@@ -145,5 +149,15 @@ class ScreenFactory {
             return;
         analyzeFiles();
         _initialized = true;
+    }
+
+    public void refresh() {
+        dateSorted.clear();
+        alphaSorted.clear();
+        for (AppGroup ag: appgroups.values())
+            ag.screenshots.clear();
+        nameToScreen.clear();
+        _initialized = false;
+        this.initialize();
     }
 }
