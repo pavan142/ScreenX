@@ -1,12 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<GridView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/grid_view"
-    android:numColumns="3"
-    android:verticalSpacing="0dp"
-    android:horizontalSpacing="0dp"
-    android:stretchMode="columnWidth"
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+    android:id="@+id/pull_to_refresh"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-</GridView>
+    android:layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <GridView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/grid_view"
+        android:numColumns="3"
+        android:verticalSpacing="0dp"
+        android:horizontalSpacing="0dp"
+        android:stretchMode="columnWidth"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    </GridView>
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

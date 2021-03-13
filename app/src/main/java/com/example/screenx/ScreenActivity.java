@@ -19,8 +19,6 @@ import java.util.ArrayList;
 
 public class ScreenActivity extends AppCompatActivity {
 
-    private static final int REQUEST_READ_STORAGE = 0;
-
     private Logger _logger;
     private ViewPager _viewpager;
     private ViewPagerAdapter _adapter;
@@ -43,7 +41,11 @@ public class ScreenActivity extends AppCompatActivity {
         _screenName = getIntent().getStringExtra("SCREEN_NAME");
         _screenPosition = getIntent().getIntExtra("SCREEN_POSITION", 0);
         _screen = _sf.findScreenByName(_screenName);
-        _screens = _sf.appgroups.get(_screen.appName).screenshots;
+        AppGroup ag =_sf.appgroups.get(_screen.appName);
+        if (ag == null) {
+            finish();
+        }
+        _screens = ag .screenshots;
         _adapter = new ViewPagerAdapter(getApplicationContext(), _screens);
         _viewpager.setAdapter(_adapter);
         _viewpager.setCurrentItem(_screenPosition);
