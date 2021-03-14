@@ -17,7 +17,7 @@
     <style name="AppTheme.NoActionBar.FullScreen">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
-        <item name="android:statusBarColor">@android:color/background_dark</item>
+        <item name="android:statusBarColor">@color/navigationBarColor</item>
         <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>
     </style>
 

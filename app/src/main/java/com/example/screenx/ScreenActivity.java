@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 import androidx.viewpager.widget.ViewPager;
 
@@ -24,10 +25,15 @@ public class ScreenActivity extends ImmersiveActivity {
     private ImageButton _shareButton;
     private LinearLayout _toolbar;
 
+    public Resources resources;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.image_slider);
+
+        resources = getApplicationContext().getResources();
+
         _logger = Logger.getInstance("FILES");
         _viewpager = findViewById(R.id.view_pager);
         _sf = ScreenFactory.getInstance();
@@ -51,7 +57,7 @@ public class ScreenActivity extends ImmersiveActivity {
         _viewpager.setCurrentItem(_screenPosition);
     }
 
-        private int getNavbarHeight() {
+    private int getNavbarHeight() {
         Resources resources = getApplicationContext().getResources();
         int resourceId = resources.getIdentifier("navigation_bar_height", "dimen", "android");
         if (resourceId > 0) {
@@ -61,14 +67,16 @@ public class ScreenActivity extends ImmersiveActivity {
     }
 
     private void alignToolbarWithNavbar() {
-//        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
-//                FrameLayout.LayoutParams.MATCH_PARENT,
-//                FrameLayout.LayoutParams.WRAP_CONTENT
-//        );
-        int navbarheight = getNavbarHeight();
-//        params.setMargins(0, 0, 0, navbarheight);
-//        _toolbar.setLayoutParams(params);
-        _toolbar.setBottom(navbarheight);
+        int height = (int)getResources().getDimension(R.dimen.bottom_toolbar_height);
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
+                RelativeLayout.LayoutParams.MATCH_PARENT,
+                height
+        );
+        int navbarHeight = getNavbarHeight();
+        _logger.log("Method2: Navigation Bar Height is", navbarHeight, "and the height is", height);
+        params.bottomMargin= navbarHeight;
+        params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+        _toolbar.setLayoutParams(params);
     }
 
     @Override
@@ -87,6 +95,7 @@ public class ScreenActivity extends ImmersiveActivity {
         if (_toolbar == null)
             return;
         _logger.log("SETTING VISIBILITY OF TOOLBAR TO VISIBLE");
+        alignToolbarWithNavbar();
         _toolbar.setVisibility(View.VISIBLE);
     }
 }

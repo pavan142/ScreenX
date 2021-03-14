@@ -4,6 +4,6 @@
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
     <color name="cardBackground">#111111</color>
-    <color name="statusBarColor">#000000</color>
-    <color name="navigationBarColor">#AA000000</color>
+    <color name="statusBarColor">#99000000</color>
+    <color name="navigationBarColor">#99000000</color>
 </resources>
