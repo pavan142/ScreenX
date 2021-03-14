@@ -2,8 +2,11 @@ package com.example.screenx;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.res.Resources;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -28,7 +31,7 @@ public class ScreenActivity extends ImmersiveActivity {
 
     public Resources resources;
     public Utils utils;
-    public AlertDialog.Builder builder;
+    public AlertDialog.Builder mAlertBuilder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,7 +39,7 @@ public class ScreenActivity extends ImmersiveActivity {
         setContentView(R.layout.image_slider);
 
         resources = getApplicationContext().getResources();
-        builder = new AlertDialog.Builder(this);
+        mAlertBuilder = new AlertDialog.Builder(this);
 
         utils = Utils.getInstance();
         _logger = Logger.getInstance("FILES");
@@ -67,6 +70,9 @@ public class ScreenActivity extends ImmersiveActivity {
         _viewpager.setAdapter(_adapter);
         _viewpager.setCurrentItem(screenPosition);
 
+        StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
+        StrictMode.setVmPolicy(builder.build());
+
         this.setupTapHandling(_viewpager);
     }
 
@@ -74,7 +80,7 @@ public class ScreenActivity extends ImmersiveActivity {
         int position = _viewpager.getCurrentItem();
         Screenshot screen = _screens.get(position);
         _logger.log("ASKED TO DELETE", screen.name, screen.appName);
-        builder.setTitle("Delete Image")
+        mAlertBuilder.setTitle("Delete Image")
                 .setMessage("Are you sure you want to delete this Image?")
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
@@ -98,6 +104,14 @@ public class ScreenActivity extends ImmersiveActivity {
         int position = _viewpager.getCurrentItem();
         Screenshot screen = _screens.get(position);
         _logger.log("ASKED TO SHARE", screen.name, screen.appName);
+        Intent sendIntent = new Intent();
+        sendIntent.setAction(Intent.ACTION_SEND);
+        sendIntent.putExtra(
+                Intent.EXTRA_STREAM,
+                Uri.fromFile(screen.file)
+        );
+        sendIntent.setType("image/*");
+        startActivity(Intent.createChooser(sendIntent, "Share Image"));
     }
 
     private void alignToolbarWithNavbar() {
