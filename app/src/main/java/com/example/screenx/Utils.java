@@ -44,16 +44,18 @@ class Utils {
     }
 
 
-    public int getNavigationBarHeight() {
-        Point appUsableSize = getAppUsableScreenSize();
-        Point realScreenSize = getRealScreenSize();
+    public int getNavbarHeight() {
 
-        _logger.log("Usable size: ", appUsableSize.x, appUsableSize.y, "real size", realScreenSize.x, realScreenSize.y);
-        if (isNavigationBarOnBottom()) {
-            return (realScreenSize.y - appUsableSize.y);
+        // Because in the landscape mode, the navbar will be on the shortedge and toolbar
+        // will be on the longedge, so there is no need to offset the toolbar
+        if (isNavigationBarOnSide())
+            return 0;
+
+        Resources resources = context.getResources();
+        int resourceId = resources.getIdentifier("navigation_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            return resources.getDimensionPixelSize(resourceId);
         }
-
-        // navigation bar is not present or is on side
         return 0;
     }
 

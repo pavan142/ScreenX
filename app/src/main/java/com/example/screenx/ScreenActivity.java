@@ -26,6 +26,7 @@ public class ScreenActivity extends ImmersiveActivity {
     private LinearLayout _toolbar;
 
     public Resources resources;
+    public Utils utils;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +35,7 @@ public class ScreenActivity extends ImmersiveActivity {
 
         resources = getApplicationContext().getResources();
 
+        utils = Utils.getInstance();
         _logger = Logger.getInstance("FILES");
         _viewpager = findViewById(R.id.view_pager);
         _sf = ScreenFactory.getInstance();
@@ -57,22 +59,13 @@ public class ScreenActivity extends ImmersiveActivity {
         _viewpager.setCurrentItem(_screenPosition);
     }
 
-    private int getNavbarHeight() {
-        Resources resources = getApplicationContext().getResources();
-        int resourceId = resources.getIdentifier("navigation_bar_height", "dimen", "android");
-        if (resourceId > 0) {
-            return resources.getDimensionPixelSize(resourceId);
-        }
-        return 0;
-    }
-
     private void alignToolbarWithNavbar() {
         int height = (int)getResources().getDimension(R.dimen.bottom_toolbar_height);
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
                 RelativeLayout.LayoutParams.MATCH_PARENT,
                 height
         );
-        int navbarHeight = getNavbarHeight();
+        int navbarHeight = utils.getNavbarHeight();
         _logger.log("Method2: Navigation Bar Height is", navbarHeight, "and the height is", height);
         params.bottomMargin= navbarHeight;
         params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);

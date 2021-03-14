@@ -35,11 +35,15 @@ public class MainActivity extends AppCompatActivity {
     private Handler _mHandler;
     private  boolean _mInitializing = true;
     private TimerTask _mTask;
+
+    public  Utils utils;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.appgroup_grid);
 
+        utils = Utils.getInstance();
+        utils.setContext(getApplicationContext());
         _logger = Logger.getInstance("FILES");
         _mHandler = new Handler();
         _pullToRefresh = findViewById(R.id.pull_to_refresh);
