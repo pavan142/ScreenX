@@ -24,13 +24,10 @@ class AppGroup {
     }
 
     public void sort() {
-        Collections.sort(screenshots, new Comparator<Screenshot>() {
-            @Override
-            public int compare(Screenshot screenshot, Screenshot t1) {
-                long result = (t1.file.lastModified() - screenshot.file.lastModified());
-                int output = (result >=0 ) ? 1: -1;
+        Collections.sort(screenshots, (Screenshot screenshot, Screenshot t1) -> {
+                long result = (t1.lastModified - screenshot.lastModified);
+                int output = (result >= 0 ) ? 1: -1;
                 return output;
-            }
-        });
+            });
     }
 }

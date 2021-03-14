@@ -26,42 +26,22 @@ public class AppGroupActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.screen_grid);
         _logger = Logger.getInstance("FILES");
-        _gridView = (GridView)findViewById(R.id.grid_view);
-        _sf = ScreenFactory.getInstance(getApplicationContext());
-        _sf.initialize();
+        _gridView = findViewById(R.id.grid_view);
+        _sf = ScreenFactory.getInstance();
         _appName = getIntent().getStringExtra("APP_GROUP_NAME");
         _pullToRefresh = findViewById(R.id.pull_to_refresh);
-        class refreshTask extends AsyncTask<String, Void, String> {
-            @Override
-            protected String doInBackground(String... strings) {
-                refresh();
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(String s) {
-                postRefresh();
-            }
-        }
-
-
-        _pullToRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                new refreshTask().execute();
-            }
-        });
+        _pullToRefresh.setOnRefreshListener(() -> refresh());
         attachAdapter();
     }
 
 
     private void refresh() {
-        _logger.log("MainActivity: Refreshing Screenshots");
-        _sf.refresh();
+        _logger.log("AppGroupActivity: Refreshing Screenshots");
+        _sf.refresh(getApplicationContext(), () -> postRefresh());
     }
 
     private void postRefresh() {
-        _logger.log("MainActivity: Successfully refreshed data");
+        _logger.log("AppGroupActivity: Successfully refreshed data");
         _pullToRefresh.setRefreshing(false);
         attachAdapter();
     }
