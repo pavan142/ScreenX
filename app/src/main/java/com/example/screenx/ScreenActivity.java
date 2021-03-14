@@ -11,6 +11,8 @@ import androidx.viewpager.widget.ViewPager;
 
 import java.util.ArrayList;
 
+import static com.example.screenx.Constants.TOOLBAR_TRANSITION;
+
 public class ScreenActivity extends ImmersiveActivity {
 
     private Logger _logger;
@@ -51,12 +53,14 @@ public class ScreenActivity extends ImmersiveActivity {
         _deleteButton = findViewById(R.id.delete);
         _shareButton = findViewById(R.id.share);
 
-        _toolbar.setVisibility(View.INVISIBLE);
+        _toolbar.setAlpha(0);
         alignToolbarWithNavbar();
         _screens = ag .screenshots;
         _adapter = new ViewPagerAdapter(getApplicationContext(), _screens);
         _viewpager.setAdapter(_adapter);
         _viewpager.setCurrentItem(_screenPosition);
+
+        this.setupTapHandling(_viewpager);
     }
 
     private void alignToolbarWithNavbar() {
@@ -78,7 +82,7 @@ public class ScreenActivity extends ImmersiveActivity {
         if (_toolbar == null)
             return;
         _logger.log("SETTING VISIBILITY OF TOOLBAR TO INVISIBLE");
-        _toolbar.setVisibility(View.INVISIBLE);
+        _toolbar.animate().alpha(0).setDuration(TOOLBAR_TRANSITION);
     }
 
     @Override
@@ -89,6 +93,6 @@ public class ScreenActivity extends ImmersiveActivity {
             return;
         _logger.log("SETTING VISIBILITY OF TOOLBAR TO VISIBLE");
         alignToolbarWithNavbar();
-        _toolbar.setVisibility(View.VISIBLE);
+        _toolbar.animate().alpha(1).setDuration(TOOLBAR_TRANSITION);
     }
 }

@@ -19,8 +19,8 @@ import java.util.TimerTask;
 
 import android.content.Intent;
 
-import static com.example.screenx.Constants.PROGRESS_BAR_PERIOD;
-import static com.example.screenx.Constants.PROGRESS_BAR_TRANSITION;
+import static com.example.screenx.Constants.PROGRESSBAR_PERIOD;
+import static com.example.screenx.Constants.PROGRESSBAR_TRANSITION;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -70,14 +70,14 @@ public class MainActivity extends AppCompatActivity {
                 });
             }
         };
-        new Timer().scheduleAtFixedRate(_mTask, 0, PROGRESS_BAR_PERIOD);
+        new Timer().scheduleAtFixedRate(_mTask, 0, PROGRESSBAR_PERIOD);
 
     }
 
     private void hideProgressBar() {
         _mTask.cancel();
-        _mProgressBar.animate().alpha(0).setDuration(PROGRESS_BAR_TRANSITION);
-        _gridView.animate().alpha(1).setDuration(PROGRESS_BAR_TRANSITION);
+        _mProgressBar.animate().alpha(0).setDuration(PROGRESSBAR_TRANSITION);
+        _gridView.animate().alpha(1).setDuration(PROGRESSBAR_TRANSITION);
         attachAdapter();
     }
 

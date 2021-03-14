@@ -20,21 +20,17 @@
         android:background="@color/navigationBarColor">
         <ImageButton
             android:layout_width="0dp"
-            android:layout_weight="1"
             android:layout_height="match_parent"
+            android:layout_weight="1"
             android:id="@+id/delete"
             android:src="@drawable/delete_white"
-            android:scaleType="fitCenter"
-            android:padding="12dp"
-            android:background="@android:color/transparent"></ImageButton>
+            style="@style/Toobar_Button"></ImageButton>
         <ImageButton
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="match_parent"
             android:id="@+id/share"
             android:src="@drawable/share_white"
-            android:scaleType="fitCenter"
-            android:padding="12dp"
-            android:background="@android:color/transparent"></ImageButton>
+            style="@style/Toobar_Button"></ImageButton>
     </LinearLayout>
 </RelativeLayout>

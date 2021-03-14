@@ -14,36 +14,29 @@ class ImmersiveActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
         _decorView = getWindow().getDecorView();
         _logger = Logger.getInstance("FILES");
-        super.onCreate(savedInstanceState);
         _logger.log("in ImmersiveActivity onCreate");
         hideSystemUI();
-        setTapHandling();
     }
 
-    @Override
-    public boolean dispatchTouchEvent(MotionEvent ev) {
-        _tapDetector.onTouchEvent(ev);
-        return super.dispatchTouchEvent(ev);
-    }
-
-    private void setTapHandling() {
-        View decorView = getWindow().getDecorView();
-        _tapDetector = new GestureDetector(this,
-                new GestureDetector.SimpleOnGestureListener() {
-                    @Override
-                    public boolean onSingleTapUp(MotionEvent e) {
-                        boolean visible = (decorView.getSystemUiVisibility() & View.SYSTEM_UI_FLAG_HIDE_NAVIGATION) == 0;
-                        _logger.log("Parent got onSingleTapUp Event", visible);
-                        if (visible) {
-                            hideSystemUI();
-                        } else {
-                            showSystemUI();
-                        }
-                        return true;
-                    }
-                });
+    protected void setupTapHandling(View targetView) {
+        targetView.setOnTouchListener((view, motionEvent) -> _tapDetector.onTouchEvent(motionEvent));
+        _tapDetector = new GestureDetector(this, new GestureDetector.SimpleOnGestureListener() {
+            @Override
+            public boolean onSingleTapUp(MotionEvent e) {
+                boolean visible = (_decorView.getSystemUiVisibility() & View.SYSTEM_UI_FLAG_HIDE_NAVIGATION) == 0;
+                _logger.log("Parent got onSingleTapUp Event", visible);
+                if (visible) {
+                    hideSystemUI();
+                } else {
+                    showSystemUI();
+                }
+                return true;
+            }
+        });
     }
 
     public void hideSystemUI() {
