@@ -11,6 +11,7 @@
         android:horizontalSpacing="0dp"
         android:stretchMode="columnWidth"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@color/lightWhite">
     </GridView>
 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

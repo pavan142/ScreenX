@@ -6,4 +6,5 @@
     <color name="cardBackground">#111111</color>
     <color name="statusBarColor">#99000000</color>
     <color name="navigationBarColor">#99000000</color>
+    <color name="lightWhite">#F7F7F7</color>
 </resources>
