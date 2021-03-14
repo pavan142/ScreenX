@@ -16,8 +16,7 @@
 <!--        android:layout_height="match_parent"-->
 <!--        app:cardElevation="7dp"-->
 <!--        app:cardMaxElevation="9dp"-->
-<!--        app:cardCornerRadius="20dp"-->
-<!--        android:layout_margin="0dp"-->
+<!--        app:cardCornerRadius="16dp"-->
 <!--        app:cardBackgroundColor="#FFFFFF"-->
 <!--        app:cardPreventCornerOverlap="true"-->
 <!--        app:cardUseCompatPadding="true">-->

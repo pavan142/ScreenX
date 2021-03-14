@@ -2,8 +2,8 @@ package com.example.screenx;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
-import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
@@ -14,7 +14,13 @@ import androidx.core.content.ContextCompat;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
+
 import android.content.Intent;
+
+import static com.example.screenx.Constants.PROGRESS_BAR_PERIOD;
+import static com.example.screenx.Constants.PROGRESS_BAR_TRANSITION;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -25,49 +31,70 @@ public class MainActivity extends AppCompatActivity {
     private Logger _logger;
     private ScreenFactory _sf;
     private SwipeRefreshLayout _pullToRefresh;
-
-
+    private View _mProgressBar;
+    private Handler _mHandler;
+    private  boolean _mInitializing = true;
+    private TimerTask _mTask;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.appgroup_grid);
+
         _logger = Logger.getInstance("FILES");
-
+        _mHandler = new Handler();
         _pullToRefresh = findViewById(R.id.pull_to_refresh);
-        class refreshTask extends AsyncTask<String, Void, String> {
-            @Override
-            protected String doInBackground(String... strings) {
-                refresh();
-                return null;
-            }
+        _pullToRefresh.setOnRefreshListener(() -> refresh());
+        _gridView = findViewById(R.id.grid_view);
+        _sf = ScreenFactory.getInstance();
 
-            @Override
-            protected void onPostExecute(String s) {
-                postRefresh();
-            }
-        }
+        _mProgressBar = findViewById(R.id.progress_bar);
 
-
-        _pullToRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                new refreshTask().execute();
-            }
-        });
-        _gridView = (GridView)findViewById(R.id.grid_view);
         requestStoragePermission();
-        _sf = ScreenFactory.getInstance(getApplicationContext());
-        _sf.initialize();
+        initialize();
+    }
+
+    private void showProgressBar() {
+        _gridView.setAlpha(0);
+        _mProgressBar.setVisibility(View.VISIBLE);
+        _mTask = new TimerTask() {
+            @Override
+            public void run() {
+                runOnUiThread(() -> {
+                    if (!_mInitializing) {
+                        hideProgressBar();
+                    }
+                });
+            }
+        };
+        new Timer().scheduleAtFixedRate(_mTask, 0, PROGRESS_BAR_PERIOD);
+
+    }
+
+    private void hideProgressBar() {
+        _mTask.cancel();
+        _mProgressBar.animate().alpha(0).setDuration(PROGRESS_BAR_TRANSITION);
+        _gridView.animate().alpha(1).setDuration(PROGRESS_BAR_TRANSITION);
         attachAdapter();
+    }
+
+    private void initialize() {
+        showProgressBar();
+        _logger.log("MainActivity: Initializing Screenshots");
+        _sf.refresh(getApplicationContext(), () -> postInitialization());
     }
 
     private void refresh() {
         _logger.log("MainActivity: Refreshing Screenshots");
-        _sf.refresh();
+        _sf.refresh(getApplicationContext(), () -> postRefresh());
+    }
+
+    private void postInitialization() {
+        _logger.log("MainActivity: Successfully initialized screenshots");
+        _mInitializing = false;
     }
 
     private void postRefresh() {
-        _logger.log("MainActivity: Successfully refreshed data");
+        _logger.log("MainActivity: Successfully refreshed screenshots");
         _pullToRefresh.setRefreshing(false);
         attachAdapter();
     }
@@ -78,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
         for (AppGroup ag: appgroups)
             mascots.add(ag.mascot);
         for (Screenshot s: mascots)
-            _logger.log(s.appName,s.name,s.file.getAbsolutePath());
+            _logger.log(s.appName,s.name);
         _adapter = new AppGroupsAdapter(getApplicationContext(), mascots);
         _gridView.setAdapter(_adapter);
         _gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
