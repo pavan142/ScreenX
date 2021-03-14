@@ -89,6 +89,10 @@ class ScreenFactory {
         return nameToScreen.get(name);
     }
 
+    public void removeScreen(String name) {
+        nameToScreen.remove(name);
+    }
+
     public void loadScreens(Context context, ScreenSortListener screenSortListener) {
         if(_initialized)
             return;
