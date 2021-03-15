@@ -1,7 +1,6 @@
 package com.example.screenx;
 
 import android.Manifest;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
@@ -9,8 +8,6 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import java.util.ArrayList;
@@ -19,6 +16,14 @@ import java.util.TimerTask;
 
 import android.content.Intent;
 
+import com.karumi.dexter.Dexter;
+import com.karumi.dexter.PermissionToken;
+import com.karumi.dexter.listener.PermissionDeniedResponse;
+import com.karumi.dexter.listener.PermissionGrantedResponse;
+import com.karumi.dexter.listener.PermissionRequest;
+import com.karumi.dexter.listener.single.DialogOnDeniedPermissionListener;
+import com.karumi.dexter.listener.single.PermissionListener;
+
 import static com.example.screenx.Constants.PROGRESSBAR_PERIOD;
 import static com.example.screenx.Constants.PROGRESSBAR_TRANSITION;
 
@@ -26,17 +31,18 @@ public class MainActivity extends AppCompatActivity {
 
     private static final int REQUEST_READ_STORAGE = 0;
 
-    private GridView _gridView;
+    private GridView _mGridView;
     private AppGroupsAdapter _adapter;
     private Logger _logger;
     private ScreenFactory _sf;
     private SwipeRefreshLayout _pullToRefresh;
     private View _mProgressBar;
+    private View _mPermissionsDisplay;
     private Handler _mHandler;
-    private  boolean _mInitializing = true;
+    private boolean _mInitializing = true;
     private TimerTask _mTask;
+    public Utils utils;
 
-    public  Utils utils;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,20 +51,26 @@ public class MainActivity extends AppCompatActivity {
         utils = Utils.getInstance();
         utils.setContext(getApplicationContext());
         _logger = Logger.getInstance("FILES");
+        _logger.log("----------MainActivity: ONCREATE---------");
+        ;
         _mHandler = new Handler();
         _pullToRefresh = findViewById(R.id.pull_to_refresh);
         _pullToRefresh.setOnRefreshListener(() -> refresh());
-        _gridView = findViewById(R.id.grid_view);
+        _mGridView = findViewById(R.id.grid_view);
         _sf = ScreenFactory.getInstance();
 
         _mProgressBar = findViewById(R.id.progress_bar);
+        _mPermissionsDisplay = findViewById(R.id.permissions_display);
+        _mPermissionsDisplay.setVisibility(View.GONE);
 
         requestStoragePermission();
-        initialize();
+//        initialize();
     }
 
     private void showProgressBar() {
-        _gridView.setAlpha(0);
+        _mGridView.setAlpha(0);
+        _mGridView.setVisibility(View.VISIBLE);
+        _mPermissionsDisplay.setVisibility(View.GONE);
         _mProgressBar.setVisibility(View.VISIBLE);
         _mTask = new TimerTask() {
             @Override
@@ -77,8 +89,15 @@ public class MainActivity extends AppCompatActivity {
     private void hideProgressBar() {
         _mTask.cancel();
         _mProgressBar.animate().alpha(0).setDuration(PROGRESSBAR_TRANSITION);
-        _gridView.animate().alpha(1).setDuration(PROGRESSBAR_TRANSITION);
+        _mGridView.animate().alpha(1).setDuration(PROGRESSBAR_TRANSITION);
+        _mHandler.postDelayed(() -> _mProgressBar.setVisibility(View.GONE), 1500);
         attachAdapter();
+    }
+
+    private void showPermissionDeniedError() {
+        _mPermissionsDisplay.setVisibility(View.VISIBLE);
+        _mProgressBar.setVisibility(View.GONE);
+        _mGridView.setVisibility(View.GONE);
     }
 
     private void initialize() {
@@ -106,13 +125,13 @@ public class MainActivity extends AppCompatActivity {
     public void attachAdapter() {
         ArrayList<Screenshot> mascots = new ArrayList<>();
         ArrayList<AppGroup> appgroups = _sf.getAppGroups(Utils.SortingCriterion.Date);
-        for (AppGroup ag: appgroups)
+        for (AppGroup ag : appgroups)
             mascots.add(ag.mascot);
-        for (Screenshot s: mascots)
-            _logger.log(s.appName,s.name);
+        for (Screenshot s : mascots)
+            _logger.log(s.appName, s.name);
         _adapter = new AppGroupsAdapter(getApplicationContext(), mascots);
-        _gridView.setAdapter(_adapter);
-        _gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        _mGridView.setAdapter(_adapter);
+        _mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Screenshot selected = mascots.get(i);
@@ -125,11 +144,33 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void requestStoragePermission() {
-        // Getting Permission for reading exteernal storage
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(
-                    this, new String[] {Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_READ_STORAGE);
-        }
+        // Reading only read storage because read storage is grouped under the same umbrella as
+        // write storage and if the user accepted one , the other would be automatically granted
+        _logger.log("Dexter checking for permissions");
+        ;
+        Dexter.withContext(this)
+                .withPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
+                .withListener(new PermissionListener() {
+                    @Override
+                    public void onPermissionGranted(PermissionGrantedResponse response) {
+                        _logger.log("Permission Granted");
+                        initialize();
+                    }
+
+                    @Override
+                    public void onPermissionDenied(PermissionDeniedResponse response) {
+                        _logger.log("Permission Denied");
+                        showPermissionDeniedError();
+                    }
+
+                    @Override
+                    public void onPermissionRationaleShouldBeShown(PermissionRequest permission, PermissionToken token) {
+                        _logger.log("Permission Rational Should be shown");
+                        showPermissionDeniedError();
+                        token.continuePermissionRequest();
+                    }
+                })
+                .onSameThread()
+                .check();
     }
 }

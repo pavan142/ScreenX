@@ -20,24 +20,36 @@
         android:layout_height="match_parent">
     </GridView>
 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/progress_bar"
-        android:background="#FFFFFF">
+<FrameLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/progress_bar"
+    android:background="#FFFFFF">
 <!--        <pl.droidsonroids.gif.GifImageView-->
 <!--            android:layout_width="wrap_content"-->
 <!--            android:layout_height="wrap_content"-->
 <!--            android:layout_centerInParent="true"-->
 <!--            android:src="@drawable/lurking_cat">-->
 <!--        </pl.droidsonroids.gif.GifImageView>-->
-        <com.github.ybq.android.spinkit.SpinKitView
-            xmlns:app="http://schemas.android.com/apk/res-auto"
-            style="@style/SpinKitView.Large.Circle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_centerInParent="true"
-            app:SpinKit_Color="@color/colorPrimary" />
-    </FrameLayout>
+    <com.github.ybq.android.spinkit.SpinKitView
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        style="@style/SpinKitView.Large.Circle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_centerInParent="true"
+        app:SpinKit_Color="@color/colorPrimary" />
+</FrameLayout>
+<FrameLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id = "@+id/permissions_display"
+    android:background="@android:color/white">
+            <pl.droidsonroids.gif.GifImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:src="@drawable/storage_permissions">
+            </pl.droidsonroids.gif.GifImageView>
+</FrameLayout>
 </RelativeLayout>

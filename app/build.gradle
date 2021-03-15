@@ -37,6 +37,7 @@ dependencies {
     implementation 'com.github.fornewid:neumorphism:0.3.0'
     implementation 'com.github.ybq:Android-SpinKit:1.4.0'
     implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.+'
+    implementation 'com.karumi:dexter:6.2.2'
 
     annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
     testImplementation 'junit:junit:4.12'
