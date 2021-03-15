@@ -1,13 +1,17 @@
 package com.example.screenx;
 
 import android.Manifest;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.Settings;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import java.util.ArrayList;
@@ -21,7 +25,6 @@ import com.karumi.dexter.PermissionToken;
 import com.karumi.dexter.listener.PermissionDeniedResponse;
 import com.karumi.dexter.listener.PermissionGrantedResponse;
 import com.karumi.dexter.listener.PermissionRequest;
-import com.karumi.dexter.listener.single.DialogOnDeniedPermissionListener;
 import com.karumi.dexter.listener.single.PermissionListener;
 
 import static com.example.screenx.Constants.PROGRESSBAR_PERIOD;
@@ -38,6 +41,9 @@ public class MainActivity extends AppCompatActivity {
     private SwipeRefreshLayout _pullToRefresh;
     private View _mProgressBar;
     private View _mPermissionsDisplay;
+    private View _mPermissionsText;
+
+    private boolean _mPermissionsDenied = false;
     private Handler _mHandler;
     private boolean _mInitializing = true;
     private TimerTask _mTask;
@@ -62,9 +68,18 @@ public class MainActivity extends AppCompatActivity {
         _mProgressBar = findViewById(R.id.progress_bar);
         _mPermissionsDisplay = findViewById(R.id.permissions_display);
         _mPermissionsDisplay.setVisibility(View.GONE);
+        _mPermissionsText = findViewById(R.id.permissions_text);
+        _mPermissionsText.setOnClickListener(view -> goToAppSettings());
 
         requestStoragePermission();
 //        initialize();
+    }
+
+    private void goToAppSettings() {
+        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+        Uri uri = Uri.fromParts("package", getPackageName(), null);
+        intent.setData(uri);
+        startActivity(intent);
     }
 
     private void showProgressBar() {
@@ -95,12 +110,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showPermissionDeniedError() {
+        _mPermissionsDenied = true;
         _mPermissionsDisplay.setVisibility(View.VISIBLE);
         _mProgressBar.setVisibility(View.GONE);
         _mGridView.setVisibility(View.GONE);
     }
 
-    private void initialize() {
+    private void permissionsGranted() {
+        _mPermissionsDenied = false;
         showProgressBar();
         _logger.log("MainActivity: Initializing Screenshots");
         _sf.refresh(getApplicationContext(), () -> postInitialization());
@@ -147,14 +164,13 @@ public class MainActivity extends AppCompatActivity {
         // Reading only read storage because read storage is grouped under the same umbrella as
         // write storage and if the user accepted one , the other would be automatically granted
         _logger.log("Dexter checking for permissions");
-        ;
         Dexter.withContext(this)
                 .withPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
                 .withListener(new PermissionListener() {
                     @Override
                     public void onPermissionGranted(PermissionGrantedResponse response) {
                         _logger.log("Permission Granted");
-                        initialize();
+                        permissionsGranted();
                     }
 
                     @Override
@@ -172,5 +188,15 @@ public class MainActivity extends AppCompatActivity {
                 })
                 .onSameThread()
                 .check();
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if (hasFocus && _mPermissionsDenied &&
+                ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                        == PackageManager.PERMISSION_GRANTED) {
+            permissionsGranted();
+        }
     }
 }

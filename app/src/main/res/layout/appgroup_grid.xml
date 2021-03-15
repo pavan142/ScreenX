@@ -2,7 +2,9 @@
 <RelativeLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    >
 
 <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
     android:id="@+id/pull_to_refresh"
@@ -45,11 +47,34 @@
     android:layout_height="match_parent"
     android:id = "@+id/permissions_display"
     android:background="@android:color/white">
-            <pl.droidsonroids.gif.GifImageView
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <pl.droidsonroids.gif.GifImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:src="@drawable/storage_permissions">
+        </pl.droidsonroids.gif.GifImageView>
+        <soup.neumorphism.NeumorphCardView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/Widget.Neumorph.CardView"
+            app:neumorph_shadowElevation="6dp"
+            app:neumorph_lightSource="leftTop"
+            app:neumorph_shapeType="flat"
+            app:neumorph_backgroundColor="@color/lightWhite"
+            android:layout_centerHorizontal="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="50dp">
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:src="@drawable/storage_permissions">
-            </pl.droidsonroids.gif.GifImageView>
+                android:padding="30dp"
+                android:id="@+id/permissions_text"
+                android:text="@string/permissions_text">
+            </TextView>
+        </soup.neumorphism.NeumorphCardView>
+    </RelativeLayout>
 </FrameLayout>
 </RelativeLayout>
