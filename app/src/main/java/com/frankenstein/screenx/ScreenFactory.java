@@ -1,8 +1,7 @@
-package com.example.screenx;
+package com.frankenstein.screenx;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import android.content.Context;

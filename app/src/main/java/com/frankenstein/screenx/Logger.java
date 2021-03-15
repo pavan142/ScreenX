@@ -1,4 +1,4 @@
-package com.example.screenx;
+package com.frankenstein.screenx;
 
 import java.util.HashMap;
 import java.util.Map;

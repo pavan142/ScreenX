@@ -1,4 +1,4 @@
-package com.example.screenx;
+package com.frankenstein.screenx;
 
 import android.content.Context;
 import android.view.LayoutInflater;

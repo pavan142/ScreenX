@@ -1,4 +1,4 @@
-package com.example.screenx;
+package com.frankenstein.screenx;
 
 public interface ScreenSortListener {
     void onSorted();

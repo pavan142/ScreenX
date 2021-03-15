@@ -1,4 +1,4 @@
-package com.example.screenx;
+package com.frankenstein.screenx;
 
 class Constants {
     public static final String SCREENSHOT_PATTERN="_[[a-z]*.]*.jpg$";

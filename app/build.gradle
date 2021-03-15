@@ -3,7 +3,7 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 30
     defaultConfig {
-        applicationId "com.example.screenx"
+        applicationId "com.frankenstein.screenx"
         minSdkVersion 27
         targetSdkVersion 30
         versionCode 1

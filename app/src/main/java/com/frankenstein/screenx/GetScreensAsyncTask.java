@@ -1,4 +1,4 @@
-package com.example.screenx;
+package com.frankenstein.screenx;
 
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;

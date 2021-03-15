@@ -1,4 +1,4 @@
-package com.example.screenx;
+package com.frankenstein.screenx;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -13,10 +13,9 @@ import android.widget.RelativeLayout;
 
 import androidx.viewpager.widget.ViewPager;
 
-import java.io.File;
 import java.util.ArrayList;
 
-import static com.example.screenx.Constants.TOOLBAR_TRANSITION;
+import static com.frankenstein.screenx.Constants.TOOLBAR_TRANSITION;
 
 public class ScreenActivity extends ImmersiveActivity {
 

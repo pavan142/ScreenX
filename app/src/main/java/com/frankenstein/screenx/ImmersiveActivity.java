@@ -1,4 +1,4 @@
-package com.example.screenx;
+package com.frankenstein.screenx;
 
 import android.os.Bundle;
 import android.view.GestureDetector;

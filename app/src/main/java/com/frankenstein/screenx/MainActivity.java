@@ -1,4 +1,4 @@
-package com.example.screenx;
+package com.frankenstein.screenx;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
@@ -27,8 +27,8 @@ import com.karumi.dexter.listener.PermissionGrantedResponse;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.single.PermissionListener;
 
-import static com.example.screenx.Constants.PROGRESSBAR_PERIOD;
-import static com.example.screenx.Constants.PROGRESSBAR_TRANSITION;
+import static com.frankenstein.screenx.Constants.PROGRESSBAR_PERIOD;
+import static com.frankenstein.screenx.Constants.PROGRESSBAR_TRANSITION;
 
 public class MainActivity extends AppCompatActivity {
 
