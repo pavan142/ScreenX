@@ -7,6 +7,7 @@
     <color name="statusBarColor">#99000000</color>
     <color name="navigationBarColor">#99000000</color>
     <color name="lightWhite">#F7F7F7</color>
+    <color name="captureButtonBackground">#99FFFFFF</color>
     <color name="white">#ffffff</color>
     <color name="primaryTeal">#00c8d7</color>
 

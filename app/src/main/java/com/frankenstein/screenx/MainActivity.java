@@ -153,8 +153,8 @@ public class MainActivity extends AppCompatActivity {
         ArrayList<AppGroup> appgroups = _sf.getAppGroups(Utils.SortingCriterion.Date);
         for (AppGroup ag : appgroups)
             mascots.add(ag.mascot);
-        for (Screenshot s : mascots)
-            _logger.log(s.appName, s.name);
+//        for (Screenshot s : mascots)
+//            _logger.log(s.appName, s.name);
         _adapter = new AppGroupsAdapter(getApplicationContext(), mascots);
         _mGridView.setAdapter(_adapter);
         _mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {

@@ -25,7 +25,7 @@ import com.frankenstein.screenx.ui.ScreenXToast
 class ScreenXService : Service(), CaptureButtonController.ClickListener, ScreenCaptureListener {
     companion object {
         // TODO: temp id
-        private const val ID_FOREGROUND = 9487
+        private const val ID_FOREGROUND = 1729
         private const val ID_SCREENSHOT_DETECTED = 9488
 
         const val ACTION_CAPTURE_SCREEN = "action_capture"
@@ -45,7 +45,7 @@ class ScreenXService : Service(), CaptureButtonController.ClickListener, ScreenC
         private const val DELAY_CAPTURE_FAB = 0L
 
         // Broadcast sent from ScryerService
-        const val EVENT_TAKE_SCREENSHOT = "org.mozilla.scryer.take_screenshot"
+        const val EVENT_TAKE_SCREENSHOT = "com.frankenstein.screenx.take_screenshot"
     }
 
     private var isRunning: Boolean = false
@@ -293,6 +293,7 @@ class ScreenXService : Service(), CaptureButtonController.ClickListener, ScreenC
     }
 
     private fun getForegroundNotification(): Notification? {
+        _logger!!.log("Getting Foreground Notification");
         val channelId = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             createForegroundChannel()
         } else {
@@ -359,7 +360,7 @@ class ScreenXService : Service(), CaptureButtonController.ClickListener, ScreenC
     @TargetApi(Build.VERSION_CODES.O)
     private fun createForegroundChannel(): String {
         val channelId = "foreground_channel"
-        val channelName = "ScreenshotPlus Service"
+        val channelName = "ScreenX Service"
         val channel = NotificationChannel(channelId, channelName,
                 NotificationManager.IMPORTANCE_NONE)
 
@@ -371,7 +372,7 @@ class ScreenXService : Service(), CaptureButtonController.ClickListener, ScreenC
     @TargetApi(Build.VERSION_CODES.O)
     private fun createMessageChannel(): String {
         val channelId = "message_channel"
-        val channelName = "ScreenshotPlus Message"
+        val channelName = "ScreenX Message"
         val channel = NotificationChannel(channelId, channelName,
                 NotificationManager.IMPORTANCE_HIGH)
 
