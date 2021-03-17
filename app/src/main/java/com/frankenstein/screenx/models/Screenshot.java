@@ -1,8 +1,8 @@
-package com.frankenstein.screenx;
+package com.frankenstein.screenx.models;
 
 import java.io.File;
 
-class Screenshot {
+public class Screenshot {
     public String name;
     public File file;
     public String appName;

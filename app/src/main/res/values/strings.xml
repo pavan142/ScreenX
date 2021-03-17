@@ -7,4 +7,17 @@
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
     <string name="permissions_text">Grant storage permissions</string>
+    <string name="snackbar_disable">Screenshot feature disabled</string>
+    <string name="snackbar_enable">Screenshot feature enabled</string>
+
+    <!-- Notification: strings displayed on the notification to perform various actions -->
+    <string name="notification_action_capture">Tap to take screenshot</string>
+    <string name="notification_action_open">Open app</string>
+    <string name="notification_action_stop">Stop</string>
+    <!-- String displayed to inform users new screenshots captured -->
+    <string name="notification_action_collect_title">New screenshots captured</string>
+    <string name="notification_action_collect">Tap to sort your screenshots</string>
+
+    <string name="miscellaneous_app_name">Miscellaneous</string>
+
 </resources>

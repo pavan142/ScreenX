@@ -1,9 +1,9 @@
-package com.frankenstein.screenx;
+package com.frankenstein.screenx.models;
 
 import java.util.ArrayList;
 import java.util.Collections;
 
-class AppGroup {
+public class AppGroup {
     public String appName;
     public ArrayList<Screenshot> screenshots;
     public Screenshot mascot;

@@ -11,6 +11,10 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
+import com.frankenstein.screenx.helper.FileHelper;
+import com.frankenstein.screenx.models.AppGroup;
+import com.frankenstein.screenx.models.Screenshot;
+
 import androidx.viewpager.widget.ViewPager;
 
 import java.util.ArrayList;

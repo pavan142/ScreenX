@@ -20,6 +20,9 @@ import java.util.TimerTask;
 
 import android.content.Intent;
 
+import com.frankenstein.screenx.helper.PermissionHelper;
+import com.frankenstein.screenx.models.AppGroup;
+import com.frankenstein.screenx.models.Screenshot;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.PermissionToken;
 import com.karumi.dexter.listener.PermissionDeniedResponse;
@@ -29,10 +32,10 @@ import com.karumi.dexter.listener.single.PermissionListener;
 
 import static com.frankenstein.screenx.Constants.PROGRESSBAR_PERIOD;
 import static com.frankenstein.screenx.Constants.PROGRESSBAR_TRANSITION;
+import static com.frankenstein.screenx.helper.FileHelper.CUSTOM_SCREENSHOT_DIR;
+import static com.frankenstein.screenx.helper.FileHelper.createIfNot;
 
 public class MainActivity extends AppCompatActivity {
-
-    private static final int REQUEST_READ_STORAGE = 0;
 
     private GridView _mGridView;
     private AppGroupsAdapter _adapter;
@@ -58,7 +61,6 @@ public class MainActivity extends AppCompatActivity {
         utils.setContext(getApplicationContext());
         _logger = Logger.getInstance("FILES");
         _logger.log("----------MainActivity: ONCREATE---------");
-        ;
         _mHandler = new Handler();
         _pullToRefresh = findViewById(R.id.pull_to_refresh);
         _pullToRefresh.setOnRefreshListener(() -> refresh());
@@ -72,7 +74,6 @@ public class MainActivity extends AppCompatActivity {
         _mPermissionsText.setOnClickListener(view -> goToAppSettings());
 
         requestStoragePermission();
-//        initialize();
     }
 
     private void goToAppSettings() {
@@ -98,7 +99,6 @@ public class MainActivity extends AppCompatActivity {
             }
         };
         new Timer().scheduleAtFixedRate(_mTask, 0, PROGRESSBAR_PERIOD);
-
     }
 
     private void hideProgressBar() {
@@ -120,7 +120,16 @@ public class MainActivity extends AppCompatActivity {
         _mPermissionsDenied = false;
         showProgressBar();
         _logger.log("MainActivity: Initializing Screenshots");
+        createIfNot(CUSTOM_SCREENSHOT_DIR);
         _sf.refresh(getApplicationContext(), () -> postInitialization());
+        _logger.log("MainActivity: Launching ScreenXService");
+        if (!PermissionHelper.hasOverlayPermission(this))
+            PermissionHelper.requestOverlayPermission(this, 1000);
+        else
+            _logger.log("MainActivity: Has permission for overlay");
+        Intent intent = new Intent(this, ScreenXService.class);
+        intent.setAction(ScreenXService.ACTION_ENABLE_CAPTURE_BUTTON);
+        startService(intent);
     }
 
     private void refresh() {

@@ -7,4 +7,9 @@
     <color name="statusBarColor">#99000000</color>
     <color name="navigationBarColor">#99000000</color>
     <color name="lightWhite">#F7F7F7</color>
+    <color name="white">#ffffff</color>
+    <color name="primaryTeal">#00c8d7</color>
+
+    <!-- Notification -->
+    <color name="foreground_notification">@color/primaryTeal</color>
 </resources>

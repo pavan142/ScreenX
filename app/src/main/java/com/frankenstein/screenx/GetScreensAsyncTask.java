@@ -3,8 +3,9 @@ package com.frankenstein.screenx;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
-import android.os.Environment;
 import android.content.Context;
+
+import com.frankenstein.screenx.models.Screenshot;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -12,6 +13,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static com.frankenstein.screenx.helper.FileHelper.getAllScreenshotFiles;
 
 class GetScreensAsyncTask extends AsyncTask<Object, Void, ArrayList<Screenshot>> {
 
@@ -61,27 +64,14 @@ class GetScreensAsyncTask extends AsyncTask<Object, Void, ArrayList<Screenshot>>
 
         ArrayList<Screenshot> screens = new ArrayList<>();
         try {
-            String path = Environment.getExternalStorageDirectory().toString() + "/DCIM/Screenshots";
-            _mLogger.log("Path: ", path);
-            File directory = new File(path);
 
-            if (directory.exists())
-                _mLogger.log("the directory exists: ", directory.getAbsolutePath());
-            else
-                _mLogger.log("the directory does not exist: " + directory.getAbsolutePath());
-
-            _mLogger.log("Size: ", directory.canRead(), directory.canWrite(), directory.canExecute());
-            File[] files = directory.listFiles();
-            _mLogger.log("Size: "+ files.length);
-
+            ArrayList<File> files = getAllScreenshotFiles();
             for (File file : files) {
                 String fileName = file.getName();
                 String appName = getSourceApp(context, fileName);
-                String filePath = path + "/" + fileName;
-                Screenshot screen = new Screenshot(fileName, filePath, appName);
+                Screenshot screen = new Screenshot(fileName, file.getAbsolutePath(), appName);
                 screens.add(screen);
             }
-
             ScreenFactory.getInstance().analyzeScreens(screens);
         } catch (Exception e) {
             _mLogger.log("got an error: ", e.getMessage());

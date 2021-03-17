@@ -6,6 +6,9 @@ import java.util.HashMap;
 import java.util.Map;
 import android.content.Context;
 
+import com.frankenstein.screenx.models.AppGroup;
+import com.frankenstein.screenx.models.Screenshot;
+
 class ScreenFactory {
     private static ScreenFactory _instance;
 

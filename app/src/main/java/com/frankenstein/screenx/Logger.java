@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import android.util.Log;
 
-class Logger {
+public class Logger {
     private String tag;
     private static final Map<String, Logger> instanceMap = new HashMap<String, Logger>();
 

@@ -12,6 +12,7 @@ import java.io.File;
 import java.util.ArrayList;
 
 import com.bumptech.glide.Glide;
+import com.frankenstein.screenx.models.Screenshot;
 
 
 public class AppGroupsAdapter extends BaseAdapter {

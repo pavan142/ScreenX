@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 import com.bumptech.glide.Glide;
+import com.frankenstein.screenx.models.Screenshot;
 
 import androidx.annotation.NonNull;
 import androidx.viewpager.widget.PagerAdapter;
