@@ -11,10 +11,11 @@ import android.os.Build
 import android.view.Gravity
 import android.view.View
 import android.view.WindowManager
-import com.crashlytics.android.Crashlytics
+import com.frankenstein.screenx.Logger
 
 class WindowController internal constructor(private val windowManager: WindowManager) {
     private val tmp: Point = Point()
+    private val _mLogger: Logger = Logger.getInstance("FILES-WINDOW-CONTROLLER");
 
     fun addView(width: Int, height: Int, isTouchable: Boolean, view: View) {
         val touchableFlag = if (isTouchable) 0 else WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
@@ -37,10 +38,9 @@ class WindowController internal constructor(private val windowManager: WindowMan
         try {
             windowManager.addView(view, params)
         } catch (e: WindowManager.BadTokenException) {
-            Crashlytics.logException(e)
-
+            _mLogger.log(e.stackTrace.toString())
         } catch (e: WindowManager.InvalidDisplayException) {
-            Crashlytics.logException(e)
+            _mLogger.log(e.stackTrace.toString())
         }
     }
 

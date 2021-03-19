@@ -48,6 +48,10 @@ class ViewPagerAdapter extends PagerAdapter {
         File file = screen.file;
         Glide.with(_context).load(file).into(imageView);
         Objects.requireNonNull(container).addView(itemView);
+
+        // Running OCR
+//        TextHelper.getInstance(_context).getData(screen.file);
+
         return itemView;
     }
 
