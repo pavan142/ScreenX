@@ -25,7 +25,7 @@ import com.frankenstein.screenx.ui.ScreenXToast
 class ScreenXService : Service(), CaptureButtonController.ClickListener, ScreenCaptureListener {
     companion object {
         // TODO: temp id
-        private const val ID_FOREGROUND = 1729
+        private const val ID_FOREGROUND = 1730
         private const val ID_SCREENSHOT_DETECTED = 9488
 
         const val ACTION_CAPTURE_SCREEN = "action_capture"
@@ -44,7 +44,7 @@ class ScreenXService : Service(), CaptureButtonController.ClickListener, ScreenC
         private const val DELAY_CAPTURE_NOTIFICATION = 1000L
         private const val DELAY_CAPTURE_FAB = 0L
 
-        // Broadcast sent from ScryerService
+        // Broadcast sent from ScreenX Service
         const val EVENT_TAKE_SCREENSHOT = "com.frankenstein.screenx.take_screenshot"
     }
 
@@ -57,15 +57,11 @@ class ScreenXService : Service(), CaptureButtonController.ClickListener, ScreenC
     private var screenCaptureManager: ScreenCaptureManager? = null
     private lateinit var requestCaptureFilter: IntentFilter
     private lateinit var requestCaptureReceiver: BroadcastReceiver
+    private val handler = Handler(Looper.getMainLooper())
 
     private val toast: ScreenXToast by lazy {
         ScreenXToast(this)
     }
-
-//    private val fileMonitor: FileMonitor by lazy {
-//        //FileMonitor(FileObserverDelegate(Handler(Looper.getMainLooper())))
-//        FileMonitor(MediaProviderDelegate(this, Handler(Looper.getMainLooper())))
-//    }
 
     private val bringTaskToFrontIntent: Intent by lazy {
         Intent(Intent.ACTION_MAIN).apply {
@@ -80,8 +76,6 @@ class ScreenXService : Service(), CaptureButtonController.ClickListener, ScreenC
             flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
         }
     }
-
-    private val handler = Handler(Looper.getMainLooper())
 
     override fun onBind(intent: Intent?): IBinder? {
         return null
@@ -98,7 +92,6 @@ class ScreenXService : Service(), CaptureButtonController.ClickListener, ScreenC
             return dispatchOnStartCommandAction(intent)
 
         } else {
-//            val serviceEnabled = ScryerApplication.getSettingsRepository().serviceEnabled
             var serviceEnabled = true;
             if (serviceEnabled) {
                 isRunning = true
@@ -115,8 +108,6 @@ class ScreenXService : Service(), CaptureButtonController.ClickListener, ScreenC
         if (isRunning) {
             isRunning = false
             destroyFloatingButton()
-//            fileMonitor.stopMonitor()
-//            stopHeartbeatTracking()
         }
         super.onDestroy()
     }
@@ -130,15 +121,12 @@ class ScreenXService : Service(), CaptureButtonController.ClickListener, ScreenC
             }
 
             ACTION_DISABLE_SERVICE_SOFTLY -> {
-//                PreferenceWrapper(this).setShouldPromptEnableService(true)
                 disableScreenXService(false)
-//                TelemetryWrapper.stopCaptureService(TelemetryWrapper.Value.NOTIFICATION)
                 return START_NOT_STICKY
             }
 
             ACTION_CAPTURE_SCREEN -> {
                 postTakeScreenshot(DELAY_CAPTURE_NOTIFICATION)
-//                TelemetryWrapper.captureViaNotification()
             }
 
             ACTION_ENABLE_CAPTURE_BUTTON -> initFloatingButton()
@@ -153,22 +141,18 @@ class ScreenXService : Service(), CaptureButtonController.ClickListener, ScreenC
             toast.show(getString(R.string.snackbar_enable), Toast.LENGTH_SHORT)
         }
         startForeground(getForegroundNotificationId(), getForegroundNotification())
-//        initFileMonitors()
         initFloatingButton()
-//        startHeartbeatTracking()
     }
 
     private fun disableScreenXService(showToast: Boolean) {
         if (showToast) {
             toast.show(getString(R.string.snackbar_disable), Toast.LENGTH_SHORT)
         }
-//        ScryerApplication.getSettingsRepository().serviceEnabled = false
         stopSelf()
     }
 
     private fun initFloatingButton() {
         _logger!!.log("Checking for Floating Button Permissions");
-//        val enabled = ScryerApplication.getSettingsRepository().floatingEnable
         var enabled = true;
         if (!enabled || !PermissionHelper.hasOverlayPermission(this)) {
             return
@@ -183,49 +167,17 @@ class ScreenXService : Service(), CaptureButtonController.ClickListener, ScreenC
         }
     }
 
-//    private fun startHeartbeatTracking() {
-//        stopHeartbeatTracking()
-//
-//        val heartbeatWorkBuilder = PeriodicWorkRequest
-//                .Builder(CaptureServiceHeartbeatWorker::class.java, 24, TimeUnit.HOURS)
-//        heartbeatWorkBuilder.addTag(CaptureServiceHeartbeatWorker.TAG)
-//        WorkManager.getInstance().enqueue(heartbeatWorkBuilder.build())
-//    }
-
-//    private fun stopHeartbeatTracking() {
-//        WorkManager.getInstance().cancelAllWorkByTag(CaptureServiceHeartbeatWorker.TAG)
-//    }
-
     private fun destroyFloatingButton() {
         captureButtonController?.destroy()
         captureButtonController = null
     }
 
-//    private fun initFileMonitors() {
-//        fileMonitor.startMonitor(object : FileMonitor.ChangeListener {
-//            override fun onChangeFinish(path: String) {
-//                postNotification(getScreenshotDetectedNotification())
-//                val model = ScreenshotModel(path,
-//                        System.currentTimeMillis(),
-//                        CollectionModel.UNCATEGORIZED)
-//                launchIO {
-//                    ScryerApplication.getScreenshotRepository().addScreenshot(listOf(model))
-//                }
-//
-//                TelemetryWrapper.captureViaExternal()
-//            }
-//        })
-//    }
-
     override fun onScreenshotButtonClicked() {
         postTakeScreenshot(DELAY_CAPTURE_FAB)
-//        TelemetryWrapper.captureViaFab()
     }
 
     override fun onScreenshotButtonDismissed() {
         destroyFloatingButton()
-//        ScryerApplication.getSettingsRepository().floatingEnable = false
-//        TelemetryWrapper.closeFAB()
     }
 
     private fun postTakeScreenshot(delayed: Long) {
@@ -239,8 +191,10 @@ class ScreenXService : Service(), CaptureButtonController.ClickListener, ScreenC
         androidx.localbroadcastmanager.content.LocalBroadcastManager.getInstance(this).sendBroadcast(Intent(EVENT_TAKE_SCREENSHOT))
 
         if (screenCapturePermissionIntent != null) {
+            _logger?.log("Take Screenshot has Permissions !! goting to take screenshots now");
             screenCaptureManager?.captureScreen()
         } else {
+            _logger?.log("Take Screenshot does not have permission to take screenshots , initiating permissions");
             requestCaptureFilter = IntentFilter(RequestCaptureActivity.getResultBroadcastAction(applicationContext))
             requestCaptureReceiver = object : BroadcastReceiver() {
                 override fun onReceive(context: Context, intent: Intent) {
@@ -276,17 +230,9 @@ class ScreenXService : Service(), CaptureButtonController.ClickListener, ScreenC
     override fun onScreenShotTaken(path: String) {
         captureButtonController?.show()
         if (!TextUtils.isEmpty(path)) {
-//            startSortingPanelActivity(path)
             MediaScannerConnection.scanFile(applicationContext, arrayOf(path), null, null)
-//            Promoter.onScreenshotTaken(this)
         }
     }
-
-//    private fun startSortingPanelActivity(path: String) {
-//        val intent = SortingPanelActivity.sortNewScreenshot(this, path, ScryerApplication.getSettingsRepository().addToCollectionEnable)
-//        intent.flags = intent.flags or Intent.FLAG_ACTIVITY_NEW_TASK
-//        startActivity(intent)
-//    }
 
     private fun getForegroundNotificationId(): Int {
         return ID_FOREGROUND
@@ -319,7 +265,7 @@ class ScreenXService : Service(), CaptureButtonController.ClickListener, ScreenC
         style.bigText(getString(R.string.notification_action_capture))
         return NotificationCompat.Builder(this, channelId)
                 .setCategory(Notification.CATEGORY_SERVICE)
-                .setSmallIcon(R.drawable.ic_stat_notify)
+                .setSmallIcon(R.drawable.gallery_color_outline_64bit)
                 .setColor(ContextCompat.getColor(this, R.color.foreground_notification))
                 .setContentTitle(getString(R.string.app_name))
                 .setContentText(getString(R.string.notification_action_capture))
@@ -329,28 +275,6 @@ class ScreenXService : Service(), CaptureButtonController.ClickListener, ScreenC
                 .addAction(stopAction)
                 .build()
     }
-
-//    private fun getScreenshotDetectedNotification(): Notification {
-//        val channelId = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-//            createMessageChannel()
-//        } else {
-//            ""
-//        }
-//
-//        val intent = SortingPanelActivity.sortCollection(this, CollectionModel.UNCATEGORIZED)
-//        intent.flags = intent.flags or Intent.FLAG_ACTIVITY_NEW_TASK
-//        val tapPendingIntent = PendingIntent.getActivity(this, 0, intent, 0)
-//
-//        return NotificationCompat.Builder(this, channelId)
-//                .setCategory(Notification.CATEGORY_PROMO)
-//                .setSmallIcon(R.drawable.ic_stat_notify_sort)
-//                .setColor(ContextCompat.getColor(this, R.color.foreground_notification))
-//                .setContentTitle(getString(R.string.notification_action_collect_title))
-//                .setContentText(getString(R.string.notification_action_collect))
-//                .setContentIntent(tapPendingIntent)
-//                .setAutoCancel(true)
-//                .build()
-//    }
 
     private fun postNotification(notification: Notification) {
         val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -362,7 +286,7 @@ class ScreenXService : Service(), CaptureButtonController.ClickListener, ScreenC
         val channelId = "foreground_channel"
         val channelName = "ScreenX Service"
         val channel = NotificationChannel(channelId, channelName,
-                NotificationManager.IMPORTANCE_NONE)
+                NotificationManager.IMPORTANCE_LOW)
 
         val manager = applicationContext.getSystemService(NotificationManager::class.java)
         manager?.createNotificationChannel(channel)

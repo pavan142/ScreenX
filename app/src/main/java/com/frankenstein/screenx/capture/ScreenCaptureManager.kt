@@ -17,6 +17,7 @@ import android.media.projection.MediaProjection
 import android.media.projection.MediaProjectionManager
 import android.os.Handler
 import android.os.HandlerThread
+import android.os.Looper
 import android.util.DisplayMetrics
 import android.view.Display
 import android.view.WindowManager
@@ -71,7 +72,7 @@ class ScreenCaptureManager(context: Context, private val screenCapturePermission
         val looper = handlerThread.looper
         workerHandler = Handler(looper)
 
-        uiHandler = Handler()
+        uiHandler = Handler(Looper.myLooper()!!)
     }
 
     fun getReadableTime(time: Long): String {
@@ -90,6 +91,12 @@ class ScreenCaptureManager(context: Context, private val screenCapturePermission
         if (appList!= null) {
             _logger.log(" I got some appList");
             appList.sortByDescending {it.lastTimeUsed }
+
+            for ((index, item) in appList.withIndex()) {
+                if (index > 5)
+                    break;
+                _logger.log(item.packageName, getReadableTime((item.lastTimeUsed)))
+            }
             if (appList.size > 0) {
                 val item = appList[0];
                 packageName = item.packageName;
@@ -112,12 +119,9 @@ class ScreenCaptureManager(context: Context, private val screenCapturePermission
             try {
                 mediaProjection = projectionManager.getMediaProjection(Activity.RESULT_OK, screenCapturePermissionIntent)
             } catch (exception: IllegalStateException) {
-                // There is no hint from MediaProjectionManager to know if there is already a
-                // MediaProjection instance running. So, just catch the exception and skip the capture.
                 return@post
             }
             createVirtualDisplay()
-            // register media projection stop callback
             mediaProjection?.registerCallback(MediaProjectionStopCallback(), workerHandler)
         }
     }

@@ -128,8 +128,8 @@ public class MainActivity extends AppCompatActivity {
         else
             _logger.log("MainActivity: Has permission for overlay");
         Intent intent = new Intent(this, ScreenXService.class);
-        intent.setAction(ScreenXService.ACTION_ENABLE_CAPTURE_BUTTON);
-        startService(intent);
+        intent.setAction(ScreenXService.ACTION_ENABLE_SERVICE);
+        startForegroundService(intent);
     }
 
     private void refresh() {

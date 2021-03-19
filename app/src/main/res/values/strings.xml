@@ -19,5 +19,5 @@
     <string name="notification_action_collect">Tap to sort your screenshots</string>
 
     <string name="miscellaneous_app_name">Miscellaneous</string>
-
+    <string name="service_description"> This service allows you to take screenshots with floatcing touch bar or through notification panel</string>
 </resources>
