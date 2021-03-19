@@ -6,7 +6,9 @@
     <string name="nav_header_subtitle">android.studio@android.com</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
-    <string name="permissions_text">Grant storage permissions</string>
+    <string name="storage_permission_text">Grant storage permissions</string>
+    <string name="usage_permission_text">Grant app usage permissions</string>
+    <string name="overlay_permission_text">Grant overlay permissions</string>
     <string name="snackbar_disable">Screenshot feature disabled</string>
     <string name="snackbar_enable">Screenshot feature enabled</string>
 

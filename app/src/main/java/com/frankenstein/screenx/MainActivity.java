@@ -1,16 +1,18 @@
 package com.frankenstein.screenx;
 
 import android.Manifest;
-import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.provider.Settings;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
@@ -44,7 +46,9 @@ public class MainActivity extends AppCompatActivity {
     private SwipeRefreshLayout _pullToRefresh;
     private View _mProgressBar;
     private View _mPermissionsDisplay;
-    private View _mPermissionsText;
+    private View _mStoragePermissionsView;
+    private View _mUsagePermissionsView;
+    private View _mOverlayPermissionsView;
 
     private boolean _mPermissionsDenied = false;
     private Handler _mHandler;
@@ -62,23 +66,45 @@ public class MainActivity extends AppCompatActivity {
         utils.setContext(getApplicationContext());
         _logger = Logger.getInstance("FILES");
         _logger.log("----------MainActivity: ONCREATE---------");
-        _mHandler = new Handler();
+        _mHandler = new Handler(Looper.myLooper());
         _pullToRefresh = findViewById(R.id.pull_to_refresh);
         _pullToRefresh.setOnRefreshListener(() -> refresh());
         _mGridView = findViewById(R.id.grid_view);
         _sf = ScreenFactory.getInstance();
 
         _mProgressBar = findViewById(R.id.progress_bar);
+
         _mPermissionsDisplay = findViewById(R.id.permissions_display);
         _mPermissionsDisplay.setVisibility(View.GONE);
-        _mPermissionsText = findViewById(R.id.permissions_text);
-        _mPermissionsText.setOnClickListener(view -> goToAppSettings());
 
-        requestStoragePermission();
+        _mStoragePermissionsView = findViewById(R.id.storage_permissions);
+        _mStoragePermissionsView.setOnClickListener(view -> goToStorageSettings());
+
+        _mUsagePermissionsView = findViewById(R.id.usage_permissions);
+        _mUsagePermissionsView.setOnClickListener(view -> goToUsageSettings());
+
+        _mOverlayPermissionsView = findViewById(R.id.overlay_permissions);
+        _mOverlayPermissionsView.setOnClickListener(view -> goToOverlaySettings());
+
+        checkPermissions();
     }
 
-    private void goToAppSettings() {
+    private void goToStorageSettings() {
         Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+        Uri uri = Uri.fromParts("package", getPackageName(), null);
+        intent.setData(uri);
+        startActivity(intent);
+    }
+
+    private void goToUsageSettings() {
+        Intent intent = new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS);
+        Uri uri = Uri.fromParts("package", getPackageName(), null);
+        intent.setData(uri);
+        startActivity(intent);
+    }
+
+    private void goToOverlaySettings() {
+        Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
         Uri uri = Uri.fromParts("package", getPackageName(), null);
         intent.setData(uri);
         startActivity(intent);
@@ -109,9 +135,10 @@ public class MainActivity extends AppCompatActivity {
         _mGridView.animate().alpha(1).setDuration(PROGRESSBAR_TRANSITION);
         _mHandler.postDelayed(() -> _mProgressBar.setVisibility(View.GONE), 1500);
         attachAdapter();
+
     }
 
-    private void showPermissionDeniedError() {
+    private void showPermissionRequestScreen() {
         _mPermissionsDenied = true;
         _mPermissionsDisplay.setVisibility(View.VISIBLE);
         _mProgressBar.setVisibility(View.GONE);
@@ -187,13 +214,13 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onPermissionDenied(PermissionDeniedResponse response) {
                         _logger.log("Permission Denied");
-                        showPermissionDeniedError();
+                        showPermissionRequestScreen();
                     }
 
                     @Override
                     public void onPermissionRationaleShouldBeShown(PermissionRequest permission, PermissionToken token) {
                         _logger.log("Permission Rational Should be shown");
-                        showPermissionDeniedError();
+                        showPermissionRequestScreen();
                         token.continuePermissionRequest();
                     }
                 })
@@ -201,13 +228,26 @@ public class MainActivity extends AppCompatActivity {
                 .check();
     }
 
+    public void checkPermissions() {
+        boolean storagePermissions = PermissionHelper.hasStoragePermission(this);
+        boolean usagePermissions = PermissionHelper.hasUsagePermission(this);
+        boolean overlayPermissions = PermissionHelper.hasOverlayPermission(this);
+
+        if (storagePermissions && usagePermissions && overlayPermissions) {
+            _logger.log(" Have both permissions");
+            permissionsGranted();
+            return;
+        }
+
+        _logger.log("the permissions for storage is ", storagePermissions, "  usage is", usagePermissions, "overlay is", overlayPermissions);
+        showPermissionRequestScreen();
+    }
+
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
-        if (hasFocus && _mPermissionsDenied &&
-                ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
-                        == PackageManager.PERMISSION_GRANTED) {
-            permissionsGranted();
+        if (hasFocus && _mPermissionsDenied) {
+            checkPermissions();
         }
     }
 
