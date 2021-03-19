@@ -22,6 +22,7 @@ public class AppGroupActivity extends AppCompatActivity {
     private ScreenFactory _sf;
     private String _appName;
     private SwipeRefreshLayout _pullToRefresh;
+    private static final int SCREEN_ACTIVITY_INTENT_CODE = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,7 +34,7 @@ public class AppGroupActivity extends AppCompatActivity {
         _appName = getIntent().getStringExtra("APP_GROUP_NAME");
         _pullToRefresh = findViewById(R.id.pull_to_refresh);
         _pullToRefresh.setOnRefreshListener(() -> refresh());
-        attachAdapter();
+        updateAdapter();
     }
 
 
@@ -45,14 +46,16 @@ public class AppGroupActivity extends AppCompatActivity {
     private void postRefresh() {
         _logger.log("AppGroupActivity: Successfully refreshed data");
         _pullToRefresh.setRefreshing(false);
-        attachAdapter();
+        updateAdapter();
     }
 
 
-    private void attachAdapter() {
+    private void updateAdapter() {
         AppGroup ag = _sf.appgroups.get(_appName);
-        if (ag == null)
+        if (ag == null || ag.screenshots.size() == 0) {
+            finish();
             return;
+        }
         ArrayList<Screenshot> screens = ag.screenshots;
         _logger.log("Displaying Scrrens of Appgroup", _appName, screens.size());
         _adapter = new ScreensAdapter(getApplicationContext(), screens);
@@ -65,8 +68,14 @@ public class AppGroupActivity extends AppCompatActivity {
                 Intent intent = new Intent(getBaseContext(), ScreenActivity.class);
                 intent.putExtra("SCREEN_NAME", selected.name);
                 intent.putExtra("SCREEN_POSITION", i);
-                startActivity(intent);
+                startActivityForResult(intent, SCREEN_ACTIVITY_INTENT_CODE);
             }
         });
+    }
+
+    @Override
+    protected void onResume() {
+        refresh();
+        super.onResume();
     }
 }

@@ -50,7 +50,7 @@ public class ScreenActivity extends ImmersiveActivity {
         _sf = ScreenFactory.getInstance();
 
         String screenName = getIntent().getStringExtra("SCREEN_NAME");
-        int screenPosition = getIntent().getIntExtra("SCREEN_POSITION", 0);
+        int mCurrPosition = getIntent().getIntExtra("SCREEN_POSITION", 0);
         Screenshot screen = _sf.findScreenByName(screenName);
 
         AppGroup ag =_sf.appgroups.get(screen.appName);
@@ -69,14 +69,22 @@ public class ScreenActivity extends ImmersiveActivity {
         _toolbar.setAlpha(0);
         alignToolbarWithNavbar();
         _screens = ag .screenshots;
-        _adapter = new ViewPagerAdapter(getApplicationContext(), _screens);
-        _viewpager.setAdapter(_adapter);
-        _viewpager.setCurrentItem(screenPosition);
+        updatePager(mCurrPosition);
 
         StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
         StrictMode.setVmPolicy(builder.build());
 
         this.setupTapHandling(_viewpager);
+    }
+
+    private void updatePager(int position) {
+        if (_screens.size() == 0) {
+            setResult(RESULT_OK);
+            finish();
+        }
+        _adapter = new ViewPagerAdapter(getApplicationContext(), _screens);
+        _viewpager.setAdapter(_adapter);
+        _viewpager.setCurrentItem(position);
     }
 
     private void onDelete() {
@@ -85,17 +93,15 @@ public class ScreenActivity extends ImmersiveActivity {
         _logger.log("ASKED TO DELETE", screen.name, screen.appName);
         mAlertBuilder.setTitle("Delete Image")
                 .setMessage("Are you sure you want to delete this Image?")
-                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        _logger.log("CONFIRMED TO DELETE", screen.name, screen.appName);
-                        if (FileHelper.deleteScreenshot(screen)) {
-                            _logger.log("SUCCESSFULLY DELETED SCREEN", screen.name, screen.appName);
-                            _screens.remove(position);
-                            _adapter.notifyDataSetChanged();
-                            _sf.removeScreen(screen.name);
-                        } else {
-                            _logger.log("FAILED TO DELETE SCREEN", screen.name, screen.appName);
-                        }
+                .setPositiveButton(android.R.string.yes, (dialog, which) -> {
+                    _logger.log("CONFIRMED TO DELETE", screen.name, screen.appName);
+                    if (FileHelper.deleteScreenshot(screen)) {
+                        _logger.log("SUCCESSFULLY DELETED SCREEN", screen.name, screen.appName);
+                        _screens.remove(position);
+                        _sf.removeScreen(screen.name);
+                        updatePager(position);
+                    } else {
+                        _logger.log("FAILED TO DELETE SCREEN", screen.name, screen.appName);
                     }
                 })
                 .setNegativeButton(android.R.string.no, null)

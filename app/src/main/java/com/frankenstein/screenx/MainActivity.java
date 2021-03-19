@@ -50,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
     private Handler _mHandler;
     private boolean _mInitializing = true;
     private TimerTask _mTask;
+    private boolean mGridInitialized = false;
     public Utils utils;
 
     @Override
@@ -103,6 +104,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void hideProgressBar() {
         _mTask.cancel();
+        mGridInitialized = true;
         _mProgressBar.animate().alpha(0).setDuration(PROGRESSBAR_TRANSITION);
         _mGridView.animate().alpha(1).setDuration(PROGRESSBAR_TRANSITION);
         _mHandler.postDelayed(() -> _mProgressBar.setVisibility(View.GONE), 1500);
@@ -207,5 +209,12 @@ public class MainActivity extends AppCompatActivity {
                         == PackageManager.PERMISSION_GRANTED) {
             permissionsGranted();
         }
+    }
+
+    @Override
+    protected void onResume() {
+        if (mGridInitialized)
+            refresh();
+        super.onResume();
     }
 }
