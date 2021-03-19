@@ -24,14 +24,14 @@ import android.view.WindowManager
 
 import com.frankenstein.screenx.Logger
 import com.frankenstein.screenx.R
+import com.frankenstein.screenx.helper.AppsHelper.Companion.getRecentAppViaUsage
+import com.frankenstein.screenx.helper.AppsHelper.Companion.getRecentAppViaEvents
 import com.frankenstein.screenx.helper.FileHelper.CUSTOM_SCREENSHOT_DIR
 import com.frankenstein.screenx.helper.FileHelper.createIfNot
 
-import java.io.File
 import java.io.FileOutputStream
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.util.*
 
 
 class ScreenCaptureManager(context: Context, private val screenCapturePermissionIntent: Intent, private val screenCaptureListener: ScreenCaptureListener) {
@@ -51,7 +51,7 @@ class ScreenCaptureManager(context: Context, private val screenCapturePermission
 
     private val _logger: Logger = Logger.getInstance("FILES-SCREEN-CAPTURE");
     private val activityManager: ActivityManager;
-    private val usagestatsManager: UsageStatsManager;
+    private val usm: UsageStatsManager;
     private val defaultPackageId: String;
     private val screenDateFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss-SSS")
 
@@ -62,7 +62,7 @@ class ScreenCaptureManager(context: Context, private val screenCapturePermission
         defaultPackageId = context.resources.getString(R.string.miscellaneous_app_name)
         val windowManager = context.getSystemService(WINDOW_SERVICE) as WindowManager
         activityManager = context.getSystemService(ACTIVITY_SERVICE) as ActivityManager
-        usagestatsManager = context.getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
+        usm = context.getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
         defaultDisplay = windowManager.defaultDisplay
         defaultDisplay.getMetrics(metrics)
         density = metrics.densityDpi
@@ -73,41 +73,6 @@ class ScreenCaptureManager(context: Context, private val screenCapturePermission
         workerHandler = Handler(looper)
 
         uiHandler = Handler(Looper.myLooper()!!)
-    }
-
-    fun getReadableTime(time: Long): String {
-        val date = Date(time);
-        return date.toString();
-    }
-
-    fun getRecentApp(): String {
-        val calendar = Calendar.getInstance()
-        val endTime = calendar.timeInMillis
-        calendar.add(Calendar.HOUR, -1)
-        val startTime = calendar.timeInMillis
-
-        var packageName: String = defaultPackageId;
-        val appList = usagestatsManager.queryUsageStats(UsageStatsManager.INTERVAL_DAILY, startTime, endTime);
-        if (appList!= null) {
-            _logger.log(" I got some appList");
-            appList.sortByDescending {it.lastTimeUsed }
-
-            for ((index, item) in appList.withIndex()) {
-                if (index > 5)
-                    break;
-                _logger.log(item.packageName, getReadableTime((item.lastTimeUsed)))
-            }
-            if (appList.size > 0) {
-                val item = appList[0];
-                packageName = item.packageName;
-                _logger.log(item.packageName, getReadableTime((item.lastTimeUsed)))
-            } else {
-                _logger.log(" I got null for appList");
-            }
-        } else {
-            _logger.log(" I got null for appList");
-        }
-        return packageName;
     }
 
     fun captureScreen() {
@@ -151,7 +116,10 @@ class ScreenCaptureManager(context: Context, private val screenCapturePermission
 
             val date: LocalDateTime = LocalDateTime.now();
             val dateString: String = date.format(screenDateFormat);
-            val filePath: String = screenshotPath + "/Screenshot_" + dateString +"_" + getRecentApp()+".jpg"
+            val appViaUsage = getRecentAppViaUsage(usm);
+            val appViaEvents = getRecentAppViaEvents(usm);
+            _logger.log("recentAppViaUsage", appViaUsage, "recentAppViaEvent", appViaEvents);
+            val filePath: String = screenshotPath + "/Screenshot_" + dateString +"_" + appViaEvents +".jpg"
 //            var bitmap: Bitmap? = null
             var croppedBitmap: Bitmap? = null
 
