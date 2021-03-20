@@ -12,6 +12,8 @@ import static com.frankenstein.screenx.Constants.SCREENSHOT_DIR;
 public class FileHelper {
 
     private static final Logger _mLogger = Logger.getInstance("FILES-IO");
+
+    //(TODO) Some users have DIRECTORY_PICTURES/Screenshots has their screenshots folder structure. Handle that too.
     public static final File SYSTEM_SCREENSHOT_DIR = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM), "Screenshots");
     public static final File CUSTOM_SCREENSHOT_DIR = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), SCREENSHOT_DIR);
 
