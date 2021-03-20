@@ -18,6 +18,7 @@ import androidx.core.content.ContextCompat
 import com.frankenstein.screenx.capture.RequestCaptureActivity
 import com.frankenstein.screenx.capture.ScreenCaptureListener
 import com.frankenstein.screenx.capture.ScreenCaptureManager
+import com.frankenstein.screenx.helper.Logger
 import com.frankenstein.screenx.helper.PermissionHelper
 import com.frankenstein.screenx.overlay.CaptureButtonController
 import com.frankenstein.screenx.ui.ScreenXToast

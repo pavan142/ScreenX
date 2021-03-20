@@ -11,7 +11,7 @@ import android.os.Build
 import android.view.Gravity
 import android.view.View
 import android.view.WindowManager
-import com.frankenstein.screenx.Logger
+import com.frankenstein.screenx.helper.Logger
 
 class WindowController internal constructor(private val windowManager: WindowManager) {
     private val tmp: Point = Point()

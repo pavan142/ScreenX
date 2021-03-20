@@ -1,10 +1,14 @@
-package com.frankenstein.screenx;
+package com.frankenstein.screenx.multithreading;
 
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.content.Context;
 
+import com.frankenstein.screenx.Constants;
+import com.frankenstein.screenx.helper.Logger;
+import com.frankenstein.screenx.ScreenFactory;
+import com.frankenstein.screenx.interfaces.ScreensFetchedListener;
 import com.frankenstein.screenx.models.Screenshot;
 
 import java.io.File;
@@ -16,7 +20,7 @@ import java.util.regex.Pattern;
 
 import static com.frankenstein.screenx.helper.FileHelper.getAllScreenshotFiles;
 
-class GetScreensAsyncTask extends AsyncTask<Object, Void, ArrayList<Screenshot>> {
+public class GetScreensAsyncTask extends AsyncTask<Object, Void, ArrayList<Screenshot>> {
 
     private final Map<String, String> _packageToAppName = new HashMap<>();
     private Logger _mLogger;

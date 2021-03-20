@@ -1,4 +1,4 @@
-package com.frankenstein.screenx;
+package com.frankenstein.screenx.ui.adapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -12,12 +12,14 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 import com.bumptech.glide.Glide;
+import com.frankenstein.screenx.helper.Logger;
+import com.frankenstein.screenx.R;
 import com.frankenstein.screenx.models.Screenshot;
 
 import androidx.annotation.NonNull;
 import androidx.viewpager.widget.PagerAdapter;
 
-class ViewPagerAdapter extends PagerAdapter {
+public class ViewPagerAdapter extends PagerAdapter {
 
     private Context _context;
     private ArrayList<Screenshot> _screens;

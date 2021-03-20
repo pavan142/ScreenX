@@ -1,13 +1,15 @@
-package com.frankenstein.screenx;
+package com.frankenstein.screenx.ui;
 
 import android.os.Bundle;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 
+import com.frankenstein.screenx.helper.Logger;
+
 import androidx.appcompat.app.AppCompatActivity;
 
-class ImmersiveActivity extends AppCompatActivity {
+public class ImmersiveActivity extends AppCompatActivity {
     private GestureDetector _tapDetector;
     private View _decorView;
     private Logger _logger;

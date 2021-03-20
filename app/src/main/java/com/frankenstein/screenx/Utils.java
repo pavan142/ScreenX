@@ -7,6 +7,8 @@ import android.os.Build;
 import android.view.Display;
 import android.view.WindowManager;
 
+import com.frankenstein.screenx.helper.Logger;
+
 import java.lang.reflect.InvocationTargetException;
 
 class Utils {

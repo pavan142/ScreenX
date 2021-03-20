@@ -2,8 +2,6 @@ package com.frankenstein.screenx.helper
 
 import android.app.usage.UsageEvents
 import android.app.usage.UsageStatsManager
-import com.frankenstein.screenx.Logger
-import com.frankenstein.screenx.helper.TimeHelper.Companion.getReadableTime
 import java.util.*
 import kotlin.collections.ArrayList
 

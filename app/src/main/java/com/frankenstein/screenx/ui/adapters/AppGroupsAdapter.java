@@ -1,4 +1,4 @@
-package com.frankenstein.screenx;
+package com.frankenstein.screenx.ui.adapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -12,6 +12,8 @@ import java.io.File;
 import java.util.ArrayList;
 
 import com.bumptech.glide.Glide;
+import com.frankenstein.screenx.helper.Logger;
+import com.frankenstein.screenx.R;
 import com.frankenstein.screenx.models.Screenshot;
 
 

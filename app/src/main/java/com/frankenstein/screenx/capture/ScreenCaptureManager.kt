@@ -22,7 +22,7 @@ import android.util.DisplayMetrics
 import android.view.Display
 import android.view.WindowManager
 
-import com.frankenstein.screenx.Logger
+import com.frankenstein.screenx.helper.Logger
 import com.frankenstein.screenx.R
 import com.frankenstein.screenx.helper.AppsHelper.Companion.getRecentAppViaUsage
 import com.frankenstein.screenx.helper.AppsHelper.Companion.getRecentAppViaEvents

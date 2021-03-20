@@ -1,7 +1,6 @@
 package com.frankenstein.screenx;
 
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.net.Uri;
@@ -12,8 +11,11 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import com.frankenstein.screenx.helper.FileHelper;
+import com.frankenstein.screenx.helper.Logger;
 import com.frankenstein.screenx.models.AppGroup;
 import com.frankenstein.screenx.models.Screenshot;
+import com.frankenstein.screenx.ui.ImmersiveActivity;
+import com.frankenstein.screenx.ui.adapters.ViewPagerAdapter;
 
 import androidx.viewpager.widget.ViewPager;
 

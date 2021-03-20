@@ -6,10 +6,14 @@ import java.util.HashMap;
 import java.util.Map;
 import android.content.Context;
 
+import com.frankenstein.screenx.helper.Logger;
+import com.frankenstein.screenx.interfaces.ScreenSortListener;
+import com.frankenstein.screenx.interfaces.ScreensFetchedListener;
 import com.frankenstein.screenx.models.AppGroup;
 import com.frankenstein.screenx.models.Screenshot;
+import com.frankenstein.screenx.multithreading.GetScreensAsyncTask;
 
-class ScreenFactory {
+public class ScreenFactory {
     private static ScreenFactory _instance;
 
     public Map<String, AppGroup> appgroups = new HashMap<>();

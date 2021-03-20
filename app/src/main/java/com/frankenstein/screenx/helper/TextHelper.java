@@ -1,8 +1,7 @@
-package com.frankenstein.screenx;
+package com.frankenstein.screenx.helper;
 
 import android.content.Context;
 import android.net.Uri;
-import android.widget.ImageView;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;

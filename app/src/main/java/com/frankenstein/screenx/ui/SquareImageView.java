@@ -1,4 +1,4 @@
-package com.frankenstein.screenx;
+package com.frankenstein.screenx.ui;
 
 import androidx.appcompat.widget.AppCompatImageView;
 import android.content.Context;

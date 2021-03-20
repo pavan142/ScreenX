@@ -21,7 +21,7 @@
 <!--        app:cardPreventCornerOverlap="true"-->
 <!--        app:cardUseCompatPadding="true">-->
 
-        <com.frankenstein.screenx.SquareImageView
+        <com.frankenstein.screenx.ui.SquareImageView
             android:id="@+id/image"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

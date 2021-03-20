@@ -1,4 +1,4 @@
-package com.frankenstein.screenx;
+package com.frankenstein.screenx.helper;
 
 import android.content.Context;
 import android.content.SharedPreferences;

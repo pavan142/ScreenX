@@ -2,12 +2,10 @@ package com.frankenstein.screenx.helper;
 
 import android.os.Environment;
 
-import com.frankenstein.screenx.Logger;
 import com.frankenstein.screenx.models.Screenshot;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.List;
 
 import static com.frankenstein.screenx.Constants.SCREENSHOT_DIR;
 
