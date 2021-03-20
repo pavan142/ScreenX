@@ -14,6 +14,7 @@ import java.util.Objects;
 import com.bumptech.glide.Glide;
 import com.frankenstein.screenx.helper.Logger;
 import com.frankenstein.screenx.R;
+import com.frankenstein.screenx.helper.TextHelper;
 import com.frankenstein.screenx.models.Screenshot;
 
 import androidx.annotation.NonNull;
@@ -52,9 +53,13 @@ public class ViewPagerAdapter extends PagerAdapter {
         Objects.requireNonNull(container).addView(itemView);
 
         // Running OCR
-//        TextHelper.getInstance(_context).getData(screen.file);
-
+        TextHelper.getInstance(_context).getData(file, (text) -> this.onTextFetched(file.getName(), text));
         return itemView;
+    }
+
+    public void onTextFetched(String filename, String text) {
+        _logger.log("got text from TextHelper for file", filename);
+        _logger.log(text);
     }
 
     @Override

@@ -7,8 +7,6 @@ import java.util.Map;
 import android.content.Context;
 
 import com.frankenstein.screenx.helper.Logger;
-import com.frankenstein.screenx.interfaces.ScreenSortListener;
-import com.frankenstein.screenx.interfaces.ScreensFetchedListener;
 import com.frankenstein.screenx.models.AppGroup;
 import com.frankenstein.screenx.models.Screenshot;
 import com.frankenstein.screenx.multithreading.GetScreensAsyncTask;
@@ -99,18 +97,22 @@ public class ScreenFactory {
         nameToScreen.remove(name);
     }
 
-    public void loadScreens(Context context, ScreenSortListener screenSortListener) {
+    public void loadScreens(Context context, ScreenRefreshListener screenSortListener) {
         if(_initialized)
             return;
-        ScreensFetchedListener listener = (screens) -> {
-                screenSortListener.onSorted();
+        GetScreensAsyncTask.ScreensFetchedListener listener = (screens) -> {
+                screenSortListener.onRefresh();
         };
         new GetScreensAsyncTask().execute(context, listener);
         _initialized = true;
     }
 
-    public void refresh(Context context, ScreenSortListener screenSortListener) {
+    public void refresh(Context context, ScreenRefreshListener screenSortListener) {
         _initialized = false;
         this.loadScreens(context, screenSortListener);
+    }
+
+    public interface ScreenRefreshListener {
+        void onRefresh();
     }
 }

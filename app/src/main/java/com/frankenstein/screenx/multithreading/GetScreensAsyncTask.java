@@ -8,7 +8,6 @@ import android.content.Context;
 import com.frankenstein.screenx.Constants;
 import com.frankenstein.screenx.helper.Logger;
 import com.frankenstein.screenx.ScreenFactory;
-import com.frankenstein.screenx.interfaces.ScreensFetchedListener;
 import com.frankenstein.screenx.models.Screenshot;
 
 import java.io.File;
@@ -86,5 +85,9 @@ public class GetScreensAsyncTask extends AsyncTask<Object, Void, ArrayList<Scree
     @Override
     protected void onPostExecute(ArrayList<Screenshot> screens) {
         mlistener.onScreensFetched(screens);
+    }
+
+    public interface ScreensFetchedListener {
+        void onScreensFetched(ArrayList<Screenshot> screens);
     }
 }
