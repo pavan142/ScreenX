@@ -194,12 +194,12 @@ class ScreenXService : Service(), CaptureButtonController.ClickListener, ScreenC
 
     private fun postTakeScreenshot(delayed: Long) {
         handler.postDelayed({
-            captureButtonController?.hide()
             takeScreenshot()
         }, delayed)
     }
 
     private fun takeScreenshot() {
+        captureButtonController?.hide()
         androidx.localbroadcastmanager.content.LocalBroadcastManager.getInstance(this).sendBroadcast(Intent(EVENT_TAKE_SCREENSHOT))
 
         if (screenCapturePermissionIntent != null) {
@@ -241,6 +241,7 @@ class ScreenXService : Service(), CaptureButtonController.ClickListener, ScreenC
 
     override fun onScreenShotTaken(path: String) {
         captureButtonController?.show()
+        toast.show(getString(R.string.screenshot_feedback), Toast.LENGTH_SHORT)
         if (!TextUtils.isEmpty(path)) {
             MediaScannerConnection.scanFile(applicationContext, arrayOf(path), null, null)
         }

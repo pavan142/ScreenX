@@ -11,6 +11,7 @@
     <string name="overlay_permission_text">Grant overlay permissions</string>
     <string name="snackbar_disable">Screenshot feature disabled</string>
     <string name="snackbar_enable">Screenshot feature enabled</string>
+    <string name="screenshot_feedback">Screenshot taken!</string>
 
     <!-- Notification: strings displayed on the notification to perform various actions -->
     <string name="notification_action_capture">Tap to take screenshot</string>
