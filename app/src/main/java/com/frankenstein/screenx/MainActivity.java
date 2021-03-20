@@ -88,6 +88,12 @@ public class MainActivity extends AppCompatActivity {
         checkPermissions();
     }
 
+    private void startScreenXService() {
+        Intent intent = new Intent(this, ScreenXService.class);
+        intent.setAction(ScreenXService.ACTION_ENABLE_SERVICE);
+        startForegroundService(intent);
+    }
+
     private void goToStorageSettings() {
         Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
         Uri uri = Uri.fromParts("package", getPackageName(), null);
@@ -155,9 +161,7 @@ public class MainActivity extends AppCompatActivity {
             PermissionHelper.requestOverlayPermission(this, 1000);
         else
             _logger.log("MainActivity: Has permission for overlay");
-        Intent intent = new Intent(this, ScreenXService.class);
-        intent.setAction(ScreenXService.ACTION_ENABLE_SERVICE);
-        startForegroundService(intent);
+        startScreenXService();
     }
 
     private void refresh() {
@@ -255,5 +259,6 @@ public class MainActivity extends AppCompatActivity {
         if (mGridInitialized)
             refresh();
         super.onResume();
+        startScreenXService();
     }
 }

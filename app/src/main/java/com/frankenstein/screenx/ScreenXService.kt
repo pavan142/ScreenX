@@ -50,6 +50,7 @@ class ScreenXService : Service(), CaptureButtonController.ClickListener, ScreenC
     }
 
     private var isRunning: Boolean = false
+    private var isFloatingButtonVisible: Boolean = false;
     private var captureButtonController: CaptureButtonController? = null
 
     private var _logger: Logger? = Logger.getInstance("FILES-SERVICE");
@@ -88,6 +89,9 @@ class ScreenXService : Service(), CaptureButtonController.ClickListener, ScreenC
             stopSelf()
             return Service.START_NOT_STICKY
         }
+
+        if(!isFloatingButtonVisible)
+            initFloatingButton();
 
         if (isRunning) {
             return dispatchOnStartCommandAction(intent)
@@ -153,6 +157,8 @@ class ScreenXService : Service(), CaptureButtonController.ClickListener, ScreenC
     }
 
     private fun initFloatingButton() {
+        if (isFloatingButtonVisible)
+            return;
         _logger!!.log("Checking for Floating Button Permissions");
         var enabled = true;
         if (!enabled || !PermissionHelper.hasOverlayPermission(this)) {
@@ -161,16 +167,21 @@ class ScreenXService : Service(), CaptureButtonController.ClickListener, ScreenC
             _logger!!.log("Yay! You have permissions for floating button");
         }
 
+        if (captureButtonController != null)
+            return;
+
         captureButtonController?: run {
             captureButtonController = CaptureButtonController(applicationContext)
             captureButtonController?.setOnClickListener(this)
             captureButtonController?.init()
         }
+        isFloatingButtonVisible = true;
     }
 
     private fun destroyFloatingButton() {
         captureButtonController?.destroy()
         captureButtonController = null
+        isFloatingButtonVisible = false;
     }
 
     override fun onScreenshotButtonClicked() {
