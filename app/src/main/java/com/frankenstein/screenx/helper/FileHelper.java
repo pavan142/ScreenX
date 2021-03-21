@@ -13,7 +13,7 @@ public class FileHelper {
 
     private static final Logger _mLogger = Logger.getInstance("FILES-IO");
 
-    //(TODO) Store it in preferences the system folder for screenshots, instead of looking at both places in DCIM/Screenshots and Pictures/Screenshots
+    //(TODO) Store it in preferences the system folder for screenshots, instead of looking everytime at both places in DCIM/Screenshots and Pictures/Screenshots
     public static final File SYSTEM_SCREENSHOT_DIR1 = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM), "Screenshots");
     public static final File SYSTEM_SCREENSHOT_DIR2 = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "Screenshots");
     public static final File CUSTOM_SCREENSHOT_DIR = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), SCREENSHOT_DIR);
