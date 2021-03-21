@@ -13,8 +13,9 @@ public class FileHelper {
 
     private static final Logger _mLogger = Logger.getInstance("FILES-IO");
 
-    //(TODO) Some users have DIRECTORY_PICTURES/Screenshots has their screenshots folder structure. Handle that too.
-    public static final File SYSTEM_SCREENSHOT_DIR = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM), "Screenshots");
+    //(TODO) Store it in preferences the system folder for screenshots, instead of looking at both places in DCIM/Screenshots and Pictures/Screenshots
+    public static final File SYSTEM_SCREENSHOT_DIR1 = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM), "Screenshots");
+    public static final File SYSTEM_SCREENSHOT_DIR2 = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "Screenshots");
     public static final File CUSTOM_SCREENSHOT_DIR = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), SCREENSHOT_DIR);
 
     public static boolean deleteScreenshot(Screenshot screen) {
@@ -38,21 +39,28 @@ public class FileHelper {
     }
 
     public static ArrayList<File> getAllScreenshotFiles() {
-        File[] systemFiles = SYSTEM_SCREENSHOT_DIR.listFiles();
+        File[] systemFiles1 = SYSTEM_SCREENSHOT_DIR1.listFiles();
+        File[] systemFiles2 = SYSTEM_SCREENSHOT_DIR2.listFiles();
         File[] customFiles = CUSTOM_SCREENSHOT_DIR.listFiles();
         ArrayList<File> result = new ArrayList<>();
         File[] emptyArray = {};
 
-        systemFiles = (systemFiles == null)? emptyArray: systemFiles;
+        systemFiles1 = (systemFiles1 == null)? emptyArray: systemFiles1;
+        systemFiles2 = (systemFiles2 == null)? emptyArray: systemFiles2;
         customFiles = (customFiles == null)? emptyArray: customFiles;
 
-        for (int i = 0; i < systemFiles.length; i++) {
-            result.add(systemFiles[i]);
+        for (int i = 0; i < systemFiles1.length; i++) {
+            result.add(systemFiles1[i]);
         }
+
+        for (int i = 0; i < systemFiles2.length; i++) {
+            result.add(systemFiles2[i]);
+        }
+
         for (int i = 0; i < customFiles.length; i++) {
             result.add(customFiles[i]);
         }
-        _mLogger.log("Total: ", result.size(), "System Files: ", systemFiles.length, "Custom Files: ", customFiles.length);
+        _mLogger.log("Total: ", result.size(), "System Files: DCIM/Screenshots ", systemFiles1.length, "Pictures/Screenshots", systemFiles2.length ,"Custom Files: ", customFiles.length);
         return result;
     }
 }
