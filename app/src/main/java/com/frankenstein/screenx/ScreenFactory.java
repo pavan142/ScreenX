@@ -1,15 +1,21 @@
 package com.frankenstein.screenx;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import android.content.Context;
 
+import com.frankenstein.screenx.helper.UsageStatsHelper;
 import com.frankenstein.screenx.helper.Logger;
 import com.frankenstein.screenx.models.AppGroup;
 import com.frankenstein.screenx.models.Screenshot;
 import com.frankenstein.screenx.multithreading.GetScreensAsyncTask;
+
+import androidx.lifecycle.MutableLiveData;
+
+import static com.frankenstein.screenx.helper.AppHelper.getScreenFromFile;
 
 public class ScreenFactory {
     private static ScreenFactory _instance;
@@ -17,11 +23,11 @@ public class ScreenFactory {
     public Map<String, AppGroup> appgroups = new HashMap<>();
     public Map<String, Screenshot> nameToScreen = new HashMap<>();
 
-    private ArrayList<AppGroup> dateSorted = new ArrayList<>();
-    private ArrayList<AppGroup> alphaSorted = new ArrayList<>();
+    public MutableLiveData<ArrayList<AppGroup>> dateSorted = new MutableLiveData<>();
+    public MutableLiveData<ArrayList<AppGroup>> alphaSorted = new MutableLiveData<>();
 
     private boolean _initialized = false;
-    private final Logger _logger = Logger.getInstance("ScreenFactory");
+    private final Logger _logger = Logger.getInstance("FILES-ScreenFactory");
 
     public static ScreenFactory getInstance() {
         if (ScreenFactory._instance == null) {
@@ -32,33 +38,12 @@ public class ScreenFactory {
     private ScreenFactory() {}
 
     public void analyzeScreens(ArrayList<Screenshot> screens) {
-        dateSorted.clear();
-        alphaSorted.clear();
         for (AppGroup ag: appgroups.values())
             ag.screenshots.clear();
         nameToScreen.clear();
         try {
             for (Screenshot screen: screens) {
-                String appName = screen.appName;
-                AppGroup ag;
-                if (!appgroups.containsKey(appName)) {
-                    ag = new AppGroup(appName);
-                    appgroups.put(appName, ag);
-                }
-                ag = appgroups.get(appName);
-                ag.screenshots.add(screen);
-                nameToScreen.put(screen.name, screen);
-            }
-
-            for (AppGroup ag : appgroups.values()) {
-                if (ag.screenshots.size() == 0) {
-                    appgroups.remove(ag.appName);
-                    continue;
-                }
-                ag.sort();
-                ag.mascot = ag.screenshots.get(0);
-                ag.lastModified = ag.mascot.lastModified;
-//                _files.log(ag.print());
+             addScreen(screen);
             }
             sort();
         } catch (Exception e) {
@@ -67,26 +52,62 @@ public class ScreenFactory {
     }
 
     public void sort() {
-        for (AppGroup i: appgroups.values()) {
-            dateSorted.add(i);
-            alphaSorted.add(i);
+        ArrayList<AppGroup> newDateSorted = new ArrayList<>();
+        ArrayList<AppGroup> newAlphaSorted = new ArrayList<>();
+
+        for (AppGroup ag : appgroups.values()) {
+            if (ag.screenshots.size() == 0) {
+                appgroups.remove(ag.appName);
+                continue;
+            }
+            ag.sort();
+            ag.mascot = ag.screenshots.get(0);
+            ag.lastModified = ag.mascot.lastModified;
         }
 
-        Collections.sort(dateSorted, (AppGroup appGroup, AppGroup t1) -> {
+        for (AppGroup i: appgroups.values()) {
+            newDateSorted.add(i);
+            newAlphaSorted.add(i);
+        }
+
+
+        Collections.sort(newDateSorted, (AppGroup appGroup, AppGroup t1) -> {
                 long result = (t1.lastModified - appGroup.lastModified);
                 int output = (result >=0 ) ? 1: -1;
                 return output;
             });
 
-        Collections.sort(alphaSorted, (AppGroup appGroup, AppGroup t1) -> {
+        Collections.sort(newAlphaSorted, (AppGroup appGroup, AppGroup t1) -> {
                 return appGroup.appName.compareTo(t1.appName);
             });
+
+        dateSorted.postValue(newDateSorted);
+        alphaSorted.postValue(newAlphaSorted);
+    }
+
+    public void addScreen(Screenshot screen) {
+        String appName = screen.appName;
+        AppGroup ag;
+        if (!appgroups.containsKey(appName)) {
+            ag = new AppGroup(appName);
+            appgroups.put(appName, ag);
+        }
+        ag = appgroups.get(appName);
+        ag.screenshots.add(screen);
+        nameToScreen.put(screen.name, screen);
+    }
+
+    public void onScreenAdded(Context context,String filepath) {
+        _logger.log("ScreenFactory: onScreenAdded", filepath);
+        File file = new File(filepath);
+        addScreen(getScreenFromFile(context, file));
+        sort();
     }
 
     public ArrayList<AppGroup> getAppGroups(Utils.SortingCriterion sort) {
         if(sort == Utils.SortingCriterion.Date)
-            return dateSorted;
-        return alphaSorted;
+            return dateSorted.getValue();
+        return alphaSorted.getValue();
     }
 
     public Screenshot findScreenByName(String name) {

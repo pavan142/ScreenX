@@ -24,8 +24,8 @@ import android.view.WindowManager
 
 import com.frankenstein.screenx.helper.Logger
 import com.frankenstein.screenx.R
-import com.frankenstein.screenx.helper.AppsHelper.Companion.getRecentAppViaUsage
-import com.frankenstein.screenx.helper.AppsHelper.Companion.getRecentAppViaEvents
+import com.frankenstein.screenx.helper.UsageStatsHelper.Companion.getRecentAppViaUsage
+import com.frankenstein.screenx.helper.UsageStatsHelper.Companion.getRecentAppViaEvents
 import com.frankenstein.screenx.helper.FileHelper.CUSTOM_SCREENSHOT_DIR
 import com.frankenstein.screenx.helper.FileHelper.createIfNot
 

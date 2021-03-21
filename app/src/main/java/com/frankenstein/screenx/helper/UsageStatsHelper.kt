@@ -5,7 +5,7 @@ import android.app.usage.UsageStatsManager
 import java.util.*
 import kotlin.collections.ArrayList
 
-class AppsHelper {
+class UsageStatsHelper {
     companion object {
         private val _logger = Logger.getInstance("FILES-RECENT-APPS");
 

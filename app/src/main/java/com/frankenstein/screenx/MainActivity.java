@@ -47,8 +47,9 @@ public class MainActivity extends AppCompatActivity {
     private boolean _mPermissionsDenied = false;
     private Handler _mHandler;
     private boolean _mInitializing = true;
-    private TimerTask _mTask;
     private boolean mGridInitialized = false;
+    private boolean _mRefreshInProgress = false;
+    private boolean _mSortByDate = true;
     public Utils utils;
 
     private FrameLayout _mHomePageContent;
@@ -65,14 +66,15 @@ public class MainActivity extends AppCompatActivity {
         _mLogger.log("----------MainActivity: ONCREATE---------");
         _mHandler = new Handler(Looper.myLooper());
         _pullToRefresh = findViewById(R.id.pull_to_refresh);
-        _pullToRefresh.setOnRefreshListener(() -> refresh());
-
+        _pullToRefresh.setOnRefreshListener(() -> refresh(this::postRefresh));
 
         _mGridView = findViewById(R.id.grid_view);
         _mHomePageContent = findViewById(R.id.homepage_content);
         _mHomePageContentEmpty = findViewById(R.id.homepage_content_empty);
 
         _sf = ScreenFactory.getInstance();
+        _sf.dateSorted.observe(this, this::dateSortedListChanged);
+        _sf.alphaSorted.observe(this, this::alphaSortedListChanged);
 
         _mProgressBar = findViewById(R.id.progress_bar);
 
@@ -132,6 +134,20 @@ public class MainActivity extends AppCompatActivity {
         _pullToRefresh.setVisibility(View.GONE);
     }
 
+    private void alphaSortedListChanged(ArrayList<AppGroup> appgroups) {
+        _mLogger.log("MainActivity: alphaSortedListChanged");
+        if (_mRefreshInProgress ||_mSortByDate)
+            return;
+        attachAdapter();
+    }
+
+    private void dateSortedListChanged(ArrayList<AppGroup> appgroups) {
+        _mLogger.log("MainActivity: dateSortedListChanged");
+        if (_mRefreshInProgress || !_mSortByDate)
+            return;
+        attachAdapter();
+    }
+
     private void showProgressBar() {
         _mHomePageContent.setAlpha(0);
         _mHomePageContent.setVisibility(View.VISIBLE);
@@ -139,21 +155,9 @@ public class MainActivity extends AppCompatActivity {
         _mPermissionsDisplay.setVisibility(View.GONE);
 
         _mProgressBar.setVisibility(View.VISIBLE);
-//        _mTask = new TimerTask() {
-//            @Override
-//            public void run() {
-//                runOnUiThread(() -> {
-//                    if (!_mInitializing) {
-//                        hideProgressBar();
-//                    }
-//                });
-//            }
-//        };
-//        new Timer().scheduleAtFixedRate(_mTask, 0, PROGRESSBAR_PERIOD);
     }
 
     private void hideProgressBar() {
-//        _mTask.cancel();
         mGridInitialized = true;
         _mProgressBar.animate().alpha(0).setDuration(PROGRESSBAR_TRANSITION);
         _mHomePageContent.animate().alpha(1).setDuration(PROGRESSBAR_TRANSITION);
@@ -173,7 +177,7 @@ public class MainActivity extends AppCompatActivity {
         showProgressBar();
         _mLogger.log("MainActivity: Initializing Screenshots");
         createIfNot(CUSTOM_SCREENSHOT_DIR);
-        _sf.refresh(getApplicationContext(), () -> postInitialization());
+        refresh(this::postInitialization);
         _mLogger.log("MainActivity: Launching ScreenXService");
         if (!PermissionHelper.hasOverlayPermission(this))
             PermissionHelper.requestOverlayPermission(this, 1000);
@@ -182,9 +186,13 @@ public class MainActivity extends AppCompatActivity {
         startScreenXService();
     }
 
-    private void refresh() {
+    private void refresh(ScreenFactory.ScreenRefreshListener listener) {
         _mLogger.log("MainActivity: Refreshing Screenshots");
-        _sf.refresh(getApplicationContext(), () -> postRefresh());
+        _mRefreshInProgress = true;
+        _sf.refresh(getApplicationContext(), () -> {
+            _mRefreshInProgress = false;
+            listener.onRefresh();
+        });
     }
 
     private void postInitialization() {
@@ -201,7 +209,8 @@ public class MainActivity extends AppCompatActivity {
 
     public void attachAdapter() {
         ArrayList<Screenshot> mascots = new ArrayList<>();
-        ArrayList<AppGroup> appgroups = _sf.getAppGroups(Utils.SortingCriterion.Date);
+        Utils.SortingCriterion criterion = (_mSortByDate) ? Utils.SortingCriterion.Date: Utils.SortingCriterion.Alphabetical;
+        ArrayList<AppGroup> appgroups = _sf.getAppGroups(criterion);
         if (appgroups.size() == 0) {
           showEmptyPage();
           return;
@@ -282,7 +291,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         if (mGridInitialized)
-            refresh();
+            refresh(this::postRefresh);
         super.onResume();
         startScreenXService();
     }

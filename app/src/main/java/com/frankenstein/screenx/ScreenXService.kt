@@ -20,6 +20,7 @@ import com.frankenstein.screenx.capture.ScreenCaptureListener
 import com.frankenstein.screenx.capture.ScreenCaptureManager
 import com.frankenstein.screenx.helper.Logger
 import com.frankenstein.screenx.helper.PermissionHelper
+import com.frankenstein.screenx.models.Screenshot
 import com.frankenstein.screenx.overlay.CaptureButtonController
 import com.frankenstein.screenx.ui.ScreenXToast
 
@@ -54,6 +55,7 @@ class ScreenXService : Service(), CaptureButtonController.ClickListener, ScreenC
     private var captureButtonController: CaptureButtonController? = null
 
     private var _logger: Logger? = Logger.getInstance("FILES-SERVICE");
+    private var _sf: ScreenFactory? = ScreenFactory.getInstance();
 
     private var screenCapturePermissionIntent: Intent? = null
     private var screenCaptureManager: ScreenCaptureManager? = null
@@ -245,6 +247,8 @@ class ScreenXService : Service(), CaptureButtonController.ClickListener, ScreenC
         if (!TextUtils.isEmpty(path)) {
             MediaScannerConnection.scanFile(applicationContext, arrayOf(path), null, null)
         }
+        _logger?.log("ScreenXService: Screenshottaken", path);
+        _sf?.onScreenAdded(this, path)
     }
 
     private fun getForegroundNotificationId(): Int {
