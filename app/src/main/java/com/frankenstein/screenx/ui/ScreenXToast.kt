@@ -36,7 +36,7 @@ class ScreenXToast(private val context: Context) {
         toast?.cancel()
 
 
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
             toast = Toast(context).apply {
                 setGravity(Gravity.FILL_HORIZONTAL or Gravity.BOTTOM, 0, yOffset)
                 view = rootView
