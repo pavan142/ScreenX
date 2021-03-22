@@ -9,10 +9,12 @@
     <color name="lightWhite">#F7F7F7</color>
     <color name="captureButtonBackground">#99FFFFFF</color>
     <color name="white">#ffffff</color>
-    <color name="primaryTeal">#00c8d7</color>
 
-    <!-- Notification -->
-    <color name="foreground_notification">@color/primaryTeal</color>
+    <!-- Icon colors -->
+    <color name="foreground_notification">@color/icon_primary_color</color>
+    <color name="blowfish_color_scheme">#78BED3</color>
+    <color name="icon_primary_color">#00EFD1</color>
+    <color name="icon_secondary_color">#00ACEA</color>
 
     <!-- Permission Button Colors-->
     <color name="permission_granted_background">#00c8d7</color>

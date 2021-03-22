@@ -15,7 +15,7 @@ import com.frankenstein.screenx.helper.Logger;
 import com.frankenstein.screenx.models.AppGroup;
 import com.frankenstein.screenx.models.Screenshot;
 import com.frankenstein.screenx.ui.ImmersiveActivity;
-import com.frankenstein.screenx.ui.adapters.ViewPagerAdapter;
+import com.frankenstein.screenx.ui.adapters.ScreenPageAdapter;
 
 import androidx.viewpager.widget.ViewPager;
 
@@ -27,7 +27,7 @@ public class ScreenActivity extends ImmersiveActivity {
 
     private Logger _logger;
     private ViewPager _viewpager;
-    private ViewPagerAdapter _adapter;
+    private ScreenPageAdapter _adapter;
     private ScreenFactory _sf;
     private ArrayList<Screenshot> _screens;
     private ImageButton _deleteButton;
@@ -41,7 +41,7 @@ public class ScreenActivity extends ImmersiveActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.image_slider);
+        setContentView(R.layout.screenpage);
 
         resources = getApplicationContext().getResources();
         mAlertBuilder = new AlertDialog.Builder(this);
@@ -75,8 +75,6 @@ public class ScreenActivity extends ImmersiveActivity {
 
         StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
         StrictMode.setVmPolicy(builder.build());
-
-        this.setupTapHandling(_viewpager);
     }
 
     private void updatePager(int position) {
@@ -84,7 +82,7 @@ public class ScreenActivity extends ImmersiveActivity {
             setResult(RESULT_OK);
             finish();
         }
-        _adapter = new ViewPagerAdapter(getApplicationContext(), _screens);
+        _adapter = new ScreenPageAdapter(getApplicationContext(), _screens, this);
         _viewpager.setAdapter(_adapter);
         _viewpager.setCurrentItem(position);
     }

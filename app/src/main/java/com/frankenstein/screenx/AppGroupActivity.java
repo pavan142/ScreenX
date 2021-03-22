@@ -9,7 +9,7 @@ import android.widget.GridView;
 import com.frankenstein.screenx.helper.Logger;
 import com.frankenstein.screenx.models.AppGroup;
 import com.frankenstein.screenx.models.Screenshot;
-import com.frankenstein.screenx.ui.adapters.ScreensAdapter;
+import com.frankenstein.screenx.ui.adapters.AppGroupPageAdapter;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -19,17 +19,18 @@ import java.util.ArrayList;
 public class AppGroupActivity extends AppCompatActivity {
 
     private GridView _gridView;
-    private ScreensAdapter _adapter;
+    private AppGroupPageAdapter _adapter;
     private Logger _logger;
     private ScreenFactory _sf;
     private String _appName;
     private SwipeRefreshLayout _pullToRefresh;
     private static final int SCREEN_ACTIVITY_INTENT_CODE = 1;
+    private boolean _mPaused = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.screen_grid);
+        setContentView(R.layout.appgrouppage);
         _logger = Logger.getInstance("FILES");
         _gridView = findViewById(R.id.grid_view);
         _sf = ScreenFactory.getInstance();
@@ -60,7 +61,7 @@ public class AppGroupActivity extends AppCompatActivity {
         }
         ArrayList<Screenshot> screens = ag.screenshots;
         _logger.log("Displaying Scrrens of Appgroup", _appName, screens.size());
-        _adapter = new ScreensAdapter(getApplicationContext(), screens);
+        _adapter = new AppGroupPageAdapter(getApplicationContext(), screens);
         _gridView.setAdapter(_adapter);
         _gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -77,7 +78,15 @@ public class AppGroupActivity extends AppCompatActivity {
 
     @Override
     protected void onResume() {
-        refresh();
+        if (_mPaused)
+            refresh();
+        _mPaused = false;
         super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        _mPaused = true;
+        super.onPause();
     }
 }

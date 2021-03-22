@@ -17,7 +17,7 @@ class ScreenXToast(private val context: Context) {
         fun makeText(context: Context, text: String, duration: Int): Toast {
             val toast = Toast(context)
             toast.setGravity(Gravity.FILL_HORIZONTAL or Gravity.BOTTOM, 0, 0)
-            toast.view = View.inflate(context, R.layout.view_custom_toast, null)
+            toast.view = View.inflate(context, R.layout.custom_toast, null)
             toast.view?.findViewById<TextView>(R.id.text)?.text = text
             toast.duration = duration
             return toast
@@ -25,7 +25,7 @@ class ScreenXToast(private val context: Context) {
     }
 
     private var toast: Toast? = null
-    private var rootView: View = View.inflate(context, R.layout.view_custom_toast, null)
+    private var rootView: View = View.inflate(context, R.layout.custom_toast, null)
     private val textView: TextView by lazy {
         rootView.findViewById<TextView>(R.id.text)
     }

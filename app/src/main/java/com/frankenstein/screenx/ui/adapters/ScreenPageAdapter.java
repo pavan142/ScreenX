@@ -12,24 +12,29 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 import com.bumptech.glide.Glide;
+import com.davemorrissey.labs.subscaleview.ImageSource;
+import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 import com.frankenstein.screenx.helper.Logger;
 import com.frankenstein.screenx.R;
 import com.frankenstein.screenx.helper.TextHelper;
+import com.frankenstein.screenx.interfaces.ScreenTapListener;
 import com.frankenstein.screenx.models.Screenshot;
 
 import androidx.annotation.NonNull;
 import androidx.viewpager.widget.PagerAdapter;
 
-public class ViewPagerAdapter extends PagerAdapter {
+public class ScreenPageAdapter extends PagerAdapter {
 
     private Context _context;
     private ArrayList<Screenshot> _screens;
     private Logger _logger;
+    private ScreenTapListener _tapListener;
 
-    public ViewPagerAdapter(Context context, ArrayList<Screenshot> screens) {
+    public ScreenPageAdapter(Context context, ArrayList<Screenshot> screens, ScreenTapListener tapListener) {
         this._context = context;
         this._screens = screens;
         this._logger = Logger.getInstance("FILES");
+        this._tapListener = tapListener;
     }
 
     @Override
@@ -45,11 +50,17 @@ public class ViewPagerAdapter extends PagerAdapter {
     @Override
     public Object instantiateItem(@NonNull ViewGroup container, final int position) {
         _logger.log("VIEW PAGER Instantiating item", position);
-        View itemView = LayoutInflater.from(_context).inflate(R.layout.screen_expanded, container, false);
-        ImageView imageView = (ImageView) itemView.findViewById(R.id.image);
+        View itemView = LayoutInflater.from(_context).inflate(R.layout.screenpage_item, container, false);
         Screenshot screen = _screens.get(position);
         File file = screen.file;
-        Glide.with(_context).load(file).into(imageView);
+
+//        ImageView imageView = (ImageView) itemView.findViewById(R.id.image);
+//        Glide.with(_context).load(file).into(imageView);
+
+        SubsamplingScaleImageView imageView = (SubsamplingScaleImageView) itemView.findViewById(R.id.image);
+        imageView.setImage(ImageSource.uri(file.toString()));
+        imageView.setOnClickListener(v -> _tapListener.onTap());
+
         Objects.requireNonNull(container).addView(itemView);
 
         // Running OCR

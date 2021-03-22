@@ -156,7 +156,7 @@ class CaptureButtonController(private val context: Context) {
     }
 
     private fun createCaptureButtonView(context: Context): View {
-        return View.inflate(context, R.layout.view_capture_button, null)
+        return View.inflate(context, R.layout.floating_bar, null)
     }
 
     private fun initExitView()  {
@@ -187,7 +187,7 @@ class CaptureButtonController(private val context: Context) {
     }
 
     private fun createExitView(context: Context): View {
-        return View.inflate(context, R.layout.view_capture_button_exit, null)
+        return View.inflate(context, R.layout.floating_bar_cancel, null)
     }
 
     private fun isCollideWithExitView(dragX: Float, dragY: Float): Boolean {

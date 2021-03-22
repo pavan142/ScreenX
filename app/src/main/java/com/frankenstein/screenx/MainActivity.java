@@ -14,8 +14,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import android.content.Intent;
 import android.widget.RelativeLayout;
@@ -24,9 +22,8 @@ import com.frankenstein.screenx.helper.Logger;
 import com.frankenstein.screenx.helper.PermissionHelper;
 import com.frankenstein.screenx.models.AppGroup;
 import com.frankenstein.screenx.models.Screenshot;
-import com.frankenstein.screenx.ui.adapters.AppGroupsAdapter;
+import com.frankenstein.screenx.ui.adapters.HomePageAdapter;
 
-import static com.frankenstein.screenx.Constants.PROGRESSBAR_PERIOD;
 import static com.frankenstein.screenx.Constants.PROGRESSBAR_TRANSITION;
 import static com.frankenstein.screenx.helper.FileHelper.CUSTOM_SCREENSHOT_DIR;
 import static com.frankenstein.screenx.helper.FileHelper.createIfNot;
@@ -34,7 +31,7 @@ import static com.frankenstein.screenx.helper.FileHelper.createIfNot;
 public class MainActivity extends AppCompatActivity {
 
     private GridView _mGridView;
-    private AppGroupsAdapter _adapter;
+    private HomePageAdapter _adapter;
     private Logger _mLogger;
     private ScreenFactory _sf;
     private SwipeRefreshLayout _pullToRefresh;
@@ -50,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean mGridInitialized = false;
     private boolean _mRefreshInProgress = false;
     private boolean _mSortByDate = true;
+    private boolean _mPaused = false;
     public Utils utils;
 
     private FrameLayout _mHomePageContent;
@@ -220,7 +218,7 @@ public class MainActivity extends AppCompatActivity {
             mascots.add(ag.mascot);
 //        for (Screenshot s : mascots)
 //            _logger.log(s.appName, s.name);
-        _adapter = new AppGroupsAdapter(getApplicationContext(), mascots);
+        _adapter = new HomePageAdapter(getApplicationContext(), mascots);
         _mGridView.setAdapter(_adapter);
         _mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -293,6 +291,17 @@ public class MainActivity extends AppCompatActivity {
         if (mGridInitialized)
             refresh(this::postRefresh);
         super.onResume();
-        startScreenXService();
+
+        // This step is to reinitialize the floating touch bar, once it is closed
+        // TODO: Start the service with that specific intent itself, instead of generic intent
+        if (_mPaused)
+            startScreenXService();
+        _mPaused = false;
+    }
+
+    @Override
+    protected void onPause() {
+        _mPaused = true;
+        super.onPause();
     }
 }

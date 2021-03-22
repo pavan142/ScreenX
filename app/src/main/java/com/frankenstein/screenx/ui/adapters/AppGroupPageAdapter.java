@@ -14,15 +14,15 @@ import com.frankenstein.screenx.helper.Logger;
 import com.frankenstein.screenx.R;
 import com.frankenstein.screenx.models.Screenshot;
 
-public class ScreensAdapter extends BaseAdapter {
+public class AppGroupPageAdapter extends BaseAdapter {
     private Context _context;
     private ArrayList<Screenshot> _screens;
     private Logger _logger;
 
-    public ScreensAdapter(Context context, ArrayList<Screenshot> arrayList) {
+    public AppGroupPageAdapter(Context context, ArrayList<Screenshot> arrayList) {
         this._context = context;
         this._screens = arrayList;
-        this._logger = Logger.getInstance("ScreensAdapter");
+        this._logger = Logger.getInstance("AppGroupPageAdapter");
     }
     @Override
     public int getCount() {
@@ -39,7 +39,7 @@ public class ScreensAdapter extends BaseAdapter {
     @Override
     public  View getView(int position, View convertView, ViewGroup parent) {
         if (convertView ==  null) {
-            convertView = LayoutInflater.from(_context).inflate(R.layout.screen_preview, parent, false);
+            convertView = LayoutInflater.from(_context).inflate(R.layout.appgrouppage_grid_item, parent, false);
         }
         ImageView imageView;
         imageView = (ImageView) convertView.findViewById(R.id.image);

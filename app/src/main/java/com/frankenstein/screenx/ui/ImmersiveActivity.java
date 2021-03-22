@@ -6,11 +6,11 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import com.frankenstein.screenx.helper.Logger;
+import com.frankenstein.screenx.interfaces.ScreenTapListener;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-public class ImmersiveActivity extends AppCompatActivity {
-    private GestureDetector _tapDetector;
+public class ImmersiveActivity extends AppCompatActivity implements ScreenTapListener {
     private View _decorView;
     private Logger _logger;
 
@@ -24,21 +24,17 @@ public class ImmersiveActivity extends AppCompatActivity {
         hideSystemUI();
     }
 
-    protected void setupTapHandling(View targetView) {
-        targetView.setOnTouchListener((view, motionEvent) -> _tapDetector.onTouchEvent(motionEvent));
-        _tapDetector = new GestureDetector(this, new GestureDetector.SimpleOnGestureListener() {
-            @Override
-            public boolean onSingleTapUp(MotionEvent e) {
-                boolean visible = (_decorView.getSystemUiVisibility() & View.SYSTEM_UI_FLAG_HIDE_NAVIGATION) == 0;
-                _logger.log("Parent got onSingleTapUp Event", visible);
-                if (visible) {
-                    hideSystemUI();
-                } else {
-                    showSystemUI();
-                }
-                return true;
-            }
-        });
+    public void onTap() {
+        toggleSystemUI();
+    }
+
+    private void toggleSystemUI() {
+        boolean visible = (_decorView.getSystemUiVisibility() & View.SYSTEM_UI_FLAG_HIDE_NAVIGATION) == 0;
+        if (visible) {
+            hideSystemUI();
+        } else {
+            showSystemUI();
+        }
     }
 
     public void hideSystemUI() {

@@ -16,13 +16,12 @@ import com.frankenstein.screenx.helper.Logger;
 import com.frankenstein.screenx.R;
 import com.frankenstein.screenx.models.Screenshot;
 
-
-public class AppGroupsAdapter extends BaseAdapter {
+public class HomePageAdapter extends BaseAdapter {
     private Context _context;
     private ArrayList<Screenshot> _screens;
     private Logger _logger;
 
-    public AppGroupsAdapter(Context context, ArrayList<Screenshot> arrayList) {
+    public HomePageAdapter(Context context, ArrayList<Screenshot> arrayList) {
         this._context = context;
         this._screens = arrayList;
         this._logger = Logger.getInstance("FILES");
@@ -42,7 +41,7 @@ public class AppGroupsAdapter extends BaseAdapter {
     @Override
     public  View getView(int position, View convertView, ViewGroup parent) {
         if (convertView ==  null) {
-            convertView = LayoutInflater.from(_context).inflate(R.layout.appgroup_preview, parent, false);
+            convertView = LayoutInflater.from(_context).inflate(R.layout.homepage_grid_item, parent, false);
         }
         ImageView imageView;
         imageView = (ImageView) convertView.findViewById(R.id.image);
