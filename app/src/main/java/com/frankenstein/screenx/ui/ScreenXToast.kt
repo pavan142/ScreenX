@@ -1,6 +1,7 @@
 package com.frankenstein.screenx.ui
 
 import android.content.Context
+import android.os.Build
 import android.view.Gravity
 import android.view.View
 import android.widget.TextView
@@ -34,11 +35,16 @@ class ScreenXToast(private val context: Context) {
         textView.text = msg
         toast?.cancel()
 
-        toast = Toast(context).apply {
-            setGravity(Gravity.FILL_HORIZONTAL or Gravity.BOTTOM, 0, yOffset)
-            view = rootView
-            duration = toastDuration
-            show()
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
+            toast = Toast(context).apply {
+                setGravity(Gravity.FILL_HORIZONTAL or Gravity.BOTTOM, 0, yOffset)
+                view = rootView
+                duration = toastDuration
+                show()
+            }
+        } else {
+            toast = Toast.makeText(context,msg, toastDuration).apply { show() }
         }
     }
 }
