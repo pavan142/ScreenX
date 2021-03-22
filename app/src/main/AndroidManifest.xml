@@ -48,7 +48,8 @@
         <service
             android:name="com.frankenstein.screenx.ScreenXService"
             android:exported="false"
-            android:description="@string/service_description"/>
+            android:description="@string/service_description"
+            android:foregroundServiceType="mediaProjection" />
     </application>
 
 </manifest>
