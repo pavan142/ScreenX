@@ -15,6 +15,7 @@ import java.util.regex.Pattern;
 
 public class AppHelper {
     private static final Map<String, String> _packageToAppName = new HashMap<>();
+    private static final Logger _mLogger = Logger.getInstance("AppHelper");
 
     private static String getAppName(PackageManager _pm, String packageId) {
         if (!_packageToAppName.containsKey(packageId)) {
@@ -22,6 +23,7 @@ public class AppHelper {
             try {
                 ai = _pm.getApplicationInfo( packageId, 0);
             } catch (final PackageManager.NameNotFoundException e) {
+                _mLogger.log("NameNotFound", packageId);
                 ai = null;
             }
             final String appName = (String) (ai != null ? _pm.getApplicationLabel(ai) : "");
@@ -42,6 +44,8 @@ public class AppHelper {
             String appName = getAppName(_pm, packageId);
             appName = (appName == "") ? "Miscellaneous" : appName;
             return appName;
+        } else {
+            _mLogger.log("No Match Found", filename);
         }
         return "Miscellaneous";
     }
