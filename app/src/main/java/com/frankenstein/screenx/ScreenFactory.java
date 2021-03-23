@@ -22,12 +22,14 @@ public class ScreenFactory {
 
     public Map<String, AppGroup> appgroups = new HashMap<>();
     public Map<String, Screenshot> nameToScreen = new HashMap<>();
+    public MutableLiveData<ArrayList<Screenshot>> screenshots = new MutableLiveData<>();
 
-    public MutableLiveData<ArrayList<AppGroup>> dateSorted = new MutableLiveData<>();
-    public MutableLiveData<ArrayList<AppGroup>> alphaSorted = new MutableLiveData<>();
+    public ArrayList<AppGroup> dateSorted = new ArrayList<>();
+    public ArrayList<AppGroup> alphaSorted = new ArrayList<>();
 
     private boolean _initialized = false;
     private final Logger _logger = Logger.getInstance("ScreenFactory");
+    private static final Logger _mTimeLogger = Logger.getInstance("TIME");
 
     public static ScreenFactory getInstance() {
         if (ScreenFactory._instance == null) {
@@ -35,17 +37,25 @@ public class ScreenFactory {
         }
         return ScreenFactory._instance;
     }
+
     private ScreenFactory() {}
 
     public void analyzeScreens(ArrayList<Screenshot> screens) {
+        Long start = System.currentTimeMillis();
+        _logger.log("Analyzing screen", Thread.currentThread().toString());
+        ArrayList<Screenshot> newScreenshots = new ArrayList<>();
         for (AppGroup ag: appgroups.values())
             ag.screenshots.clear();
         nameToScreen.clear();
         try {
             for (Screenshot screen: screens) {
-             addScreen(screen);
+                addScreen(screen);
+                newScreenshots.add(screen);
             }
             sort();
+            Long end = System.currentTimeMillis();
+            _mTimeLogger.log("Posting Screenshots value to livedata on UI Thread, Time taken for analyze Screens is", (end-start));
+            screenshots.postValue(newScreenshots);
         } catch (Exception e) {
             _logger.log("got an error: ", e.getMessage());
         }
@@ -81,8 +91,15 @@ public class ScreenFactory {
                 return appGroup.appName.compareTo(t1.appName);
             });
 
-        dateSorted.postValue(newDateSorted);
-        alphaSorted.postValue(newAlphaSorted);
+        // dateSorted and alphaSorted are not thread safe. They are directly used by adapter to populate
+        // the views on main thread.
+        // So we create new arrays, populate them and then assign it to the dateSorted and alphaSorted
+        // had we gone the way of dateSorted.clear(), or alphaSorted.clear(), the adapter
+        // views will be broken when that happens. With this flow, the array reference
+        // held by the adapter is still valid. The adapter's array will only be reassigned when
+        // the Livedata event(from MutableLiveData<screenshots> is fired onto the main thread)
+        dateSorted = newDateSorted;
+        alphaSorted = newAlphaSorted;
     }
 
     public void addScreen(Screenshot screen) {
@@ -100,14 +117,21 @@ public class ScreenFactory {
     public void onScreenAdded(Context context,String filepath) {
         _logger.log("ScreenFactory: onScreenAdded", filepath);
         File file = new File(filepath);
-        addScreen(getScreenFromFile(context, file));
+        Screenshot screen = getScreenFromFile(context, file);
+        addScreen(screen);
+
+        ArrayList<Screenshot> newScreenshots = screenshots.getValue();
+        newScreenshots.add(screen);
+
         sort();
+        _logger.log("Posting Screenshots value to livedata on UI Thread");
+        screenshots.postValue(newScreenshots);
     }
 
     public ArrayList<AppGroup> getAppGroups(Utils.SortingCriterion sort) {
         if(sort == Utils.SortingCriterion.Date)
-            return dateSorted.getValue();
-        return alphaSorted.getValue();
+            return dateSorted;
+        return alphaSorted;
     }
 
     public Screenshot findScreenByName(String name) {
@@ -118,22 +142,16 @@ public class ScreenFactory {
         nameToScreen.remove(name);
     }
 
-    public void loadScreens(Context context, ScreenRefreshListener screenSortListener) {
+    public void loadScreens(Context context) {
         if(_initialized)
             return;
-        GetScreensAsyncTask.ScreensFetchedListener listener = (screens) -> {
-                screenSortListener.onRefresh();
-        };
-        new GetScreensAsyncTask().execute(context, listener);
+        new GetScreensAsyncTask().execute(context);
         _initialized = true;
     }
 
-    public void refresh(Context context, ScreenRefreshListener screenSortListener) {
+    public void refresh(Context context) {
+        _logger.log("received refresh request", Thread.currentThread().toString());
         _initialized = false;
-        this.loadScreens(context, screenSortListener);
-    }
-
-    public interface ScreenRefreshListener {
-        void onRefresh();
+        this.loadScreens(context);
     }
 }

@@ -2,7 +2,7 @@
 <FrameLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/homepage_content"
+    android:id="@+id/homepage_content_layout"
     xmlns:android="http://schemas.android.com/apk/res/android">
     <include
         layout="@layout/homepage_content_empty"/>

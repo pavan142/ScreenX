@@ -15,20 +15,18 @@ import static com.frankenstein.screenx.helper.FileHelper.getAllScreenshotFiles;
 
 public class GetScreensAsyncTask extends AsyncTask<Object, Void, ArrayList<Screenshot>> {
 
-    private Logger _mLogger;
-
-    protected ScreensFetchedListener mlistener;
+    private Logger _mLogger = Logger.getInstance("GetScreensAsyncTask");;
+    private static final Logger _mTimeLogger = Logger.getInstance("TIME");
 
     public GetScreensAsyncTask() {
         super();
-        _mLogger = Logger.getInstance("GetScreensAsyncTask");
     }
 
     @Override
     protected ArrayList<Screenshot> doInBackground(Object ...objects) {
+        Long start = System.currentTimeMillis();
+        _mLogger.log("doInBackground", Thread.currentThread().toString());
         final Context context = (Context) objects[0];
-        mlistener = (ScreensFetchedListener) objects[1];
-
         ArrayList<Screenshot> screens = new ArrayList<>();
         try {
 
@@ -37,19 +35,12 @@ public class GetScreensAsyncTask extends AsyncTask<Object, Void, ArrayList<Scree
                 Screenshot screen = getScreenFromFile(context, file);
                 screens.add(screen);
             }
+            Long end = System.currentTimeMillis();
+            _mTimeLogger.log("Time taken for processing screenshot files in background =", (end-start));
             ScreenFactory.getInstance().analyzeScreens(screens);
         } catch (Exception e) {
             _mLogger.log("got an error: ", e.getMessage());
         }
         return screens;
-    }
-
-    @Override
-    protected void onPostExecute(ArrayList<Screenshot> screens) {
-        mlistener.onScreensFetched(screens);
-    }
-
-    public interface ScreensFetchedListener {
-        void onScreensFetched(ArrayList<Screenshot> screens);
     }
 }

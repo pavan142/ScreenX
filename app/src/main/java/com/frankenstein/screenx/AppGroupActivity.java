@@ -21,7 +21,6 @@ public class AppGroupActivity extends AppCompatActivity {
     private GridView _gridView;
     private AppGroupPageAdapter _adapter;
     private Logger _logger;
-    private ScreenFactory _sf;
     private String _appName;
     private SwipeRefreshLayout _pullToRefresh;
     private static final int SCREEN_ACTIVITY_INTENT_CODE = 1;
@@ -33,20 +32,20 @@ public class AppGroupActivity extends AppCompatActivity {
         setContentView(R.layout.appgrouppage);
         _logger = Logger.getInstance("AppGroupActivity");
         _gridView = findViewById(R.id.grid_view);
-        _sf = ScreenFactory.getInstance();
         _appName = getIntent().getStringExtra("APP_GROUP_NAME");
         _pullToRefresh = findViewById(R.id.pull_to_refresh);
         _pullToRefresh.setOnRefreshListener(() -> refresh());
+        ScreenXApplication.screenFactory.screenshots.observe(this, this::postRefresh);
         updateAdapter();
     }
 
 
     private void refresh() {
         _logger.log("AppGroupActivity: Refreshing Screenshots");
-        _sf.refresh(getApplicationContext(), () -> postRefresh());
+        ScreenXApplication.screenFactory.refresh(this);
     }
 
-    private void postRefresh() {
+    private void postRefresh(ArrayList<Screenshot> screens) {
         _logger.log("AppGroupActivity: Successfully refreshed data");
         _pullToRefresh.setRefreshing(false);
         updateAdapter();
@@ -54,7 +53,7 @@ public class AppGroupActivity extends AppCompatActivity {
 
 
     private void updateAdapter() {
-        AppGroup ag = _sf.appgroups.get(_appName);
+        AppGroup ag = ScreenXApplication.screenFactory.appgroups.get(_appName);
         if (ag == null || ag.screenshots.size() == 0) {
             finish();
             return;

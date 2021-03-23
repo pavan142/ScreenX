@@ -28,7 +28,6 @@ public class ScreenActivity extends ImmersiveActivity {
     private Logger _logger;
     private ViewPager _viewpager;
     private ScreenPageAdapter _adapter;
-    private ScreenFactory _sf;
     private ArrayList<Screenshot> _screens;
     private ImageButton _deleteButton;
     private ImageButton _shareButton;
@@ -49,13 +48,12 @@ public class ScreenActivity extends ImmersiveActivity {
         utils = Utils.getInstance();
         _logger = Logger.getInstance("ScreenActivity");
         _viewpager = findViewById(R.id.view_pager);
-        _sf = ScreenFactory.getInstance();
 
         String screenName = getIntent().getStringExtra("SCREEN_NAME");
         int mCurrPosition = getIntent().getIntExtra("SCREEN_POSITION", 0);
-        Screenshot screen = _sf.findScreenByName(screenName);
+        Screenshot screen = ScreenXApplication.screenFactory.findScreenByName(screenName);
 
-        AppGroup ag =_sf.appgroups.get(screen.appName);
+        AppGroup ag = ScreenXApplication.screenFactory.appgroups.get(screen.appName);
         if (ag == null) {
             finish();
         }
@@ -98,7 +96,7 @@ public class ScreenActivity extends ImmersiveActivity {
                     if (FileHelper.deleteScreenshot(screen)) {
                         _logger.log("SUCCESSFULLY DELETED SCREEN", screen.name, screen.appName);
                         _screens.remove(position);
-                        _sf.removeScreen(screen.name);
+                        ScreenXApplication.screenFactory.removeScreen(screen.name);
                         updatePager(position);
                     } else {
                         _logger.log("FAILED TO DELETE SCREEN", screen.name, screen.appName);

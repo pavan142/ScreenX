@@ -11,6 +11,7 @@ import android.widget.FrameLayout;
 import android.widget.GridView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.MutableLiveData;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import java.util.ArrayList;
@@ -34,7 +35,6 @@ public class MainActivity extends AppCompatActivity {
     private GridView _mGridView;
     private HomePageAdapter _adapter;
     private Logger _mLogger;
-    private ScreenFactory _sf;
     private SwipeRefreshLayout _pullToRefresh;
     private View _mProgressBar;
     private View _mPermissionsDisplay;
@@ -42,17 +42,24 @@ public class MainActivity extends AppCompatActivity {
     private View _mUsagePermissionsView;
     private View _mOverlayPermissionsView;
 
-    private boolean _mPermissionsDenied = false;
+    private boolean _mPermissionsGranted = false;
     private Handler _mHandler;
-    private boolean _mInitializing = true;
-    private boolean mGridInitialized = false;
-    private boolean _mRefreshInProgress = false;
     private boolean _mSortByDate = true;
     private boolean _mPaused = false;
     public Utils utils;
 
-    private FrameLayout _mHomePageContent;
+    private FrameLayout _mHomePageContentLayout;
     private RelativeLayout _mHomePageContentEmpty;
+
+    private MutableLiveData<HomePageState> _mState = new MutableLiveData<>();
+    private HomePageState _mPrevState = HomePageState.REQUEST_PERMISSIONS;
+    private enum HomePageState {
+        REQUEST_PERMISSIONS,
+        LOADING_PROGRESS_BAR,
+        NO_CONTENT_SCREEN,
+        DISPLAY_CONTENT,
+        PULL_REFRESH_PROGRESS
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,16 +72,14 @@ public class MainActivity extends AppCompatActivity {
         _mLogger.log("-----ONCREATE------");
         _mHandler = new Handler(Looper.myLooper());
         _pullToRefresh = findViewById(R.id.pull_to_refresh);
-        _pullToRefresh.setOnRefreshListener(() -> refresh(this::postRefresh));
+        _pullToRefresh.setOnRefreshListener(() -> _mState.setValue(HomePageState.PULL_REFRESH_PROGRESS));
 
         _mGridView = findViewById(R.id.grid_view);
-        _mHomePageContent = findViewById(R.id.homepage_content);
+        _mHomePageContentLayout = findViewById(R.id.homepage_content_layout);
         _mHomePageContentEmpty = findViewById(R.id.homepage_content_empty);
 
-        _sf = ScreenFactory.getInstance();
-        _sf.dateSorted.observe(this, this::dateSortedListChanged);
-        _sf.alphaSorted.observe(this, this::alphaSortedListChanged);
-
+        _mLogger.log("Adding observer on screenshots live data");
+        ScreenXApplication.screenFactory.screenshots.observe(this, this::onScreenshotsChanged);
         _mProgressBar = findViewById(R.id.progress_bar);
 
         _mPermissionsDisplay = findViewById(R.id.permissions_display);
@@ -88,10 +93,80 @@ public class MainActivity extends AppCompatActivity {
         _mOverlayPermissionsView = findViewById(R.id.overlay_permissions);
         _mOverlayPermissionsView.setOnClickListener(view -> goToOverlaySettings());
 
-        _mHomePageContentEmpty.setVisibility(View.GONE);
+        _mState.observeForever(this::onStateChange);
+        _mState.setValue(HomePageState.REQUEST_PERMISSIONS);
+//        _mState.setValue(HomePageState.LOADING_PROGRESS_BAR);
+    }
+
+    private void onStateChange(HomePageState newState) {
+        _mLogger.log("onStateChange", newState.toString());
+        switch (newState) {
+            case REQUEST_PERMISSIONS:
+                requestPermissions();
+                break;
+            case LOADING_PROGRESS_BAR:
+                showProgressBar();
+                break;
+            case NO_CONTENT_SCREEN:
+                showNoContentScreen();
+                break;
+            case DISPLAY_CONTENT:
+                displayContent();
+                break;
+            case PULL_REFRESH_PROGRESS:
+                refresh();
+                break;
+        }
+        _mPrevState = newState;
+    }
+
+    private void requestPermissions() {
+        _mPermissionsGranted = false;
+        _mPermissionsDisplay.setVisibility(View.VISIBLE);
         _mProgressBar.setVisibility(View.GONE);
-        _mPermissionsDisplay.setVisibility(View.GONE);
+        _mHomePageContentEmpty.setVisibility(View.GONE);
         checkPermissions();
+    }
+
+    private void showProgressBar() {
+        _mPermissionsGranted = true;
+        _mHomePageContentLayout.setAlpha(0);
+        _mHomePageContentLayout.setVisibility(View.VISIBLE);
+        _mPermissionsDisplay.setVisibility(View.GONE);
+        _mProgressBar.setVisibility(View.VISIBLE);
+
+        _mLogger.log("Initializing Screenshots");
+        createIfNot(CUSTOM_SCREENSHOT_DIR);
+        refresh();
+        _mLogger.log("Launching ScreenXService");
+        startScreenXService();
+    }
+
+
+    private void transitionProgressBar() {
+        _mProgressBar.animate().alpha(0).setDuration(PROGRESSBAR_TRANSITION);
+        _mHomePageContentLayout.animate().alpha(1).setDuration(PROGRESSBAR_TRANSITION);
+        _mHandler.postDelayed(() -> _mProgressBar.setVisibility(View.GONE), 1500);
+    }
+
+    private void showNoContentScreen() {
+        if (_mPrevState == HomePageState.LOADING_PROGRESS_BAR)
+            transitionProgressBar();
+        _mLogger.log("Showing No Content Page");
+
+        _mHomePageContentEmpty.setVisibility(View.VISIBLE);
+        _pullToRefresh.setVisibility(View.GONE);
+
+        _mLogger.log("current thread is", Thread.currentThread().toString());
+        ScreenshotParser.getInstance().parse();
+    }
+
+    private void displayContent() {
+        if (_mPrevState == HomePageState.LOADING_PROGRESS_BAR)
+            transitionProgressBar();
+        _mLogger.log("Showing Content Page");
+        _pullToRefresh.setVisibility(View.VISIBLE);
+        _mHomePageContentEmpty.setVisibility(View.GONE);
     }
 
     private void startScreenXService() {
@@ -121,107 +196,36 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    private void hideEmptyPage() {
-        _mLogger.log("Hiding Empty Page");
-        _pullToRefresh.setVisibility(View.VISIBLE);
-        _mHomePageContentEmpty.setVisibility(View.GONE);
-    }
-
-    private void showEmptyPage() {
-        _mLogger.log("Showing Empty Page");
-        _mHomePageContentEmpty.setVisibility(View.VISIBLE);
-        _pullToRefresh.setVisibility(View.GONE);
-    }
-
-    private void alphaSortedListChanged(ArrayList<AppGroup> appgroups) {
-        _mLogger.log("MainActivity: alphaSortedListChanged");
-        if (_mRefreshInProgress ||_mSortByDate)
-            return;
+    private void onScreenshotsChanged(ArrayList<Screenshot> screenshots) {
+        _mLogger.log("received onScreenshotsChanged", Thread.currentThread().toString());
+        if (_mState.getValue() == HomePageState.PULL_REFRESH_PROGRESS) {
+            _pullToRefresh.setRefreshing(false);
+        }
         attachAdapter();
     }
 
-    private void dateSortedListChanged(ArrayList<AppGroup> appgroups) {
-        _mLogger.log("MainActivity: dateSortedListChanged");
-        if (_mRefreshInProgress || !_mSortByDate)
-            return;
-        attachAdapter();
-    }
-
-    private void showProgressBar() {
-        _mHomePageContent.setAlpha(0);
-        _mHomePageContent.setVisibility(View.VISIBLE);
-
-        _mPermissionsDisplay.setVisibility(View.GONE);
-
-        _mProgressBar.setVisibility(View.VISIBLE);
-    }
-
-    private void hideProgressBar() {
-        mGridInitialized = true;
-        _mProgressBar.animate().alpha(0).setDuration(PROGRESSBAR_TRANSITION);
-        _mHomePageContent.animate().alpha(1).setDuration(PROGRESSBAR_TRANSITION);
-        _mHandler.postDelayed(() -> _mProgressBar.setVisibility(View.GONE), 1500);
-        attachAdapter();
-
-        _mLogger.log("current thread is", Thread.currentThread().toString());
-        ScreenshotParser.getInstance().parse();
-    }
-
-    private void showPermissionRequestScreen() {
-        _mPermissionsDenied = true;
-        _mPermissionsDisplay.setVisibility(View.VISIBLE);
-        _mProgressBar.setVisibility(View.GONE);
-        _mHomePageContent.setVisibility(View.GONE);
-    }
-
-    private void permissionsGranted() {
-        _mPermissionsDenied = false;
-        showProgressBar();
-        _mLogger.log("MainActivity: Initializing Screenshots");
-        createIfNot(CUSTOM_SCREENSHOT_DIR);
-        refresh(this::postInitialization);
-        _mLogger.log("MainActivity: Launching ScreenXService");
-        if (!PermissionHelper.hasOverlayPermission(this))
-            PermissionHelper.requestOverlayPermission(this, 1000);
-        else
-            _mLogger.log("MainActivity: Has permission for overlay");
-        startScreenXService();
-    }
-
-    private void refresh(ScreenFactory.ScreenRefreshListener listener) {
-        _mLogger.log("MainActivity: Refreshing Screenshots");
-        _mRefreshInProgress = true;
-        _sf.refresh(getApplicationContext(), () -> {
-            _mRefreshInProgress = false;
-            listener.onRefresh();
-        });
-    }
-
-    private void postInitialization() {
-        _mLogger.log("MainActivity: Successfully initialized screenshots");
-        _mInitializing = false;
-        hideProgressBar();
-    }
-
-    private void postRefresh() {
-        _mLogger.log("MainActivity: Successfully refreshed screenshots");
-        _pullToRefresh.setRefreshing(false);
-        attachAdapter();
+    private void refresh() {
+        _mLogger.log("Refreshing Screenshots");
+        ScreenXApplication.screenFactory.refresh(getApplicationContext());
     }
 
     public void attachAdapter() {
+        _mLogger.log("attaching adapter");
         ArrayList<Screenshot> mascots = new ArrayList<>();
         Utils.SortingCriterion criterion = (_mSortByDate) ? Utils.SortingCriterion.Date: Utils.SortingCriterion.Alphabetical;
-        ArrayList<AppGroup> appgroups = _sf.getAppGroups(criterion);
+        ArrayList<AppGroup> appgroups = ScreenXApplication.screenFactory.getAppGroups(criterion);
         if (appgroups.size() == 0) {
-          showEmptyPage();
+            _mLogger.log("appgroup size is zero");
+          _mState.setValue(HomePageState.NO_CONTENT_SCREEN);
           return;
         }
+
+        _mState.setValue(HomePageState.DISPLAY_CONTENT);
 
         for (AppGroup ag : appgroups)
             mascots.add(ag.mascot);
 //        for (Screenshot s : mascots)
-//            _logger.log(s.appName, s.name);
+//            _mLogger.log(s.appName, s.name);
         _adapter = new HomePageAdapter(getApplicationContext(), mascots);
         _mGridView.setAdapter(_adapter);
         _mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -234,40 +238,7 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-        hideEmptyPage();
     }
-
-/*
-    private void requestStoragePermission() {
-        // Reading only read storage because read storage is grouped under the same umbrella as
-        // write storage and if the user accepted one , the other would be automatically granted
-        _logger.log("Dexter checking for permissions");
-        Dexter.withContext(this)
-                .withPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
-                .withListener(new PermissionListener() {
-                    @Override
-                    public void onPermissionGranted(PermissionGrantedResponse response) {
-                        _logger.log("Permission Granted");
-                        permissionsGranted();
-                    }
-
-                    @Override
-                    public void onPermissionDenied(PermissionDeniedResponse response) {
-                        _logger.log("Permission Denied");
-                        showPermissionRequestScreen();
-                    }
-
-                    @Override
-                    public void onPermissionRationaleShouldBeShown(PermissionRequest permission, PermissionToken token) {
-                        _logger.log("Permission Rational Should be shown");
-                        showPermissionRequestScreen();
-                        token.continuePermissionRequest();
-                    }
-                })
-                .onSameThread()
-                .check();
-    }
-*/
 
     public void checkPermissions() {
         boolean storagePermissions = PermissionHelper.hasStoragePermission(this);
@@ -276,26 +247,26 @@ public class MainActivity extends AppCompatActivity {
 
         if (storagePermissions && usagePermissions && overlayPermissions) {
             _mLogger.log("Has all the permissions");
-            permissionsGranted();
+            _mState.setValue(HomePageState.LOADING_PROGRESS_BAR);
             return;
         }
 
         _mLogger.log("Permissions Missing:: storage ->", storagePermissions, "  usage ->", usagePermissions, "overlay ->", overlayPermissions);
-        showPermissionRequestScreen();
     }
 
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
-        if (hasFocus && _mPermissionsDenied) {
+        if (hasFocus && !_mPermissionsGranted) {
             checkPermissions();
         }
     }
 
     @Override
     protected void onResume() {
-        if (mGridInitialized)
-            refresh(this::postRefresh);
+        _mLogger.log("onResume", _mState.getValue().compareTo(HomePageState.LOADING_PROGRESS_BAR) > 0);
+        if (_mPaused && _mState.getValue() == HomePageState.DISPLAY_CONTENT)
+            refresh();
         super.onResume();
 
         // This step is to reinitialize the floating touch bar, once it is closed
@@ -307,7 +278,13 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onPause() {
+        _mLogger.log("onPause");
         _mPaused = true;
         super.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
     }
 }

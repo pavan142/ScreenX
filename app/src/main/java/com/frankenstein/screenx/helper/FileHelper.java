@@ -12,6 +12,7 @@ import static com.frankenstein.screenx.Constants.SCREENSHOT_DIR;
 public class FileHelper {
 
     private static final Logger _mLogger = Logger.getInstance("FileHelper");
+    private static final Logger _mTimeLogger = Logger.getInstance("TIME");
 
     //(TODO) Store it in preferences the system folder for screenshots, instead of looking everytime at both places in DCIM/Screenshots and Pictures/Screenshots
     public static final File SYSTEM_SCREENSHOT_DIR1 = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM), "Screenshots");
@@ -39,6 +40,7 @@ public class FileHelper {
     }
 
     public static ArrayList<File> getAllScreenshotFiles() {
+        Long start = System.currentTimeMillis();
         File[] systemFiles1 = SYSTEM_SCREENSHOT_DIR1.listFiles();
         File[] systemFiles2 = SYSTEM_SCREENSHOT_DIR2.listFiles();
         File[] customFiles = CUSTOM_SCREENSHOT_DIR.listFiles();
@@ -61,6 +63,8 @@ public class FileHelper {
             result.add(customFiles[i]);
         }
         _mLogger.log("Total: ", result.size(), "System Files: DCIM/Screenshots ", systemFiles1.length, "Pictures/Screenshots", systemFiles2.length ,"Custom Files: ", customFiles.length);
+        Long delta = System.currentTimeMillis() - start;
+        _mTimeLogger.log("Time taken for reading all screenshot files is", delta);
         return result;
     }
 }
