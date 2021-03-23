@@ -35,19 +35,25 @@ public class AppHelper {
 
     private static String getSourceApp(Context context, String filename) {
         final PackageManager _pm = context.getPackageManager();
-        Pattern pattern = Pattern.compile(Constants.SCREENSHOT_PATTERN);
+        Pattern pattern = Pattern.compile(Constants.SCREENSHOT_PREFIX_PATTERN);
         Matcher matcher = pattern.matcher(filename);
 
-        if (matcher.find()) {
-            String matched = matcher.group();
-            String packageId = matched.substring(1, matched.length() - 4);
-            String appName = getAppName(_pm, packageId);
-            appName = (appName == "") ? "Miscellaneous" : appName;
-            return appName;
-        } else {
+        if (!matcher.find()) {
             _mLogger.log("No Match Found", filename);
+            return "Miscellaneous";
         }
-        return "Miscellaneous";
+
+        String matched = matcher.group();
+        int endIndex = filename.length() - 4;
+        int startIndex = matched.length();
+        if (endIndex <= startIndex) {
+            _mLogger.log("No Match Found", filename);
+            return "Miscellaneous";
+        }
+        String packageId = filename.substring(startIndex, endIndex);
+        String appName = getAppName(_pm, packageId);
+        appName = (appName == "") ? "Miscellaneous" : appName;
+        return appName;
     }
 
 

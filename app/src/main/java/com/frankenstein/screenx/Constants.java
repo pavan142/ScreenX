@@ -1,8 +1,8 @@
 package com.frankenstein.screenx;
 
 public class Constants {
-    // TODO (packageNames can also include underscores in them, so instead of suffix pattern-matching, implement prefix matching (Screenshot_<time>_<packagename>.jpg)
-    public static final String SCREENSHOT_PATTERN="_[a-z0-9.]*.jpg$";
+    public static final String SCREENSHOT_SUFFIX_PATTERN ="_[a-z0-9.]*.jpg$";
+    public static final String SCREENSHOT_PREFIX_PATTERN ="^Screenshot_[0-9-]*_";;
     public static final String SCREENSHOT_DIR = "ScreenX";
     public static final int PROGRESSBAR_TRANSITION = 200;
     public static final int TOOLBAR_TRANSITION = 100;
