@@ -7,7 +7,7 @@ import kotlin.collections.ArrayList
 
 class UsageStatsHelper {
     companion object {
-        private val _logger = Logger.getInstance("FILES-RECENT-APPS");
+        private val _logger = Logger.getInstance("UsageStatsHelper");
 
         fun getRecentAppViaUsage(usm: UsageStatsManager): String {
             var calendar = Calendar.getInstance()

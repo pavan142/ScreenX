@@ -11,7 +11,7 @@ import static com.frankenstein.screenx.Constants.SCREENSHOT_DIR;
 
 public class FileHelper {
 
-    private static final Logger _mLogger = Logger.getInstance("FILES-IO");
+    private static final Logger _mLogger = Logger.getInstance("FileHelper");
 
     //(TODO) Store it in preferences the system folder for screenshots, instead of looking everytime at both places in DCIM/Screenshots and Pictures/Screenshots
     public static final File SYSTEM_SCREENSHOT_DIR1 = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM), "Screenshots");

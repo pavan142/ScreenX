@@ -20,6 +20,7 @@ import android.widget.RelativeLayout;
 
 import com.frankenstein.screenx.helper.Logger;
 import com.frankenstein.screenx.helper.PermissionHelper;
+import com.frankenstein.screenx.helper.ScreenshotParser;
 import com.frankenstein.screenx.models.AppGroup;
 import com.frankenstein.screenx.models.Screenshot;
 import com.frankenstein.screenx.ui.adapters.HomePageAdapter;
@@ -60,8 +61,8 @@ public class MainActivity extends AppCompatActivity {
 
         utils = Utils.getInstance();
         utils.setContext(getApplicationContext());
-        _mLogger = Logger.getInstance("FILES");
-        _mLogger.log("----------MainActivity: ONCREATE---------");
+        _mLogger = Logger.getInstance("MainActivity");
+        _mLogger.log("-----ONCREATE------");
         _mHandler = new Handler(Looper.myLooper());
         _pullToRefresh = findViewById(R.id.pull_to_refresh);
         _pullToRefresh.setOnRefreshListener(() -> refresh(this::postRefresh));
@@ -161,6 +162,9 @@ public class MainActivity extends AppCompatActivity {
         _mHomePageContent.animate().alpha(1).setDuration(PROGRESSBAR_TRANSITION);
         _mHandler.postDelayed(() -> _mProgressBar.setVisibility(View.GONE), 1500);
         attachAdapter();
+
+        _mLogger.log("current thread is", Thread.currentThread().toString());
+        ScreenshotParser.getInstance().parse();
     }
 
     private void showPermissionRequestScreen() {
@@ -233,35 +237,37 @@ public class MainActivity extends AppCompatActivity {
         hideEmptyPage();
     }
 
-//    private void requestStoragePermission() {
-//        // Reading only read storage because read storage is grouped under the same umbrella as
-//        // write storage and if the user accepted one , the other would be automatically granted
-//        _logger.log("Dexter checking for permissions");
-//        Dexter.withContext(this)
-//                .withPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
-//                .withListener(new PermissionListener() {
-//                    @Override
-//                    public void onPermissionGranted(PermissionGrantedResponse response) {
-//                        _logger.log("Permission Granted");
-//                        permissionsGranted();
-//                    }
-//
-//                    @Override
-//                    public void onPermissionDenied(PermissionDeniedResponse response) {
-//                        _logger.log("Permission Denied");
-//                        showPermissionRequestScreen();
-//                    }
-//
-//                    @Override
-//                    public void onPermissionRationaleShouldBeShown(PermissionRequest permission, PermissionToken token) {
-//                        _logger.log("Permission Rational Should be shown");
-//                        showPermissionRequestScreen();
-//                        token.continuePermissionRequest();
-//                    }
-//                })
-//                .onSameThread()
-//                .check();
-//    }
+/*
+    private void requestStoragePermission() {
+        // Reading only read storage because read storage is grouped under the same umbrella as
+        // write storage and if the user accepted one , the other would be automatically granted
+        _logger.log("Dexter checking for permissions");
+        Dexter.withContext(this)
+                .withPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
+                .withListener(new PermissionListener() {
+                    @Override
+                    public void onPermissionGranted(PermissionGrantedResponse response) {
+                        _logger.log("Permission Granted");
+                        permissionsGranted();
+                    }
+
+                    @Override
+                    public void onPermissionDenied(PermissionDeniedResponse response) {
+                        _logger.log("Permission Denied");
+                        showPermissionRequestScreen();
+                    }
+
+                    @Override
+                    public void onPermissionRationaleShouldBeShown(PermissionRequest permission, PermissionToken token) {
+                        _logger.log("Permission Rational Should be shown");
+                        showPermissionRequestScreen();
+                        token.continuePermissionRequest();
+                    }
+                })
+                .onSameThread()
+                .check();
+    }
+*/
 
     public void checkPermissions() {
         boolean storagePermissions = PermissionHelper.hasStoragePermission(this);
@@ -269,12 +275,12 @@ public class MainActivity extends AppCompatActivity {
         boolean overlayPermissions = PermissionHelper.hasOverlayPermission(this);
 
         if (storagePermissions && usagePermissions && overlayPermissions) {
-            _mLogger.log(" Have both permissions");
+            _mLogger.log("Has all the permissions");
             permissionsGranted();
             return;
         }
 
-        _mLogger.log("the permissions for storage is ", storagePermissions, "  usage is", usagePermissions, "overlay is", overlayPermissions);
+        _mLogger.log("Permissions Missing:: storage ->", storagePermissions, "  usage ->", usagePermissions, "overlay ->", overlayPermissions);
         showPermissionRequestScreen();
     }
 

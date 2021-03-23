@@ -7,9 +7,10 @@ import android.util.Log;
 public class Logger {
     private String tag;
     private static final Map<String, Logger> instanceMap = new HashMap<String, Logger>();
-
+    private static final String TAG_PREFIX="SCREENX-";
     public static Logger getInstance(String tag) {
         if (!instanceMap.containsKey(tag)) {
+            tag = TAG_PREFIX + tag;
             instanceMap.put(tag, new Logger(tag));
         }
         return instanceMap.get(tag);

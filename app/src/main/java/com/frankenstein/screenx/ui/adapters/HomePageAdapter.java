@@ -24,7 +24,7 @@ public class HomePageAdapter extends BaseAdapter {
     public HomePageAdapter(Context context, ArrayList<Screenshot> arrayList) {
         this._context = context;
         this._screens = arrayList;
-        this._logger = Logger.getInstance("FILES");
+        this._logger = Logger.getInstance("HomePageAdapter");
     }
     @Override
     public int getCount() {

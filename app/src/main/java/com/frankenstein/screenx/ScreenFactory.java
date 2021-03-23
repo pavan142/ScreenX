@@ -27,7 +27,7 @@ public class ScreenFactory {
     public MutableLiveData<ArrayList<AppGroup>> alphaSorted = new MutableLiveData<>();
 
     private boolean _initialized = false;
-    private final Logger _logger = Logger.getInstance("FILES-ScreenFactory");
+    private final Logger _logger = Logger.getInstance("ScreenFactory");
 
     public static ScreenFactory getInstance() {
         if (ScreenFactory._instance == null) {

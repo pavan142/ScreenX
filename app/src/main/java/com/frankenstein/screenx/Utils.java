@@ -26,7 +26,7 @@ class Utils {
     }
 
     private Utils(){
-        _logger = Logger.getInstance("UTILS");
+        _logger = Logger.getInstance("Utils");
     }
 
     public void setContext(Context context) {

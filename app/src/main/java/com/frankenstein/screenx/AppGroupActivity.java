@@ -31,7 +31,7 @@ public class AppGroupActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.appgrouppage);
-        _logger = Logger.getInstance("FILES");
+        _logger = Logger.getInstance("AppGroupActivity");
         _gridView = findViewById(R.id.grid_view);
         _sf = ScreenFactory.getInstance();
         _appName = getIntent().getStringExtra("APP_GROUP_NAME");

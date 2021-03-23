@@ -5,13 +5,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Objects;
 
-import com.bumptech.glide.Glide;
 import com.davemorrissey.labs.subscaleview.ImageSource;
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 import com.frankenstein.screenx.helper.Logger;
@@ -33,7 +31,7 @@ public class ScreenPageAdapter extends PagerAdapter {
     public ScreenPageAdapter(Context context, ArrayList<Screenshot> screens, ScreenTapListener tapListener) {
         this._context = context;
         this._screens = screens;
-        this._logger = Logger.getInstance("FILES");
+        this._logger = Logger.getInstance("ScreenPageAdapter");
         this._tapListener = tapListener;
     }
 
@@ -64,7 +62,7 @@ public class ScreenPageAdapter extends PagerAdapter {
         Objects.requireNonNull(container).addView(itemView);
 
         // Running OCR
-        TextHelper.getInstance(_context).getData(file, (text) -> this.onTextFetched(file.getName(), text));
+        TextHelper.getInstance().getDataForUIUpdate(file, (text) -> this.onTextFetched(file.getName(), text));
         return itemView;
     }
 

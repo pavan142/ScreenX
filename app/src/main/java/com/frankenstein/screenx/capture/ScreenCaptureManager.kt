@@ -49,7 +49,7 @@ class ScreenCaptureManager(context: Context, private val screenCapturePermission
     private var height = 0
     private val screenshotPath: String
 
-    private val _logger: Logger = Logger.getInstance("FILES-SCREEN-CAPTURE");
+    private val _logger: Logger = Logger.getInstance("ScreenCaptureManager");
     private val activityManager: ActivityManager;
     private val usm: UsageStatsManager;
     private val defaultPackageId: String;

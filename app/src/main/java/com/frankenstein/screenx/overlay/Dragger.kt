@@ -7,7 +7,7 @@ package com.frankenstein.screenx.overlay
 
 import android.content.Context
 import android.view.View
-import com.frankenstein.screenx.extension.dpToPx
+import com.frankenstein.screenx.helper.MetricsHelper.dpToPx
 
 class Dragger(private val context: Context,
               private val targetView: View,
@@ -18,7 +18,7 @@ class Dragger(private val context: Context,
     private lateinit var dragView: View
     private lateinit var dragHelper: DragHelper
 
-    private val minTouchAreaSize = 48f.dpToPx(context.resources.displayMetrics)
+    private val minTouchAreaSize = dpToPx(context.resources.displayMetrics, 48f)
     private val dragAreaWidth = Math.max(width, minTouchAreaSize)
     private val dragAreaHeight = Math.max(height, minTouchAreaSize)
 

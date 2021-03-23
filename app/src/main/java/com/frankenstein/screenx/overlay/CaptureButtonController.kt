@@ -15,7 +15,7 @@ import android.view.WindowManager
 import android.view.animation.AccelerateInterpolator
 import android.view.animation.OvershootInterpolator
 import android.widget.RelativeLayout
-import com.frankenstein.screenx.extension.dpToPx
+import com.frankenstein.screenx.helper.MetricsHelper.dpToPx
 import com.frankenstein.screenx.R
 
 class CaptureButtonController(private val context: Context) {
@@ -42,7 +42,7 @@ class CaptureButtonController(private val context: Context) {
             context.getSystemService(Context.WINDOW_SERVICE) as WindowManager)
 
     private val metrics = context.resources.displayMetrics
-    private val buttonSize = BUTTON_SIZE_DP.dpToPx(metrics)
+    private val buttonSize = dpToPx(metrics, BUTTON_SIZE_DP);
 
     fun init() {
         screen = Screen(context, windowController)

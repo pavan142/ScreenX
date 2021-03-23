@@ -47,7 +47,7 @@ public class ScreenActivity extends ImmersiveActivity {
         mAlertBuilder = new AlertDialog.Builder(this);
 
         utils = Utils.getInstance();
-        _logger = Logger.getInstance("FILES");
+        _logger = Logger.getInstance("ScreenActivity");
         _viewpager = findViewById(R.id.view_pager);
         _sf = ScreenFactory.getInstance();
 

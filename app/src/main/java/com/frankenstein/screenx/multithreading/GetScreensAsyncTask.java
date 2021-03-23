@@ -21,7 +21,7 @@ public class GetScreensAsyncTask extends AsyncTask<Object, Void, ArrayList<Scree
 
     public GetScreensAsyncTask() {
         super();
-        _mLogger = Logger.getInstance("FILES_IO");
+        _mLogger = Logger.getInstance("GetScreensAsyncTask");
     }
 
     @Override

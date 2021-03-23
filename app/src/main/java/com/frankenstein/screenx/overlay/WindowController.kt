@@ -15,7 +15,7 @@ import com.frankenstein.screenx.helper.Logger
 
 class WindowController internal constructor(private val windowManager: WindowManager) {
     private val tmp: Point = Point()
-    private val _mLogger: Logger = Logger.getInstance("FILES-WINDOW-CONTROLLER");
+    private val _mLogger: Logger = Logger.getInstance("WindowController");
 
     fun addView(width: Int, height: Int, isTouchable: Boolean, view: View) {
         val touchableFlag = if (isTouchable) 0 else WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE

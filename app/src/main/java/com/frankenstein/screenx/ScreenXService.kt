@@ -54,7 +54,7 @@ class ScreenXService : Service(), CaptureButtonController.ClickListener, ScreenC
     private var isFloatingButtonVisible: Boolean = false;
     private var captureButtonController: CaptureButtonController? = null
 
-    private var _logger: Logger? = Logger.getInstance("FILES-SERVICE");
+    private var _logger: Logger? = Logger.getInstance("ScreenXService");
     private var _sf: ScreenFactory? = ScreenFactory.getInstance();
 
     private var screenCapturePermissionIntent: Intent? = null
