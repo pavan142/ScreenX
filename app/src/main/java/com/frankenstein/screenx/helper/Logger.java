@@ -9,8 +9,15 @@ public class Logger {
     private static final Map<String, Logger> instanceMap = new HashMap<String, Logger>();
     private static final String TAG_PREFIX="SCREENX-";
     public static Logger getInstance(String tag) {
+        tag = TAG_PREFIX + tag;
         if (!instanceMap.containsKey(tag)) {
-            tag = TAG_PREFIX + tag;
+            instanceMap.put(tag, new Logger(tag));
+        }
+        return instanceMap.get(tag);
+    }
+
+    public static Logger getRawInstance(String tag) {
+        if (!instanceMap.containsKey(tag)) {
             instanceMap.put(tag, new Logger(tag));
         }
         return instanceMap.get(tag);
@@ -25,7 +32,7 @@ public class Logger {
         for (int i = 0; i < args.length; i++) {
             message += args[i] + "\t";
         }
-        Log.i(this.tag, message);
+        Log.d(this.tag, message);
     }
 
     public void i(Object... args) {
@@ -41,7 +48,7 @@ public class Logger {
         for (int i = 0; i < args.length; i++) {
             message += args[i] + "\t";
         }
-        Log.i(this.tag, message);
+        Log.w(this.tag, message);
     }
 
     public void v(Object... args) {
@@ -49,7 +56,7 @@ public class Logger {
         for (int i = 0; i < args.length; i++) {
             message += args[i] + "\t";
         }
-        Log.i(this.tag, message);
+        Log.v(this.tag, message);
     }
 
     public void e(Object... args) {
@@ -57,7 +64,7 @@ public class Logger {
         for (int i = 0; i < args.length; i++) {
             message += args[i] + "\t";
         }
-        Log.i(this.tag, message);
+        Log.e(this.tag, message);
     }
 
     public void log(Object... args) {

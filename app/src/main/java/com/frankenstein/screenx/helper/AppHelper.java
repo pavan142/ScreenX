@@ -15,7 +15,7 @@ import java.util.regex.Pattern;
 
 public class AppHelper {
     private static final Map<String, String> _packageToAppName = new HashMap<>();
-    private static final Logger _mLogger = Logger.getInstance("AppHelper");
+    private static final Logger _mLogger = Logger.getRawInstance("AppHelper");
 
     private static String getAppName(PackageManager _pm, String packageId) {
         if (!_packageToAppName.containsKey(packageId)) {
@@ -23,9 +23,10 @@ public class AppHelper {
             try {
                 ai = _pm.getApplicationInfo( packageId, 0);
             } catch (final PackageManager.NameNotFoundException e) {
-                _mLogger.log("NameNotFound", packageId);
+                _mLogger.d("NameNotFound", packageId);
                 ai = null;
             }
+            // (TODO: If appName comes out to be null for some reason, as a hail mary, we could take the last part of the packagename `com.example.android.chrome` -> chrome`
             final String appName = (String) (ai != null ? _pm.getApplicationLabel(ai) : "");
             _packageToAppName.put(packageId, appName);
         }
@@ -39,7 +40,7 @@ public class AppHelper {
         Matcher matcher = pattern.matcher(filename);
 
         if (!matcher.find()) {
-            _mLogger.log("No Match Found", filename);
+            _mLogger.d("No Match Found", filename);
             return "Miscellaneous";
         }
 
@@ -47,7 +48,7 @@ public class AppHelper {
         int endIndex = filename.length() - 4;
         int startIndex = matched.length();
         if (endIndex <= startIndex) {
-            _mLogger.log("No Match Found", filename);
+            _mLogger.d("No Match Found", filename);
             return "Miscellaneous";
         }
         String packageId = filename.substring(startIndex, endIndex);

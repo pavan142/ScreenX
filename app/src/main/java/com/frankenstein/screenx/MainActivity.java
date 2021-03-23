@@ -256,6 +256,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
+        // TODO: This can be clubbed along with onResume itself
         super.onWindowFocusChanged(hasFocus);
         if (hasFocus && !_mPermissionsGranted) {
             checkPermissions();
