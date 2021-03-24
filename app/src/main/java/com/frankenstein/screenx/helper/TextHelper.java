@@ -22,8 +22,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import androidx.annotation.NonNull;
 
@@ -65,34 +67,47 @@ public class TextHelper {
             String text = _mCache.get(filename);
             if (text != null) {
                 _mLogger.log("Found the data in Cache", filename);
-                listener.onTextFetched(text);
+                // (TODO) This is wrong invoking UI Listener on background thread
+                listener.onTextFetched(file, text);
             } else {
                 String dataFromDB = textByFilenameDB(filename);
                 if (dataFromDB != null ) {
                     _mLogger.log("Fetched the data from DB", filename);
                     _mCache.put(filename, dataFromDB);
-                    listener.onTextFetched(dataFromDB);
+                    listener.onTextFetched(file, dataFromDB);
                 } else {
-                    textByFileNameOCR(file, (String ocrText) -> {
+                    textByFileOCR(file, (File _file, String ocrText) -> {
                         // THIS IS RUNNING IN MAIN/UI THREAD
                         _mLogger.log("Scanned the data using OCR", filename);
                         // AS OCR CALLBACKS ARE RUN ON MAIN/UI THREAD, DB OPERATIONS NEED TO BE POSTED ON TO SEPARATE THREAD
                         _mHandler.post(() -> {
                             putScreenIntoDB(filename, ocrText);
-                            _mCache.put(filename, ocrText);
                         });
                         // AS OCR CALLBACKS ARE RUN ON MAIN/UI THREAD, DIRECTLY INVOKING THE UI LISTENER HERE IS OKAY
-                        listener.onTextFetched(ocrText);
+                        listener.onTextFetched(_file, ocrText);
                     });
                 }
             }
         });
     }
 
-    public String getUnParsedScreenshots() {
+    public ArrayList<Screenshot> getUnParsedScreenshots() {
         List<ScreenShotEntity> parsedScreenList = _mDBClient.screenShotDao().getAll();
+        Set<String> parsedScreens = new HashSet<String>();
+        for(ScreenShotEntity screen: parsedScreenList) {
+            parsedScreens.add(screen.filename);
+        }
         ArrayList<Screenshot> allScreens = ScreenXApplication.screenFactory.screenshots.getValue();
-        return null;
+        ArrayList<Screenshot> unParsedScreens = new ArrayList<>();
+        if (allScreens == null)
+            return unParsedScreens;
+        for(Screenshot screen: allScreens) {
+            if (!parsedScreens.contains(screen.name)) {
+                unParsedScreens.add(screen);
+            }
+        }
+        _mLogger.log("UnParsedScreenshots length", unParsedScreens.size());
+        return unParsedScreens;
     }
 
     public String textByFilenameDB(String filename) {
@@ -107,13 +122,15 @@ public class TextHelper {
         if (screen == null) {
             _mLogger.log("Inserting Data into DB", filename);
             _mDBClient.screenShotDao().putScreenShot(filename, text, "");
+            _mCache.put(filename, text);
             return true;
         }
         return false;
     }
 
-    public void textByFileNameOCR(File file, TextHelperListener listener) {
+    public void textByFileOCR(File file, TextHelperListener listener) {
         try {
+//            _mLogger.log("OCR Starting for", file.getName());
             InputImage image = InputImage.fromFilePath(_mContext, Uri.fromFile(file));
             // PROCESS IMAGE IS RUN ON DIFFERENT THREAD
             Task<Text> result = _mOCRClient.process(image)
@@ -122,8 +139,8 @@ public class TextHelper {
                         @Override
                         public void onSuccess(Text text) {
                             String output = text.getText();
-                            _mLogger.log("OCR Task Completed Succesfully for file", file.getAbsolutePath());
-                            listener.onTextFetched(output);
+//                            _mLogger.log("OCR Task Completed Succesfully for file", file.getName());
+                            listener.onTextFetched(file, output);
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
@@ -138,6 +155,6 @@ public class TextHelper {
     }
 
     public interface TextHelperListener {
-        public void onTextFetched(String text);
+        public void onTextFetched(File file, String text);
     }
 }

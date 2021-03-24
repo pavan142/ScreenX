@@ -158,7 +158,6 @@ public class MainActivity extends AppCompatActivity {
         _pullToRefresh.setVisibility(View.GONE);
 
         _mLogger.log("current thread is", Thread.currentThread().toString());
-        ScreenshotParser.getInstance().parse();
     }
 
     private void displayContent() {
