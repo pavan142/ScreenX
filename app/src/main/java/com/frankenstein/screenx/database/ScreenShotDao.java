@@ -14,8 +14,8 @@ public interface ScreenShotDao {
     @Query("SELECT * FROM ScreenShotEntity")
     List<ScreenShotEntity> getAll();
 
-    @Query("SELECT * FROM ScreenShotEntity WHERE text_content LIKE :textContent")
-    ScreenShotEntity findByContent(String textContent);
+    @Query ("SELECT * FROM ScreenShotEntity INNER JOIN fts ON ScreenShotEntity.`rowid` = fts.`rowid` WHERE fts.text_content MATCH :query")
+    List<ScreenShotEntity> findByContent(String query);
 
     @Query("SELECT * FROM ScreenShotEntity WHERE filename LIKE :filename")
     ScreenShotEntity getScreenShotByName(String filename);
