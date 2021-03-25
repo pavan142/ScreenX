@@ -6,6 +6,10 @@
     <string name="nav_header_subtitle">android.studio@android.com</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
+
+    // Search
+    <string name="search_hint">Search</string>
+
     <string name="storage_permission_text">Grant storage permissions</string>
     <string name="usage_permission_text">Grant app usage permissions</string>
     <string name="overlay_permission_text">Grant overlay permissions</string>

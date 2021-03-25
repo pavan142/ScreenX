@@ -1,5 +1,6 @@
 package com.frankenstein.screenx;
 
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -11,13 +12,17 @@ import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.GridView;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
+import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.MutableLiveData;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import java.util.ArrayList;
 
 import android.content.Intent;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import com.frankenstein.screenx.helper.Logger;
@@ -48,8 +53,11 @@ public class MainActivity extends AppCompatActivity {
     private boolean _mPaused = false;
     public Utils utils;
 
-    private FrameLayout _mHomePageContentLayout;
-    private RelativeLayout _mHomePageContentEmpty;
+    private View _mHomePageContentLayout;
+    private View _mHomePageContentEmpty;
+    private View _mHomePageDisplayContent;
+
+    private Toolbar _mToolbar;
 
     private MutableLiveData<HomePageState> _mState = new MutableLiveData<>();
     private HomePageState _mPrevState = HomePageState.REQUEST_PERMISSIONS;
@@ -77,6 +85,7 @@ public class MainActivity extends AppCompatActivity {
         _mGridView = findViewById(R.id.grid_view);
         _mHomePageContentLayout = findViewById(R.id.homepage_content_layout);
         _mHomePageContentEmpty = findViewById(R.id.homepage_content_empty);
+        _mHomePageDisplayContent = findViewById(R.id.homepage_display_content);
 
         _mLogger.log("Adding observer on screenshots live data");
         ScreenXApplication.screenFactory.screenshots.observe(this, this::onScreenshotsChanged);
@@ -93,9 +102,14 @@ public class MainActivity extends AppCompatActivity {
         _mOverlayPermissionsView = findViewById(R.id.overlay_permissions);
         _mOverlayPermissionsView.setOnClickListener(view -> goToOverlaySettings());
 
+        setSupportActionBar(findViewById(R.id.toolbar));
+        getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+        getSupportActionBar().setCustomView(R.layout.toolbar_homepage);
+        SearchView _mSearchView = findViewById(R.id.search_view);
+        _mSearchView.findViewById(R.id.search_plate).setBackgroundColor(Color.TRANSPARENT);
+        _mSearchView.setIconifiedByDefault(false);
         _mState.observeForever(this::onStateChange);
         _mState.setValue(HomePageState.REQUEST_PERMISSIONS);
-//        _mState.setValue(HomePageState.LOADING_PROGRESS_BAR);
     }
 
     private void onStateChange(HomePageState newState) {
@@ -155,7 +169,7 @@ public class MainActivity extends AppCompatActivity {
         _mLogger.log("Showing No Content Page");
 
         _mHomePageContentEmpty.setVisibility(View.VISIBLE);
-        _pullToRefresh.setVisibility(View.GONE);
+        _mHomePageDisplayContent.setVisibility(View.GONE);
 
         _mLogger.log("current thread is", Thread.currentThread().toString());
     }
@@ -164,7 +178,7 @@ public class MainActivity extends AppCompatActivity {
         if (_mPrevState == HomePageState.LOADING_PROGRESS_BAR)
             transitionProgressBar();
         _mLogger.log("Showing Content Page");
-        _pullToRefresh.setVisibility(View.VISIBLE);
+        _mHomePageDisplayContent.setVisibility(View.VISIBLE);
         _mHomePageContentEmpty.setVisibility(View.GONE);
     }
 
