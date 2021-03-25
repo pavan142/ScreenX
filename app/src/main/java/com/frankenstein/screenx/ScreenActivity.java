@@ -25,6 +25,13 @@ import static com.frankenstein.screenx.Constants.TOOLBAR_TRANSITION;
 
 public class ScreenActivity extends ImmersiveActivity {
 
+    public static final String DISPLAY_APP_GROUP_ITEMS = "DISPLAY_APP_GROUP_ITEMS";
+    public static final String DISPLAY_SEARCH_RESULTS = "DISPLAY_SEARCH_RESULTS";
+    public static final String INTENT_DISPLAY_TYPE = "INTENT_DISPLAY_TYPE";
+    public static final String INTENT_SEARCH_MATCHES="INTENT_SEARCH_MATCHES";
+    public static final String INTENT_SCREEN_POSITION="INTEN_SCREEN_POSITION";
+    public static final String INTENT_SCREEN_NAME="INTENT_SCREEN_NAME";
+
     private Logger _logger;
     private ViewPager _viewpager;
     private ScreenPageAdapter _adapter;
@@ -32,6 +39,9 @@ public class ScreenActivity extends ImmersiveActivity {
     private ImageButton _deleteButton;
     private ImageButton _shareButton;
     private LinearLayout _toolbar;
+    private String _screenName;
+    private int _currPosition;
+    private ArrayList<String> _searchMatches;
 
     public Resources resources;
     public Utils utils;
@@ -48,31 +58,56 @@ public class ScreenActivity extends ImmersiveActivity {
         utils = Utils.getInstance();
         _logger = Logger.getInstance("ScreenActivity");
         _viewpager = findViewById(R.id.view_pager);
-
-        String screenName = getIntent().getStringExtra("SCREEN_NAME");
-        int mCurrPosition = getIntent().getIntExtra("SCREEN_POSITION", 0);
-        Screenshot screen = ScreenXApplication.screenFactory.findScreenByName(screenName);
-
-        AppGroup ag = ScreenXApplication.screenFactory.appgroups.get(screen.appName);
-        if (ag == null) {
-            finish();
-        }
-
         _toolbar = findViewById(R.id.toolbar);
-
         _deleteButton = findViewById(R.id.delete);
         _deleteButton.setOnClickListener(view -> onDelete());
-
         _shareButton = findViewById(R.id.share);
         _shareButton.setOnClickListener(view -> onShare());
-
         _toolbar.setAlpha(0);
         alignToolbarWithNavbar();
-        _screens = ag .screenshots;
-        updatePager(mCurrPosition);
 
+        _screenName = getIntent().getStringExtra(INTENT_SCREEN_NAME);
+        _currPosition = getIntent().getIntExtra(INTENT_SCREEN_POSITION, 0);
+        _searchMatches = getIntent().getStringArrayListExtra(INTENT_SEARCH_MATCHES);
+        String displayType = getIntent().getStringExtra(INTENT_DISPLAY_TYPE);
+        switch (displayType) {
+            case DISPLAY_APP_GROUP_ITEMS:
+                displayAppGroupItems();
+                break;
+            case DISPLAY_SEARCH_RESULTS:
+                displaySearchItems();
+                break;
+            default:
+                displayAppGroupItems();
+                break;
+        }
+
+        updatePager(_currPosition);
+        // TODO: Find a better fix to this
         StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
         StrictMode.setVmPolicy(builder.build());
+    }
+
+    private void displayAppGroupItems() {
+        Screenshot screen = ScreenXApplication.screenFactory.findScreenByName(_screenName);
+        AppGroup ag = ScreenXApplication.screenFactory.appgroups.get(screen.appName);
+        if (ag == null) {
+            setResult(RESULT_OK);
+            finish();
+        }
+        _screens = ag.screenshots;
+    }
+
+    private void displaySearchItems() {
+        if (_searchMatches == null) {
+            setResult(RESULT_OK);
+            finish();
+        }
+        _screens = new ArrayList<>();
+        for (int i = 0; i < _searchMatches.size(); i++) {
+            String name = _searchMatches.get(i);
+            _screens.add(ScreenXApplication.screenFactory.findScreenByName(name));
+        }
     }
 
     private void updatePager(int position) {
