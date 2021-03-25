@@ -68,8 +68,9 @@ public class AppGroupActivity extends AppCompatActivity {
                 Screenshot selected = screens.get(i);
                 _logger.log("The screen selected is", i, selected.name, "the appName: ", selected.appName);
                 Intent intent = new Intent(getBaseContext(), ScreenActivity.class);
-                intent.putExtra("SCREEN_NAME", selected.name);
-                intent.putExtra("SCREEN_POSITION", i);
+                intent.putExtra(ScreenActivity.INTENT_SCREEN_NAME, selected.name);
+                intent.putExtra(ScreenActivity.INTENT_SCREEN_POSITION, i);
+                intent.putExtra(ScreenActivity.INTENT_DISPLAY_TYPE, ScreenActivity.DISPLAY_APP_GROUP_ITEMS);
                 startActivityForResult(intent, SCREEN_ACTIVITY_INTENT_CODE);
             }
         });
