@@ -50,6 +50,7 @@ public class SearchActivity extends AppCompatActivity {
                 _mLiveMatches.observe(SearchActivity.this, SearchActivity.this::onLiveMatches);
             }
         });
+        _mSearch.requestFocus();
         _mGridView = findViewById(R.id.grid_view);
     }
 

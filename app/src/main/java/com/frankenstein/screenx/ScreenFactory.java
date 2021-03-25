@@ -21,7 +21,7 @@ public class ScreenFactory {
     private static ScreenFactory _instance;
 
     public Map<String, AppGroup> appgroups = new HashMap<>();
-    public Map<String, Screenshot> nameToScreen = new HashMap<>();
+    private Map<String, Screenshot> nameToScreen = new HashMap<>();
     public MutableLiveData<ArrayList<Screenshot>> screenshots = new MutableLiveData<>();
 
     public ArrayList<AppGroup> dateSorted = new ArrayList<>();
