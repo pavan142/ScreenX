@@ -9,7 +9,6 @@ import android.os.Looper;
 import android.provider.Settings;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.FrameLayout;
 import android.widget.GridView;
 
 import androidx.appcompat.app.ActionBar;
@@ -22,8 +21,6 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import java.util.ArrayList;
 
 import android.content.Intent;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 
 import com.frankenstein.screenx.helper.Logger;
 import com.frankenstein.screenx.helper.PermissionHelper;
@@ -102,15 +99,29 @@ public class MainActivity extends AppCompatActivity {
         _mOverlayPermissionsView = findViewById(R.id.overlay_permissions);
         _mOverlayPermissionsView.setOnClickListener(view -> goToOverlaySettings());
 
+        setupSearchBar();
+        _mState.observeForever(this::onStateChange);
+        _mState.setValue(HomePageState.REQUEST_PERMISSIONS);
+    }
+
+    private void setupSearchBar() {
         setSupportActionBar(findViewById(R.id.toolbar));
         getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         getSupportActionBar().setCustomView(R.layout.toolbar_homepage);
         SearchView _mSearchView = findViewById(R.id.search_view);
         _mSearchView.findViewById(R.id.search_plate).setBackgroundColor(Color.TRANSPARENT);
         _mSearchView.setIconifiedByDefault(false);
-        _mState.observeForever(this::onStateChange);
-        _mState.setValue(HomePageState.REQUEST_PERMISSIONS);
+        _mSearchView.setClickable(false);
+        _mSearchView.setFocusableInTouchMode(false);
+
+        View proxy = findViewById(R.id.search_proxy);
+        proxy.setOnClickListener((View v) -> {
+            Intent intent = new Intent(this, SearchActivity.class);
+            startActivity(intent);
+        });
     }
+
+
 
     private void onStateChange(HomePageState newState) {
         _mLogger.log("onStateChange", newState.toString());

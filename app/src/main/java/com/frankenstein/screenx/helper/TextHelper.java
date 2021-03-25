@@ -28,6 +28,8 @@ import java.util.Map;
 import java.util.Set;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 
 import static com.frankenstein.screenx.Constants.DB_THREAD_NAME;
 
@@ -108,6 +110,27 @@ public class TextHelper {
         }
         _mLogger.log("UnParsedScreenshots length", unParsedScreens.size());
         return unParsedScreens;
+    }
+
+    public LiveData<ArrayList<Screenshot>> searchScreenshots(String text) {
+        MutableLiveData<ArrayList<Screenshot>> livescreens = new MutableLiveData<>();
+        // This method is invoked by Main Thread, so we need to post the database operations
+        // on to a separate thread
+        _mHandler.post(() -> {
+            List<ScreenShotEntity> matchedList = _mDBClient.screenShotDao().findByContent("%"+text+"%");
+            ArrayList<Screenshot> screens = new ArrayList<>();
+            _mLogger.log("Total matched screenshots by search = ", matchedList.size());
+            for (int i = 0; i < matchedList.size(); i++) {
+                ScreenShotEntity item = matchedList.get(i);
+                _mLogger.log("Matched Screenshot", item.filename, item.textContent );
+                String filename = item.filename;
+                Screenshot screen = ScreenXApplication.screenFactory.findScreenByName(filename);
+                screens.add(screen);
+            }
+            livescreens.postValue(screens);
+        });
+
+        return livescreens;
     }
 
     public String textByFilenameDB(String filename) {
