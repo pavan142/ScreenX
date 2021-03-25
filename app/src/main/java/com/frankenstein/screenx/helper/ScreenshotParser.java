@@ -1,18 +1,19 @@
 package com.frankenstein.screenx.helper;
 
 import android.content.Context;
+import android.os.Handler;
+import android.os.HandlerThread;
 
-import com.frankenstein.screenx.models.Screenshot;
-import com.frankenstein.screenx.workers.ScreenshotParserWorker;
-
-import androidx.work.OneTimeWorkRequest;
-import androidx.work.WorkManager;
-import androidx.work.WorkRequest;
+import com.frankenstein.screenx.coroutines.ParserCoroutine;
 
 public class ScreenshotParser {
 
     private static ScreenshotParser _instance;
+    public static final String HANDLER_THREAD_NAME="screenshotparser-handler-thread";
 
+    private static final Logger _mLogger = Logger.getInstance("ScreenshotParser");
+    private Handler _mHandler;
+    private HandlerThread _mHandlerThread;
     public static void init(Context context) {
         ScreenshotParser._instance = new ScreenshotParser(context);
     }
@@ -22,12 +23,13 @@ public class ScreenshotParser {
     }
 
     Context _mContext;
+    ParserCoroutine _mParserCoroutine;
+
     public ScreenshotParser(Context context) {
         this._mContext = context;
-    }
-
-    public void parse() {
-        WorkRequest parseRequest = new OneTimeWorkRequest.Builder(ScreenshotParserWorker.class).build();
-        WorkManager.getInstance(_mContext).enqueue(parseRequest);
+        _mHandlerThread = new HandlerThread(HANDLER_THREAD_NAME);
+        _mHandlerThread.start();
+        _mHandler = new Handler(_mHandlerThread.getLooper());
+        _mParserCoroutine = new ParserCoroutine();
     }
 }

@@ -62,13 +62,13 @@ public class ScreenPageAdapter extends PagerAdapter {
         Objects.requireNonNull(container).addView(itemView);
 
         // Running OCR
-        TextHelper.getInstance().getDataForUIUpdate(file, (text) -> this.onTextFetched(file.getName(), text));
+        TextHelper.getInstance().getDataForUIUpdate(file, (_file, text) -> this.onTextFetched(file.getName(), text));
         return itemView;
     }
 
     public void onTextFetched(String filename, String text) {
         _logger.log("got text from TextHelper for file", filename);
-        _logger.log(text);
+//        _logger.log(text);
     }
 
     @Override
