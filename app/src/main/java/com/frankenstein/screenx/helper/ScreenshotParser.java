@@ -31,5 +31,8 @@ public class ScreenshotParser {
         _mHandlerThread.start();
         _mHandler = new Handler(_mHandlerThread.getLooper());
         _mParserCoroutine = new ParserCoroutine();
+        _mHandler.postDelayed(() -> {
+            _mParserCoroutine.start();
+        }, 12000);
     }
 }
