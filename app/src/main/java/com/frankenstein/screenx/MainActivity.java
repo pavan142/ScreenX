@@ -1,6 +1,7 @@
 package com.frankenstein.screenx;
 
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -21,7 +22,6 @@ import android.widget.RelativeLayout;
 
 import com.frankenstein.screenx.helper.Logger;
 import com.frankenstein.screenx.helper.PermissionHelper;
-import com.frankenstein.screenx.helper.ScreenshotParser;
 import com.frankenstein.screenx.models.AppGroup;
 import com.frankenstein.screenx.models.Screenshot;
 import com.frankenstein.screenx.ui.adapters.HomePageAdapter;
@@ -102,7 +102,7 @@ public class MainActivity extends AppCompatActivity {
         _mLogger.log("onStateChange", newState.toString());
         switch (newState) {
             case REQUEST_PERMISSIONS:
-                requestPermissions();
+                showRequestPermissionsScreen();
                 break;
             case LOADING_PROGRESS_BAR:
                 showProgressBar();
@@ -120,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
         _mPrevState = newState;
     }
 
-    private void requestPermissions() {
+    private void showRequestPermissionsScreen() {
         _mPermissionsGranted = false;
         _mPermissionsDisplay.setVisibility(View.VISIBLE);
         _mProgressBar.setVisibility(View.GONE);
@@ -171,7 +171,11 @@ public class MainActivity extends AppCompatActivity {
     private void startScreenXService() {
         Intent intent = new Intent(this, ScreenXService.class);
         intent.setAction(ScreenXService.ACTION_ENABLE_SERVICE);
-        startForegroundService(intent);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            startForegroundService(intent);
+        } else {
+            startService(intent);
+        }
     }
 
     private void goToStorageSettings() {

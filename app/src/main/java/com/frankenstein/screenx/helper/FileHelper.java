@@ -40,6 +40,8 @@ public class FileHelper {
     }
 
     public static ArrayList<File> getAllScreenshotFiles() {
+        _mLogger.log("Permissions for File Read", SYSTEM_SCREENSHOT_DIR1.canRead(), SYSTEM_SCREENSHOT_DIR2.canRead(), CUSTOM_SCREENSHOT_DIR.canRead());
+
         Long start = System.currentTimeMillis();
         File[] systemFiles1 = SYSTEM_SCREENSHOT_DIR1.listFiles();
         File[] systemFiles2 = SYSTEM_SCREENSHOT_DIR2.listFiles();

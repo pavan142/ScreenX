@@ -9,7 +9,7 @@ android {
     compileSdkVersion 30
     defaultConfig {
         applicationId "com.frankenstein.screenx"
-        minSdkVersion 27
+        minSdkVersion 21
         targetSdkVersion 30
         versionCode 3
         versionName "1.2.0"
