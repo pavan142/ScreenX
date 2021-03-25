@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.os.Handler;
 import android.os.HandlerThread;
 
+import com.frankenstein.screenx.ScreenActivity;
 import com.frankenstein.screenx.ScreenXApplication;
 import com.frankenstein.screenx.database.DatabaseManager;
 import com.frankenstein.screenx.database.ScreenShotDatabase;
@@ -21,6 +22,8 @@ import com.google.mlkit.vision.text.TextRecognizer;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -127,9 +130,18 @@ public class TextHelper {
                 _mLogger.log("Matched Screenshot", item.filename, item.textContent );
                 screens.add(item.filename);
             }
+            Collections.sort(screens, new Comparator<String>() {
+                @Override
+                public int compare(String o1, String o2) {
+                    Screenshot s1 = ScreenXApplication.screenFactory.findScreenByName(o1);
+                    Screenshot s2 = ScreenXApplication.screenFactory.findScreenByName(o2);
+                    long result = (s2.lastModified - s1.lastModified);
+                    int output = (result >=0 ) ? 1: -1;
+                    return output;
+                }
+            });
             livescreens.postValue(screens);
         });
-
         return livescreens;
     }
 
