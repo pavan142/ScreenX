@@ -7,8 +7,6 @@ import java.util.HashMap;
 import java.util.Map;
 import android.content.Context;
 
-import com.frankenstein.screenx.helper.TextHelper;
-import com.frankenstein.screenx.helper.UsageStatsHelper;
 import com.frankenstein.screenx.helper.Logger;
 import com.frankenstein.screenx.models.AppGroup;
 import com.frankenstein.screenx.models.Screenshot;
@@ -155,11 +153,13 @@ public class ScreenFactory {
 
     public void removeScreen(String name) {
         nameToScreen.remove(name);
+        ScreenXApplication.textHelper.deleteScreenshotFromUI(name);
     }
 
     public void removeScreenList(ArrayList<String> toBeRemoved) {
         for (String name: toBeRemoved)
             nameToScreen.remove(toBeRemoved);
+        ScreenXApplication.textHelper.deleteScreenshotListFromUI(toBeRemoved);
     }
 
     public void loadScreens(Context context) {
