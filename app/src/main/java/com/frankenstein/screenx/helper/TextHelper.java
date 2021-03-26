@@ -42,10 +42,11 @@ public class TextHelper {
         return _mInstance;
     }
 
-    public static void init(Context context) {
+    public static TextHelper init(Context context) {
         if (_mInstance != null)
-            return;
+            return _mInstance;
         _mInstance = new TextHelper(context);
+        return _mInstance;
     }
 
     private TextRecognizer _mOCRClient;

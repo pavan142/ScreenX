@@ -11,7 +11,7 @@ import com.frankenstein.screenx.helper.Logger;
 
 import java.lang.reflect.InvocationTargetException;
 
-class Utils {
+public class Utils {
     public enum SortingCriterion {
         Alphabetical,
         Date
@@ -20,6 +20,7 @@ class Utils {
     private static final Utils _mInstance = new Utils();
     private Context context;
     private Logger _logger;
+    private static final Long _start = System.currentTimeMillis();;
 
     public static Utils getInstance() {
         return _mInstance;
@@ -27,6 +28,10 @@ class Utils {
 
     private Utils(){
         _logger = Logger.getInstance("Utils");
+    }
+
+    public static String timePassed() {
+        return " @"+ (System.currentTimeMillis() - _start) + "ms";
     }
 
     public void setContext(Context context) {

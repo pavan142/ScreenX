@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 import android.content.Context;
 
+import com.frankenstein.screenx.helper.TextHelper;
 import com.frankenstein.screenx.helper.UsageStatsHelper;
 import com.frankenstein.screenx.helper.Logger;
 import com.frankenstein.screenx.models.AppGroup;
@@ -31,11 +32,15 @@ public class ScreenFactory {
     private final Logger _logger = Logger.getInstance("ScreenFactory");
     private static final Logger _mTimeLogger = Logger.getInstance("TIME");
 
+    public static ScreenFactory init(Context context) {
+        if (_instance != null)
+            return _instance;
+        _instance = new ScreenFactory();
+        return _instance;
+    }
+
     public static ScreenFactory getInstance() {
-        if (ScreenFactory._instance == null) {
-            ScreenFactory._instance = new ScreenFactory();
-        }
-        return ScreenFactory._instance;
+        return _instance;
     }
 
     private ScreenFactory() {}
