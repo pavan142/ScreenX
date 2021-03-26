@@ -11,7 +11,7 @@
         android:id="@+id/search_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:searchIcon="@drawable/search"
+        app:searchIcon="@drawable/ic_search"
         app:queryHint="@string/search_hint"
         android:iconifiedByDefault="false"
         android:background="@color/white"

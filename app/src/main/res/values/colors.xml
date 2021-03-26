@@ -15,6 +15,7 @@
     <color name="blowfish_color_scheme">#78BED3</color>
     <color name="icon_primary_color">#00EFD1</color>
     <color name="icon_secondary_color">#00ACEA</color>
+    <color name="checkbox_unchecked_color">#AAAAAAAA</color>
 
     <!-- Permission Button Colors-->
     <color name="permission_granted_background">#00c8d7</color>
