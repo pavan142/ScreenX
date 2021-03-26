@@ -17,12 +17,13 @@ public class ScreenXApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        ScreenshotParser.init(getApplicationContext());
-        TextHelper.init(getApplicationContext());
-
+        _mLogger.log("onCreate: ", Utils.timePassed());
         // Singleton objects that live through out the application lifecycle
-        screenFactory = ScreenFactory.getInstance();
-        textHelper = TextHelper.getInstance();
-        screenshotParser = ScreenshotParser.getInstance();
+        // Don't change this order, as they have are ordered as per the
+        // dependency chain, texthelper and screenshotparser both depend on
+        // screenFactory
+        screenFactory = ScreenFactory.init(getApplicationContext());
+        textHelper = TextHelper.init(getApplicationContext());
+        screenshotParser = ScreenshotParser.init(getApplicationContext());
     }
 }
