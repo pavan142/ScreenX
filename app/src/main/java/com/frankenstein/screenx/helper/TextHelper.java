@@ -5,7 +5,6 @@ import android.net.Uri;
 import android.os.Handler;
 import android.os.HandlerThread;
 
-import com.frankenstein.screenx.ScreenActivity;
 import com.frankenstein.screenx.ScreenXApplication;
 import com.frankenstein.screenx.database.DatabaseManager;
 import com.frankenstein.screenx.database.ScreenShotDatabase;
@@ -65,6 +64,9 @@ public class TextHelper {
          _mThread = new HandlerThread(DB_THREAD_NAME);
          _mThread.start();
          _mHandler = new Handler(_mThread.getLooper());
+         // As this class is a singleton that lives as long as application is alive,
+         // adding observer Forever
+         ScreenXApplication.screenFactory.screenshots.observeForever(this::syncFromUI);
     }
 
     public void getDataForUIUpdate(File file, TextHelperListener listener) {
@@ -99,6 +101,7 @@ public class TextHelper {
 
     public ArrayList<Screenshot> getUnParsedScreenshots() {
         List<ScreenShotEntity> parsedScreenList = _mDBClient.screenShotDao().getAll();
+        _mLogger.log("Total Screenshots in database", parsedScreenList.size());
         Set<String> parsedScreens = new HashSet<String>();
         for(ScreenShotEntity screen: parsedScreenList) {
             parsedScreens.add(screen.filename);
@@ -128,8 +131,8 @@ public class TextHelper {
             _mLogger.log("Total matched screenshots by search = ", matchedList.size());
             for (int i = 0; i < matchedList.size(); i++) {
                 ScreenShotEntity item = matchedList.get(i);
-                _mLogger.log("Matched Screenshot", item.filename, item.textContent );
-                screens.add(item.filename);
+                if (ScreenXApplication.screenFactory.findScreenByName(item.filename) != null)
+                    screens.add(item.filename);
             }
             Collections.sort(screens, new Comparator<String>() {
                 @Override
@@ -160,8 +163,39 @@ public class TextHelper {
             _mDBClient.screenShotDao().putScreenShot(filename, text, "");
             _mCache.put(filename, text);
             return true;
+        } else {
+            _mDBClient.screenShotDao().updateScreenShotText(filename, text);
+            return true;
         }
-        return false;
+    }
+
+    public void deleteScreenshotListFromUI(ArrayList<String> deleteList) {
+        _mHandler.post(() -> {
+            _mDBClient.screenShotDao().deleteMultipleScreenShots(deleteList.toArray(new String[deleteList.size()]));
+        });
+    }
+
+    public void deleteScreenshotFromUI(String filename) {
+        _mHandler.post(() -> {
+            _mDBClient.screenShotDao().deleteScreenShot(filename);
+        });
+    }
+
+    public void syncFromUI(ArrayList<Screenshot> screensOnDevice) {
+        _mHandler.post(() -> {
+            List<ScreenShotEntity> screensOnDatabase = _mDBClient.screenShotDao().getAll();
+            ArrayList<String> toBeDeleted = new ArrayList<>();
+            for(ScreenShotEntity entity: screensOnDatabase) {
+                String filename = (entity.filename);
+                if (ScreenXApplication.screenFactory.findScreenByName(filename) == null) {
+                    toBeDeleted.add(filename);
+                }
+            }
+            for (String filename: toBeDeleted) {
+                _mLogger.log("to be deleted", filename);
+            }
+            _mDBClient.screenShotDao().deleteMultipleScreenShots(toBeDeleted.toArray(new String[toBeDeleted.size()]));
+        });
     }
 
     public void textByFileOCR(File file, TextHelperListener listener) {

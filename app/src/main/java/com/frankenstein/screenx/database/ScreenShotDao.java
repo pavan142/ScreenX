@@ -11,6 +11,9 @@ public interface ScreenShotDao {
     @Query("INSERT INTO ScreenShotEntity (filename, text_content, meta_data) values(:filename, :textContent, :metaData)")
     void putScreenShot(String filename, String textContent, String metaData);
 
+    @Query("UPDATE ScreenShotEntity SET text_content= :textContent WHERE filename = :filename")
+    void updateScreenShotText(String filename, String textContent);
+
     @Query("SELECT * FROM ScreenShotEntity")
     List<ScreenShotEntity> getAll();
 
