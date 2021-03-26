@@ -47,7 +47,7 @@ public class ScreenFactory {
 
     public void analyzeScreens(ArrayList<Screenshot> screens) {
         Long start = System.currentTimeMillis();
-        _logger.log("Analyzing screen", Thread.currentThread().toString());
+        _logger.log("Analyzing screens", Thread.currentThread().toString());
         ArrayList<Screenshot> newScreenshots = new ArrayList<>();
         for (AppGroup ag: appgroups.values())
             ag.screenshots.clear();
@@ -67,56 +67,66 @@ public class ScreenFactory {
     }
 
     public void sort() {
-        ArrayList<AppGroup> newDateSorted = new ArrayList<>();
-        ArrayList<AppGroup> newAlphaSorted = new ArrayList<>();
+        try {
+            ArrayList<AppGroup> newDateSorted = new ArrayList<>();
+            ArrayList<AppGroup> newAlphaSorted = new ArrayList<>();
 
-        for (AppGroup ag : appgroups.values()) {
-            if (ag.screenshots.size() == 0) {
-                appgroups.remove(ag.appName);
-                continue;
+            for (AppGroup ag : appgroups.values()) {
+                if (ag.screenshots.size() == 0) {
+                    appgroups.remove(ag.appName);
+                    continue;
+                }
+                ag.sort();
+                ag.mascot = ag.screenshots.get(0);
+                ag.lastModified = ag.mascot.lastModified;
             }
-            ag.sort();
-            ag.mascot = ag.screenshots.get(0);
-            ag.lastModified = ag.mascot.lastModified;
-        }
 
-        for (AppGroup i: appgroups.values()) {
-            newDateSorted.add(i);
-            newAlphaSorted.add(i);
-        }
+            for (AppGroup i: appgroups.values()) {
+                newDateSorted.add(i);
+                newAlphaSorted.add(i);
+            }
 
 
-        Collections.sort(newDateSorted, (AppGroup appGroup, AppGroup t1) -> {
+            Collections.sort(newDateSorted, (AppGroup appGroup, AppGroup t1) -> {
                 long result = (t1.lastModified - appGroup.lastModified);
                 int output = (result >=0 ) ? 1: -1;
                 return output;
             });
 
-        Collections.sort(newAlphaSorted, (AppGroup appGroup, AppGroup t1) -> {
+            Collections.sort(newAlphaSorted, (AppGroup appGroup, AppGroup t1) -> {
                 return appGroup.appName.compareTo(t1.appName);
             });
 
-        // dateSorted and alphaSorted are not thread safe. They are directly used by adapter to populate
-        // the views on main thread.
-        // So we create new arrays, populate them and then assign it to the dateSorted and alphaSorted
-        // had we gone the way of dateSorted.clear(), or alphaSorted.clear(), the adapter
-        // views will be broken when that happens. With this flow, the array reference
-        // held by the adapter is still valid. The adapter's array will only be reassigned when
-        // the Livedata event(from MutableLiveData<screenshots> is fired onto the main thread)
-        dateSorted = newDateSorted;
-        alphaSorted = newAlphaSorted;
+            // dateSorted and alphaSorted are not thread safe. They are directly used by adapter to populate
+            // the views on main thread.
+            // So we create new arrays, populate them and then assign it to the dateSorted and alphaSorted
+            // had we gone the way of dateSorted.clear(), or alphaSorted.clear(), the adapter
+            // views will be broken when that happens. With this flow, the array reference
+            // held by the adapter is still valid. The adapter's array will only be reassigned when
+            // the Livedata event(from MutableLiveData<screenshots> is fired onto the main thread)
+            dateSorted = newDateSorted;
+            alphaSorted = newAlphaSorted;
+        } catch (Exception e) {
+            _logger.log("Sort: got an error", e.getMessage());
+        }
+
     }
 
     public void addScreen(Screenshot screen) {
-        String appName = screen.appName;
-        AppGroup ag;
-        if (!appgroups.containsKey(appName)) {
-            ag = new AppGroup(appName);
-            appgroups.put(appName, ag);
+        try {
+            String appName = screen.appName;
+            AppGroup ag;
+            if (!appgroups.containsKey(appName)) {
+                ag = new AppGroup(appName);
+                appgroups.put(appName, ag);
+            }
+            ag = appgroups.get(appName);
+            ag.screenshots.add(screen);
+            nameToScreen.put(screen.name, screen);
+        } catch(Exception e) {
+            _logger.log("Error in AddScreen", e.getMessage());
         }
-        ag = appgroups.get(appName);
-        ag.screenshots.add(screen);
-        nameToScreen.put(screen.name, screen);
+
     }
 
     public void onScreenAdded(Context context,String filepath) {
@@ -145,6 +155,11 @@ public class ScreenFactory {
 
     public void removeScreen(String name) {
         nameToScreen.remove(name);
+    }
+
+    public void removeScreenList(ArrayList<String> toBeRemoved) {
+        for (String name: toBeRemoved)
+            nameToScreen.remove(toBeRemoved);
     }
 
     public void loadScreens(Context context) {

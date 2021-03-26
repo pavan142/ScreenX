@@ -26,6 +26,18 @@ public class FileHelper {
         return file.delete();
     }
 
+    public static ArrayList<Boolean> deleteScreenshotList(ArrayList<Screenshot> deleteList) {
+        ArrayList<Boolean> results = new ArrayList<>();
+        for (Screenshot screen: deleteList) {
+            File file = screen.file;
+            if (!(file.exists() && file.isFile() && file.canWrite())) {
+                results.add(false);
+            }
+            results.add(file.delete());
+        }
+        return results;
+    }
+
     public static void createIfNot(File dir) {
         try {
             if (dir.exists() && dir.isDirectory()) {

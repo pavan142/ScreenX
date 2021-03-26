@@ -83,7 +83,7 @@ public class ScreenActivity extends ImmersiveActivity {
         }
 
         updatePager(_currPosition);
-        // TODO: Find a better fix to this
+        // TODO: Find a better fix for this
         StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
         StrictMode.setVmPolicy(builder.build());
     }
@@ -123,22 +123,22 @@ public class ScreenActivity extends ImmersiveActivity {
     private void onDelete() {
         int position = _viewpager.getCurrentItem();
         Screenshot screen = _screens.get(position);
-        _logger.log("ASKED TO DELETE", screen.name, screen.appName);
-        mAlertBuilder.setTitle("Delete Image")
-                .setMessage("Are you sure you want to delete this Image?")
-                .setPositiveButton(android.R.string.yes, (dialog, which) -> {
-                    _logger.log("CONFIRMED TO DELETE", screen.name, screen.appName);
+        _logger.log("User asked to delete the image", screen.name, screen.appName);
+        String Message = "Are you sure? You want to permanently delete the image from your device?";
+        mAlertBuilder.setTitle("Delete")
+                .setMessage(Message)
+                .setPositiveButton(getResources().getString(R.string.delete_confirm), (dialog, which) -> {
+                    _logger.log("User confirmed to delete the image", screen.name, screen.appName);
                     if (FileHelper.deleteScreenshot(screen)) {
-                        _logger.log("SUCCESSFULLY DELETED SCREEN", screen.name, screen.appName);
+                        _logger.log("Successfully deleted the image", screen.name, screen.appName);
                         _screens.remove(position);
                         ScreenXApplication.screenFactory.removeScreen(screen.name);
                         updatePager(position);
                     } else {
-                        _logger.log("FAILED TO DELETE SCREEN", screen.name, screen.appName);
+                        _logger.log("Failed to delete the image", screen.name, screen.appName);
                     }
                 })
-                .setNegativeButton(android.R.string.no, null)
-                .setIcon(android.R.drawable.ic_dialog_alert)
+                .setNegativeButton(getResources().getString(R.string.delete_cancel), null)
                 .show();
     }
 

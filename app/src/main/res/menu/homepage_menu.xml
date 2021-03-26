@@ -4,7 +4,7 @@
     <!-- "Mark Favorite", should appear as action button if possible -->
     <item
         android:id="@+id/action_favorite"
-        android:icon="@drawable/share_white"
+        android:icon="@drawable/ic_share_white"
         android:title="@string/search_hint"
         app:showAsAction="always"/>
 
