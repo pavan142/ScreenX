@@ -25,6 +25,8 @@ class ParserCoroutine(): CoroutineScope {
             queueAScan()
         }
     }
+
+    // Default Dispatcher, because CPU intensive operations are run here
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.Default + lifeCycleJob
 
@@ -36,7 +38,7 @@ class ParserCoroutine(): CoroutineScope {
 
     fun resume() {
         _logger.log(Utils.timePassed(), "Resuming")
-        outgoing_mail = actor (context = lifeCycleJob, capacity = Channel.CONFLATED) {
+        outgoing_mail = actor (capacity = Channel.CONFLATED) {
             var incoming_mail = this.channel
 
             // Processing incoming mail
@@ -59,13 +61,11 @@ class ParserCoroutine(): CoroutineScope {
     }
 
     suspend fun processUnParsedScreens() {
-        launch {
-            var unparsedScreenshots =  ScreenXApplication.textHelper.unParsedScreenshots
-            _logger.log(Utils.timePassed(), "processing unparsed screens:: ", unparsedScreenshots.size)
-            unparsedScreenshots.forEachIndexed{i, screen ->
-                _logger.log("processing index", i, unparsedScreenshots.size)
-                scanAndSave(screen)
-            }
+        var unparsedScreenshots =  ScreenXApplication.textHelper.unParsedScreenshots
+        _logger.log(Utils.timePassed(), "processing unparsed screens:: ", unparsedScreenshots.size)
+        unparsedScreenshots.forEachIndexed{i, screen ->
+            _logger.log("processing index", i, unparsedScreenshots.size)
+            scanAndSave(screen)
         }
     }
 
