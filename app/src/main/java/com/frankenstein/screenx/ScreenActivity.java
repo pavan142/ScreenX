@@ -17,10 +17,12 @@ import com.frankenstein.screenx.models.Screenshot;
 import com.frankenstein.screenx.ui.ImmersiveActivity;
 import com.frankenstein.screenx.ui.adapters.ScreenPageAdapter;
 
+import androidx.core.content.FileProvider;
 import androidx.viewpager.widget.ViewPager;
 
 import java.util.ArrayList;
 
+import static com.frankenstein.screenx.Constants.FILE_PROVIDER_AUTHORITY;
 import static com.frankenstein.screenx.Constants.TOOLBAR_TRANSITION;
 
 public class ScreenActivity extends ImmersiveActivity {
@@ -83,9 +85,6 @@ public class ScreenActivity extends ImmersiveActivity {
         }
 
         updatePager(_currPosition);
-        // TODO: Find a better fix for this
-        StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
-        StrictMode.setVmPolicy(builder.build());
     }
 
     private void displayAppGroupItems() {
@@ -146,14 +145,15 @@ public class ScreenActivity extends ImmersiveActivity {
         int position = _viewpager.getCurrentItem();
         Screenshot screen = _screens.get(position);
         _logger.log("ASKED TO SHARE", screen.name, screen.appName);
-        Intent sendIntent = new Intent();
-        sendIntent.setAction(Intent.ACTION_SEND);
-        sendIntent.putExtra(
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_SEND);
+        intent.putExtra(
                 Intent.EXTRA_STREAM,
-                Uri.fromFile(screen.file)
+                FileProvider.getUriForFile(this, FILE_PROVIDER_AUTHORITY, screen.file)
         );
-        sendIntent.setType("image/*");
-        startActivity(Intent.createChooser(sendIntent, "Share Image"));
+        intent.setType("image/*");
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        startActivity(Intent.createChooser(intent, "Share Image"));
     }
 
     private void alignToolbarWithNavbar() {

@@ -19,11 +19,14 @@ import com.frankenstein.screenx.ui.adapters.AppGroupPageAdapter;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.FileProvider;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
+
+import static com.frankenstein.screenx.Constants.FILE_PROVIDER_AUTHORITY;
 
 public class AppGroupActivity extends AppCompatActivity {
 
@@ -67,9 +70,6 @@ public class AppGroupActivity extends AppCompatActivity {
         _mAlertBuilder = new AlertDialog.Builder(this);
         ScreenXApplication.screenFactory.screenshots.observe(this, this::postRefresh);
         updateAdapter();
-        // TODO: Find a better fix for this
-        StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
-        StrictMode.setVmPolicy(builder.build());
     }
 
 
@@ -171,14 +171,14 @@ public class AppGroupActivity extends AppCompatActivity {
         intent.setType("image/*");
 
         ArrayList<Uri> files = new ArrayList<Uri>();
-
         for(Screenshot screen : _mSelectedScreens) {
             _logger.log("Planning to share", screen.name);
-            Uri uri = Uri.fromFile(screen.file);
+            Uri uri = FileProvider.getUriForFile(this, FILE_PROVIDER_AUTHORITY , screen.file);
             files.add(uri);
         }
 
         intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, files);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_GRANT_READ_URI_PERMISSION);
         startActivity(intent);
     }
 
@@ -202,7 +202,7 @@ public class AppGroupActivity extends AppCompatActivity {
                             deletedScreens.add(screen.name);
                         _logger.log("Successfully deleted the screenshot", screen.name, screen.appName);
                         } else {
-                        _logger.log("failed to delete the screenshot", screen.name, screen.appName);
+                        _logger.log("Failed to delete the screenshot", screen.name, screen.appName);
                         }
                     }
                     ScreenXApplication.screenFactory.removeScreenList(deletedScreens);

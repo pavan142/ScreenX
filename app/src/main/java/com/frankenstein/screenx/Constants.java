@@ -8,4 +8,5 @@ public class Constants {
     public static final int TOOLBAR_TRANSITION = 100;
     public static final String DB_NAME="screenshots-db";
     public static final String DB_THREAD_NAME ="db-thread";
+    public static final String FILE_PROVIDER_AUTHORITY="com.frankenstein.screenx.fileprovider";
 }
