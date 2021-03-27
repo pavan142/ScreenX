@@ -182,6 +182,13 @@ public class TextHelper {
     }
 
     public void syncFromUI(ArrayList<Screenshot> screensOnDevice) {
+        if (screensOnDevice.size() == 0) {
+            // There must be an issue with storage permissions or some rogue scenario when this happens, so skipping it
+            // On the other hand, if this is a genuine case, that the user actually deleted all the screenshots on their
+            // phone, then that data will still be retained until a new screenshot appears, when all the old data will be deleted
+            _mLogger.log("ScreensOnDevice is zero!!, has something gone wrong?");
+            return;
+        }
         _mHandler.post(() -> {
             List<ScreenShotEntity> screensOnDatabase = _mDBClient.screenShotDao().getAll();
             ArrayList<String> toBeDeleted = new ArrayList<>();
