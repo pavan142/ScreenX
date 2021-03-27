@@ -9,22 +9,6 @@ import android.widget.Toast
 import com.frankenstein.screenx.R
 
 class ScreenXToast(private val context: Context) {
-    companion object {
-
-        /**
-         * Use ScryerToast#show() if you're likely to show toast multiple times within the same page,
-         * so the toast view can be reused instead of inflating a new one each time this method is called.
-         */
-        fun makeText(context: Context, text: String, duration: Int): Toast {
-            val toast = Toast(context)
-            toast.setGravity(Gravity.FILL_HORIZONTAL or Gravity.BOTTOM, 0, 0)
-            toast.view = View.inflate(context, R.layout.custom_toast, null)
-            toast.view?.findViewById<TextView>(R.id.text)?.text = text
-            toast.duration = duration
-            return toast
-        }
-    }
-
     private var toast: Toast? = null
     private var rootView: View = View.inflate(context, R.layout.custom_toast, null)
     private val textView: TextView by lazy {
@@ -36,15 +20,17 @@ class ScreenXToast(private val context: Context) {
         toast?.cancel()
 
 
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+          // This check is unnecessary , as the target SDK is downgraded from 30 to 29 now
+          // TODO Enable the check once the target SDK is upgraded back to 30
+//        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
             toast = Toast(context).apply {
                 setGravity(Gravity.FILL_HORIZONTAL or Gravity.BOTTOM, 0, yOffset)
                 view = rootView
                 duration = toastDuration
                 show()
             }
-        } else {
-            toast = Toast.makeText(context,msg, toastDuration).apply { show() }
-        }
+//        } else {
+//            toast = Toast.makeText(context,msg, toastDuration).apply { show() }
+//        }
     }
 }
