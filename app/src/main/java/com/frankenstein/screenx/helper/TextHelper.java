@@ -115,6 +115,14 @@ public class TextHelper {
                 unParsedScreens.add(screen);
             }
         }
+        Collections.sort(unParsedScreens, new Comparator<Screenshot>() {
+            @Override
+            public int compare(Screenshot s1, Screenshot s2) {
+                long result = (s2.lastModified - s1.lastModified);
+                int output = (result >=0 ) ? 1: -1;
+                return output;
+            }
+        });
         _mLogger.log("UnParsedScreenshots length", unParsedScreens.size());
         return unParsedScreens;
     }
