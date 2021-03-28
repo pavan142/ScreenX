@@ -5,32 +5,30 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.AutoCompleteTextView;
-import android.widget.GridView;
+import android.widget.ImageButton;
+import androidx.appcompat.widget.AppCompatAutoCompleteTextView;
 
 import com.frankenstein.screenx.helper.Logger;
 import com.frankenstein.screenx.models.Screenshot;
-import com.frankenstein.screenx.ui.adapters.SearchPageAdapter;
 
 import java.util.ArrayList;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.LiveData;
 
 public class SearchActivity extends MultipleSelectActivity {
 
-    private AutoCompleteTextView _mSearch;
+    private AppCompatAutoCompleteTextView _mSearch;
     private final Logger _mLogger = Logger.getInstance("SearchActivity");
     private LiveData<ArrayList<String>> _mLiveMatches = new LiveData<ArrayList<String>>() {};
-    private GridView _mGridView;
     private ArrayList<String> _mMatches;
+    private ImageButton _mClearSearch;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         setContentView(R.layout.searchpage);
         super.onCreate(savedInstanceState);
         _mSearch = findViewById(R.id.automcomplete_search);
+        _mClearSearch = findViewById(R.id.clear_search_bar);
         _mSearch.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -42,6 +40,7 @@ public class SearchActivity extends MultipleSelectActivity {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 _mLogger.log("onTextChagned", s, start, before, count);
                 _mLiveMatches = ScreenXApplication.textHelper.searchScreenshots(s.toString());
+                checkAndToggleClear(count);
             }
 
             @Override
@@ -51,7 +50,17 @@ public class SearchActivity extends MultipleSelectActivity {
             }
         });
         _mSearch.requestFocus();
-        _mGridView = findViewById(R.id.grid_view);
+        _mClearSearch.setOnClickListener((View view) -> {
+            _mSearch.setText("");
+        });
+    }
+
+    public void checkAndToggleClear(int count) {
+        if (count > 0) {
+            _mClearSearch.setVisibility(View.VISIBLE);
+        } else {
+            _mClearSearch.setVisibility(View.GONE);
+        }
     }
 
     public void onLiveMatches(ArrayList<String> matches) {

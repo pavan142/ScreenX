@@ -18,12 +18,4 @@
         android:selectAllOnFocus="true"
         android:textSize="24dp"
         android:text="App Group Page"/>
-<!--    <ImageButton-->
-<!--        android:id="@+id/clear"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="match_parent"-->
-<!--        android:src="@drawable/ic_close"-->
-<!--        android:visibility="invisible"-->
-<!--        android:background="?android:attr/selectableItemBackgroundBorderless"/>-->
-
 </androidx.appcompat.widget.Toolbar>
