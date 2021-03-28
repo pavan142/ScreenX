@@ -215,6 +215,10 @@ public class TextHelper {
 
     public void textByFileOCR(File file, TextHelperListener listener) {
         try {
+            if (file == null) {
+                _mLogger.log("got null for file", file);
+                return;
+            }
 //            _mLogger.log("OCR Starting for", file.getName());
             InputImage image = InputImage.fromFilePath(_mContext, Uri.fromFile(file));
             // PROCESS IMAGE IS RUN ON DIFFERENT THREAD
@@ -234,7 +238,7 @@ public class TextHelper {
                             _mLogger.log("OCR Failed to get data from image", file.getAbsolutePath());
                         }
                     });
-        } catch (IOException e) {
+        } catch (Exception e) {
             _mLogger.log("OCR: Failed to get data from image", file.getAbsolutePath());
         }
     }
