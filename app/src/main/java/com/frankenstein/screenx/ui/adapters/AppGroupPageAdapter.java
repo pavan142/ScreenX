@@ -21,13 +21,12 @@ import androidx.appcompat.widget.AppCompatCheckBox;
 public class AppGroupPageAdapter extends BaseAdapter {
     private Context _context;
     private ArrayList<Screenshot> _screens;
-    private Logger _logger;
+    private Logger _logger = Logger.getInstance("AppGroupPageAdapter");
     private Set<Screenshot> _mSelectedScreens;
 
     public AppGroupPageAdapter(Context context, ArrayList<Screenshot> arrayList, Set<Screenshot> selectedScreens) {
         this._context = context;
         this._screens = arrayList;
-        this._logger = Logger.getInstance("AppGroupPageAdapter");
         this._mSelectedScreens = selectedScreens;
     }
     @Override

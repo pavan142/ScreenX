@@ -18,18 +18,18 @@ import java.util.ArrayList;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.LiveData;
 
-public class SearchActivity extends AppCompatActivity {
+public class SearchActivity extends MultipleSelectActivity {
 
     private AutoCompleteTextView _mSearch;
     private final Logger _mLogger = Logger.getInstance("SearchActivity");
     private LiveData<ArrayList<String>> _mLiveMatches = new LiveData<ArrayList<String>>() {};
     private GridView _mGridView;
-    private SearchPageAdapter _mAdapter;
+    private ArrayList<String> _mMatches;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
         setContentView(R.layout.searchpage);
+        super.onCreate(savedInstanceState);
         _mSearch = findViewById(R.id.automcomplete_search);
         _mSearch.addTextChangedListener(new TextWatcher() {
             @Override
@@ -60,26 +60,38 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     private void updateAdapter(ArrayList<String> matches) {
-        ArrayList<Screenshot> screens = new ArrayList<>();
+        ArrayList<Screenshot> newScreens = new ArrayList<>();
         for (int i = 0; i < matches.size(); i++) {
             _mLogger.log("Matched", matches.get(i));
-            screens.add(ScreenXApplication.screenFactory.findScreenByName(matches.get(i)));
+            Screenshot screen = ScreenXApplication.screenFactory.findScreenByName(matches.get(i));
+            if (screen != null)
+                newScreens.add(screen);
         }
-        _mLogger.log("Displaying grid with items = ", screens.size());
-        _mAdapter = new SearchPageAdapter(getApplicationContext(), screens);
-        _mGridView.setAdapter(_mAdapter);
-        _mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Screenshot selected = screens.get(i);
-                _mLogger.log("The screen selected is", i, selected.name, "the appName: ", selected.appName);
-                Intent intent = new Intent(getBaseContext(), ScreenActivity.class);
-                intent.putExtra(ScreenActivity.INTENT_SCREEN_NAME, selected.name);
-                intent.putExtra(ScreenActivity.INTENT_SCREEN_POSITION, i);
-                intent.putExtra(ScreenActivity.INTENT_SEARCH_MATCHES, matches);
-                intent.putExtra(ScreenActivity.INTENT_DISPLAY_TYPE, ScreenActivity.DISPLAY_SEARCH_RESULTS);
-                startActivity(intent);
+        boolean sameData = newScreens.size() == mScreens.size();
+        if (sameData) {
+            for (int i = 0; i < newScreens.size(); i++) {
+                if (!newScreens.get(i).name.equals(mScreens.get(i).name)) {
+                    sameData = false;
+                    break;
+                }
             }
-        });
+        }
+        if (sameData)
+            return;
+
+        mScreens = newScreens;
+        _mMatches = matches;
+        _mLogger.log("Displaying grid with items = ", mScreens.size());
+        super.updateAdapter();
+    }
+
+    @Override
+    public Intent getTapIntent(Screenshot selected, int position) {
+        Intent intent = new Intent(getBaseContext(), ScreenActivity.class);
+        intent.putExtra(ScreenActivity.INTENT_SCREEN_NAME, selected.name);
+        intent.putExtra(ScreenActivity.INTENT_SCREEN_POSITION, position);
+        intent.putExtra(ScreenActivity.INTENT_SEARCH_MATCHES, _mMatches);
+        intent.putExtra(ScreenActivity.INTENT_DISPLAY_TYPE, ScreenActivity.DISPLAY_SEARCH_RESULTS);
+        return intent;
     }
 }
