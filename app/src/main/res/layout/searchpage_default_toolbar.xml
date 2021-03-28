@@ -19,7 +19,7 @@
         android:selectAllOnFocus="true"
         android:singleLine="true" />
     <ImageButton
-        android:id="@+id/clear"
+        android:id="@+id/clear_search_bar"
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_gravity="center_vertical|end"
