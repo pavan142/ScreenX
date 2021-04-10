@@ -48,16 +48,20 @@ public class AppGroupPageAdapter extends BaseAdapter {
         }
         ImageView imageView;
         imageView = (ImageView) convertView.findViewById(R.id.image);
-        Screenshot screen = _screens.get(position);
-        File file = screen.file;
-        Glide.with(_context).load(file).thumbnail(0.1f).into(imageView);
-        AppCompatCheckBox checkbox =  convertView.findViewById(R.id.checkbox);
-        if (_mSelectedScreens.size() == 0) {
-            checkbox.setVisibility(View.INVISIBLE);
-        } else {
-            checkbox.setVisibility(View.VISIBLE);
+        try {
+            Screenshot screen = _screens.get(position);
+            File file = screen.file;
+            Glide.with(_context).load(file).thumbnail(0.1f).into(imageView);
+            AppCompatCheckBox checkbox =  convertView.findViewById(R.id.checkbox);
+            if (_mSelectedScreens.size() == 0) {
+                checkbox.setVisibility(View.INVISIBLE);
+            } else {
+                checkbox.setVisibility(View.VISIBLE);
+            }
+            checkbox.setChecked(_mSelectedScreens.contains(screen));
+        } catch (IndexOutOfBoundsException e) {
+            _logger.log("Dataset synchronization issue, index out of bounds:: position is", position, ":: _screens size is", _screens.size());
         }
-        checkbox.setChecked(_mSelectedScreens.contains(screen));
         return convertView;
     }
 }

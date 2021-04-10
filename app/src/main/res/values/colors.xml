@@ -24,4 +24,5 @@
     <color name="permission_awaiting_background">#00c8d7</color>
     <color name="permission_awaiting_shadow_dark">#9900c8d7</color>
 
+    <color name="grey20">#ededed</color>
 </resources>

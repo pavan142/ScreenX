@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.Settings;
+import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
@@ -107,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
     private void setupSearchBar() {
         setSupportActionBar(findViewById(R.id.toolbar));
         getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
-        getSupportActionBar().setCustomView(R.layout.toolbar_homepage);
+        getSupportActionBar().setCustomView(R.layout.homepage_toolbar);
         SearchView _mSearchView = findViewById(R.id.search_view);
         _mSearchView.findViewById(R.id.search_plate).setBackgroundColor(Color.TRANSPARENT);
         _mSearchView.setIconifiedByDefault(false);
@@ -191,6 +192,17 @@ public class MainActivity extends AppCompatActivity {
         _mLogger.log("Showing Content Page");
         _mHomePageDisplayContent.setVisibility(View.VISIBLE);
         _mHomePageContentEmpty.setVisibility(View.GONE);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        this.getMenuInflater().inflate(R.menu.homepage_menu, menu);
+        menu.findItem(R.id.action_about).setOnMenuItemClickListener(menuItem -> {
+            Intent intent = new Intent(this, AboutActivity.class);
+            startActivity(intent);
+            return true;
+        });
+        return true;
     }
 
     private void startScreenXService() {
