@@ -28,6 +28,9 @@
     <string name="miscellaneous_app_name">Miscellaneous</string>
     <string name="service_description"> This service allows you to take screenshots with floatcing touch bar or through notification panel</string>
 
+    <!-- Usage Settings Dialog for devices that do not support usage setting intent-->
+    <string name = "usage_settings_confirm">Go To Settings</string>
+
     <!-- Delete Dialog-->
     <string name="delete_confirm">Confirm</string>
     <string name="delete_cancel">Cancel</string>
