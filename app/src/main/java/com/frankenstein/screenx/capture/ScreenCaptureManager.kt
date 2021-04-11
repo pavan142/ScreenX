@@ -21,17 +21,16 @@ import android.os.Looper
 import android.util.DisplayMetrics
 import android.view.Display
 import android.view.WindowManager
+import com.frankenstein.screenx.Constants.SCREEN_DATE_FORMAT
 
 import com.frankenstein.screenx.helper.Logger
 import com.frankenstein.screenx.R
-import com.frankenstein.screenx.helper.UsageStatsHelper.Companion.getRecentAppViaUsage
-import com.frankenstein.screenx.helper.UsageStatsHelper.Companion.getRecentAppViaEvents
+import com.frankenstein.screenx.helper.UsageStatsHelper.Companion.lastForegroundApp
 import com.frankenstein.screenx.helper.FileHelper.CUSTOM_SCREENSHOT_DIR
 import com.frankenstein.screenx.helper.FileHelper.createIfNot
 
 import java.io.FileOutputStream
 import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 
 
 class ScreenCaptureManager(context: Context, private val screenCapturePermissionIntent: Intent, private val screenCaptureListener: ScreenCaptureListener) {
@@ -53,7 +52,6 @@ class ScreenCaptureManager(context: Context, private val screenCapturePermission
     private val activityManager: ActivityManager;
     private val usm: UsageStatsManager;
     private val defaultPackageId: String;
-    private val screenDateFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss-SSS")
 
     init {
         val screenshotDirectory = CUSTOM_SCREENSHOT_DIR;
@@ -115,11 +113,10 @@ class ScreenCaptureManager(context: Context, private val screenCapturePermission
             imageReader?.setOnImageAvailableListener(null, null)
 
             val date: LocalDateTime = LocalDateTime.now();
-            val dateString: String = date.format(screenDateFormat);
-            val appViaUsage = getRecentAppViaUsage(usm);
-            val appViaEvents = getRecentAppViaEvents(usm);
-            _logger.log("recentAppViaUsage", appViaUsage, "recentAppViaEvent", appViaEvents);
-            val filePath: String = screenshotPath + "/Screenshot_" + dateString +"_" + appViaEvents +".jpg"
+            val dateString: String = date.format(SCREEN_DATE_FORMAT);
+            val packageId = lastForegroundApp(usm);
+            _logger.log("lastForegroundApp", packageId);
+            val filePath: String = screenshotPath + "/Screenshot_" + dateString +"_" + packageId +".jpg"
 //            var bitmap: Bitmap? = null
             var croppedBitmap: Bitmap? = null
 

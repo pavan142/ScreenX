@@ -10,7 +10,7 @@ import com.frankenstein.screenx.models.Screenshot;
 import java.io.File;
 import java.util.ArrayList;
 
-import static com.frankenstein.screenx.helper.AppHelper.GetScreenFromFile;
+import static com.frankenstein.screenx.helper.AppHelper.GetMultipleScreens;
 import static com.frankenstein.screenx.helper.FileHelper.getAllScreenshotFiles;
 
 public class GetScreensAsyncTask extends AsyncTask<Object, Void, ArrayList<Screenshot>> {
@@ -30,11 +30,9 @@ public class GetScreensAsyncTask extends AsyncTask<Object, Void, ArrayList<Scree
         ArrayList<Screenshot> screens = new ArrayList<>();
         try {
             ArrayList<File> files = getAllScreenshotFiles();
-            for (File file : files) {
-                Screenshot screen = GetScreenFromFile(context, file);
-                screens.add(screen);
-            }
+            screens = GetMultipleScreens(context, files);
             Long end = System.currentTimeMillis();
+            _mLogger.log("Assigned Screens", screens.size());
             _mTimeLogger.log("Time taken for processing screenshot files in background =", (end-start));
             ScreenFactory.getInstance().analyzeScreens(screens);
         } catch (Exception e) {

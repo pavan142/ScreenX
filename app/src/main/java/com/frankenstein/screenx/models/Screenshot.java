@@ -1,13 +1,14 @@
 package com.frankenstein.screenx.models;
 
+import com.frankenstein.screenx.interfaces.TimeSortable;
+
 import java.io.File;
 
-public class Screenshot {
+public class Screenshot extends TimeSortable {
     public String name;
     public File file;
     public String appName;
     public String filePath;
-    public long lastModified;
 
     public Screenshot(String name, String filePath, String appName) {
         this.name = name;

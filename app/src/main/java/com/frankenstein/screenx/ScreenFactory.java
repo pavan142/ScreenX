@@ -8,6 +8,7 @@ import java.util.Map;
 import android.content.Context;
 
 import com.frankenstein.screenx.helper.Logger;
+import com.frankenstein.screenx.helper.SortHelper;
 import com.frankenstein.screenx.models.AppGroup;
 import com.frankenstein.screenx.models.Screenshot;
 import com.frankenstein.screenx.multithreading.GetScreensAsyncTask;
@@ -15,6 +16,7 @@ import com.frankenstein.screenx.multithreading.GetScreensAsyncTask;
 import androidx.lifecycle.MutableLiveData;
 
 import static com.frankenstein.screenx.helper.AppHelper.GetScreenFromFile;
+import static com.frankenstein.screenx.helper.SortHelper.DESC_TIME;
 
 public class ScreenFactory {
     private static ScreenFactory _instance;
@@ -84,12 +86,7 @@ public class ScreenFactory {
                 newAlphaSorted.add(i);
             }
 
-
-            Collections.sort(newDateSorted, (AppGroup appGroup, AppGroup t1) -> {
-                long result = (t1.lastModified - appGroup.lastModified);
-                int output = (result >=0 ) ? 1: -1;
-                return output;
-            });
+            DESC_TIME(newDateSorted);
 
             Collections.sort(newAlphaSorted, (AppGroup appGroup, AppGroup t1) -> {
                 return appGroup.appName.compareTo(t1.appName);

@@ -1,5 +1,6 @@
 package com.frankenstein.screenx;
 
+import java.time.format.DateTimeFormatter;
 import java.util.regex.Pattern;
 
 public class Constants {
@@ -13,4 +14,6 @@ public class Constants {
     public static final String DB_THREAD_NAME ="db-thread";
     public static final String FILE_PROVIDER_AUTHORITY="com.frankenstein.screenx.fileprovider";
     public static final String SCREENSHOT_DEFAULT_APPGROUP = "Miscellaneous";
+    public static final DateTimeFormatter SCREEN_DATE_FORMAT  = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss-SSS");
+
 }
