@@ -1,13 +1,16 @@
 package com.frankenstein.screenx.models;
 
+import com.frankenstein.screenx.interfaces.TimeSortable;
+
 import java.util.ArrayList;
 import java.util.Collections;
 
-public class AppGroup {
+import static com.frankenstein.screenx.helper.SortHelper.DESC_TIME;
+
+public class AppGroup extends TimeSortable {
     public String appName;
     public ArrayList<Screenshot> screenshots;
     public Screenshot mascot;
-    public long lastModified;
 
     public AppGroup(String _appName) {
         this.appName = _appName;
@@ -23,10 +26,6 @@ public class AppGroup {
     }
 
     public void sort() {
-        Collections.sort(screenshots, (Screenshot screenshot, Screenshot t1) -> {
-                long result = (t1.lastModified - screenshot.lastModified);
-                int output = (result >= 0 ) ? 1: -1;
-                return output;
-            });
+        DESC_TIME(screenshots);
     }
 }

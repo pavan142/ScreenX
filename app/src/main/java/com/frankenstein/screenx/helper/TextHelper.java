@@ -21,8 +21,6 @@ import com.google.mlkit.vision.text.TextRecognizer;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -34,6 +32,8 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import static com.frankenstein.screenx.Constants.DB_THREAD_NAME;
+import static com.frankenstein.screenx.helper.SortHelper.DESC_SCREENS_BY_TIME;
+import static com.frankenstein.screenx.helper.SortHelper.DESC_TIME;
 
 public class TextHelper {
     private static TextHelper _mInstance;
@@ -115,14 +115,7 @@ public class TextHelper {
                 unParsedScreens.add(screen);
             }
         }
-        Collections.sort(unParsedScreens, new Comparator<Screenshot>() {
-            @Override
-            public int compare(Screenshot s1, Screenshot s2) {
-                long result = (s2.lastModified - s1.lastModified);
-                int output = (result >=0 ) ? 1: -1;
-                return output;
-            }
-        });
+        DESC_TIME(unParsedScreens);
         _mLogger.log("UnParsedScreenshots length", unParsedScreens.size());
         return unParsedScreens;
     }
@@ -142,16 +135,7 @@ public class TextHelper {
                 if (ScreenXApplication.screenFactory.findScreenByName(item.filename) != null)
                     screens.add(item.filename);
             }
-            Collections.sort(screens, new Comparator<String>() {
-                @Override
-                public int compare(String o1, String o2) {
-                    Screenshot s1 = ScreenXApplication.screenFactory.findScreenByName(o1);
-                    Screenshot s2 = ScreenXApplication.screenFactory.findScreenByName(o2);
-                    long result = (s2.lastModified - s1.lastModified);
-                    int output = (result >=0 ) ? 1: -1;
-                    return output;
-                }
-            });
+            DESC_SCREENS_BY_TIME(screens);
             livescreens.postValue(screens);
         });
         return livescreens;
