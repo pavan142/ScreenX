@@ -28,6 +28,7 @@ import com.frankenstein.screenx.helper.Logger;
 import com.frankenstein.screenx.helper.PermissionHelper;
 import com.frankenstein.screenx.models.AppGroup;
 import com.frankenstein.screenx.models.Screenshot;
+import com.frankenstein.screenx.ui.PermissionComponentView;
 import com.frankenstein.screenx.ui.adapters.HomePageAdapter;
 
 import static com.frankenstein.screenx.Constants.PROGRESSBAR_TRANSITION;
@@ -42,9 +43,9 @@ public class MainActivity extends AppCompatActivity {
     private SwipeRefreshLayout _pullToRefresh;
     private View _mProgressBar;
     private View _mPermissionsDisplay;
-    private View _mStoragePermissionsView;
-    private View _mUsagePermissionsView;
-    private View _mOverlayPermissionsView;
+    private PermissionComponentView _mStoragePermissionsView;
+    private PermissionComponentView _mUsagePermissionsView;
+    private PermissionComponentView _mOverlayPermissionsView;
     private AlertDialog.Builder _mAlertBuilder;
 
     private boolean _mPermissionsGranted = false;
@@ -304,6 +305,10 @@ public class MainActivity extends AppCompatActivity {
             _mState.setValue(HomePageState.LOADING_PROGRESS_BAR);
             return;
         }
+
+        _mStoragePermissionsView.onPermissionChanged(storagePermissions);
+        _mUsagePermissionsView.onPermissionChanged(usagePermissions);
+        _mOverlayPermissionsView.onPermissionChanged(overlayPermissions);
 
         _mLogger.log("Permissions Missing:: storage ->", storagePermissions, "  usage ->", usagePermissions, "overlay ->", overlayPermissions);
     }

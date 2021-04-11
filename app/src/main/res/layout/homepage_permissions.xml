@@ -1,84 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout android:layout_width="match_parent"
+<LinearLayout
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="0px"
+    android:gravity="center"
+    android:layout_centerHorizontal="true"
     android:id="@+id/permissions_display"
     android:background="@android:color/white"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <LinearLayout
+    <com.frankenstein.screenx.ui.PermissionComponentView
+        android:layout_height="wrap_content"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-        <!--        <pl.droidsonroids.gif.GifImageView-->
-        <!--            android:layout_width="wrap_content"-->
-        <!--            android:layout_centerInParent="true"-->
-        <!--            android:layout_height="0dp"-->
-        <!--            android:layout_weight="2"-->
-        <!--            android:src="@drawable/storage_permissions">-->
-        <!--        </pl.droidsonroids.gif.GifImageView>-->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:padding="0px"
-            android:gravity="center"
-            android:layout_centerHorizontal="true"
-            android:layout_alignParentBottom="true">
-
-            <soup.neumorphism.NeumorphCardView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                style="@style/Widget.Neumorph.CardView"
-                app:neumorph_shadowElevation="6dp"
-                app:neumorph_lightSource="leftTop"
-                app:neumorph_shapeType="flat"
-                app:neumorph_backgroundColor="@color/lightWhite"
-                android:layout_centerHorizontal="true">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:padding="30dp"
-                    android:id="@+id/storage_permissions"
-                    android:text="@string/storage_permission_text">
-                </TextView>
-            </soup.neumorphism.NeumorphCardView>
-            <soup.neumorphism.NeumorphCardView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                style="@style/Widget.Neumorph.CardView"
-                app:neumorph_shadowElevation="6dp"
-                app:neumorph_lightSource="leftTop"
-                app:neumorph_shapeType="flat"
-                app:neumorph_backgroundColor="@color/lightWhite"
-                android:layout_centerHorizontal="true"
-                android:layout_alignParentBottom="true">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:padding="30dp"
-                    android:id="@+id/usage_permissions"
-                    android:text="@string/usage_permission_text">
-                </TextView>
-            </soup.neumorphism.NeumorphCardView>
-            <soup.neumorphism.NeumorphCardView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                style="@style/Widget.Neumorph.CardView"
-                app:neumorph_shadowElevation="6dp"
-                app:neumorph_lightSource="leftTop"
-                app:neumorph_shapeType="flat"
-                app:neumorph_backgroundColor="@color/lightWhite"
-                android:layout_centerHorizontal="true"
-                android:layout_alignParentBottom="true">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:padding="30dp"
-                    android:id="@+id/overlay_permissions"
-                    android:text="@string/overlay_permission_text">
-                </TextView>
-            </soup.neumorphism.NeumorphCardView>
-        </LinearLayout>
-    </LinearLayout>
-</FrameLayout>
+        android:id="@+id/storage_permissions"
+        app:permission_text="@string/storage_permission_text"
+        ></com.frankenstein.screenx.ui.PermissionComponentView>
+    <com.frankenstein.screenx.ui.PermissionComponentView
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:id="@+id/usage_permissions"
+        app:permission_text="@string/usage_permission_text"
+        ></com.frankenstein.screenx.ui.PermissionComponentView>
+    <com.frankenstein.screenx.ui.PermissionComponentView
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:id="@+id/overlay_permissions"
+        app:permission_text="@string/overlay_permission_text"
+        ></com.frankenstein.screenx.ui.PermissionComponentView>
+</LinearLayout>
