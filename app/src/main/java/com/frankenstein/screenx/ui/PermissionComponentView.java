@@ -20,6 +20,7 @@ public class PermissionComponentView extends LinearLayout {
     private LottieAnimationView _mSuccessAnimation;
     private NeumorphCardView _mCardView;
     private View _mLeftBorder;
+    private boolean _mHasPermission = false;
 
     public PermissionComponentView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -53,5 +54,10 @@ public class PermissionComponentView extends LinearLayout {
         _mCardView.setBackgroundColor(bgColor);
 //        _mSuccessAnimation.setVisibility(hasPermission? View.VISIBLE: View.INVISIBLE);
 //        _mLeftBorder.setVisibility(hasPermission? View.VISIBLE: View.GONE);
+        _mHasPermission = hasPermission;
+    }
+
+    public Boolean hasPermission() {
+        return _mHasPermission;
     }
 }

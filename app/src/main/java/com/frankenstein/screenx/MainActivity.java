@@ -1,5 +1,6 @@
 package com.frankenstein.screenx;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
 import android.content.pm.PackageManager;
@@ -17,6 +18,7 @@ import android.widget.GridView;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
+import androidx.core.app.ActivityCompat;
 import androidx.lifecycle.MutableLiveData;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
@@ -37,6 +39,7 @@ import static com.frankenstein.screenx.helper.FileHelper.createIfNot;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final int REQUEST_WRITE_STORAGE = 1;
     private GridView _mGridView;
     private HomePageAdapter _adapter;
     private Logger _mLogger;
@@ -199,7 +202,7 @@ public class MainActivity extends AppCompatActivity {
     private void startScreenXService() {
         Intent intent = new Intent(this, ScreenXService.class);
         intent.setAction(ScreenXService.ACTION_ENABLE_SERVICE);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             startForegroundService(intent);
         } else {
             startService(intent);
@@ -207,13 +210,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void goToStorageSettings() {
-        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-        Uri uri = Uri.fromParts("package", getPackageName(), null);
-        intent.setData(uri);
-        startActivity(intent);
+        ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_WRITE_STORAGE);
     }
 
     private void goToUsageSettings() {
+        if (_mUsagePermissionsView.hasPermission())
+            return;
         try {
             Intent intent = new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS);
             Uri uri = Uri.fromParts("package", getPackageName(), null);
@@ -245,6 +247,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void goToOverlaySettings() {
+        if (_mOverlayPermissionsView.hasPermission())
+            return;
         Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
         Uri uri = Uri.fromParts("package", getPackageName(), null);
         intent.setData(uri);
