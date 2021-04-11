@@ -1,5 +1,8 @@
 package com.frankenstein.screenx;
 
+import android.app.AlertDialog;
+import android.content.ActivityNotFoundException;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
@@ -22,6 +25,7 @@ import java.util.ArrayList;
 
 import android.content.Intent;
 
+import com.frankenstein.screenx.helper.FileHelper;
 import com.frankenstein.screenx.helper.Logger;
 import com.frankenstein.screenx.helper.PermissionHelper;
 import com.frankenstein.screenx.models.AppGroup;
@@ -43,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
     private View _mStoragePermissionsView;
     private View _mUsagePermissionsView;
     private View _mOverlayPermissionsView;
+    private AlertDialog.Builder _mAlertBuilder;
 
     private boolean _mPermissionsGranted = false;
     private Handler _mHandler;
@@ -99,6 +104,7 @@ public class MainActivity extends AppCompatActivity {
         _mOverlayPermissionsView = findViewById(R.id.overlay_permissions);
         _mOverlayPermissionsView.setOnClickListener(view -> goToOverlaySettings());
 
+        _mAlertBuilder = new AlertDialog.Builder(this);
         setupSearchBar();
         _mState.observeForever(this::onStateChange);
         _mState.setValue(HomePageState.REQUEST_PERMISSIONS);
@@ -211,10 +217,34 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void goToUsageSettings() {
-        Intent intent = new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS);
-        Uri uri = Uri.fromParts("package", getPackageName(), null);
-        intent.setData(uri);
-        startActivity(intent);
+        try {
+            Intent intent = new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS);
+            Uri uri = Uri.fromParts("package", getPackageName(), null);
+            intent.setData(uri);
+            PackageManager pm = getPackageManager();
+            if (intent.resolveActivity(pm) != null) {
+                startActivity(intent);
+            } else {
+                _mLogger.log("No Intent for usage access settings");
+                showManualGrantOfUsageSettings();
+            }
+        } catch (ActivityNotFoundException e) {
+            _mLogger.log("Got Activity Not Found Exception: Usage access settings", e.getMessage());
+            showManualGrantOfUsageSettings();
+        }
+    }
+
+    private void showManualGrantOfUsageSettings() {
+        String appName = getResources().getString(R.string.app_name);
+        String Message = "Go to Settings -> Search for Usage Access -> Look for " +
+                appName + " -> Grant Permission to " + appName;
+        _mAlertBuilder.setTitle("Usage Access Settings")
+                .setMessage(Message)
+                .setPositiveButton(getResources().getString(R.string.usage_settings_confirm), (dialog, which) -> {
+                    Intent settingsIntent = new Intent(Settings.ACTION_SETTINGS);
+                    startActivity(settingsIntent);
+                })
+                .show();
     }
 
     private void goToOverlaySettings() {
@@ -300,7 +330,7 @@ public class MainActivity extends AppCompatActivity {
 
         // This step is to reinitialize the floating touch bar, once it is closed
         // TODO: Start the service with that specific intent itself, instead of generic intent
-        if (_mPaused)
+        if (_mPaused && _mState.getValue() == HomePageState.DISPLAY_CONTENT)
             startScreenXService();
         _mPaused = false;
     }
