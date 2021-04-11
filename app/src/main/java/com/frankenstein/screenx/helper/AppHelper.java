@@ -40,7 +40,9 @@ public class AppHelper {
             return Constants.SCREENSHOT_DEFAULT_APPGROUP;
         }
         String matched = matcher.group();
-        if (matched.length() < 2)
+        // The maximum length is to stop it recognizing from hashed screenshots
+        // like on Realme devices: Example: Screenshot_<time>_ae8e34gq5wgwgw43t314teggqwffae12.jpg
+        if (matched.length() < 2 || matched.length() > 24)
             return Constants.SCREENSHOT_DEFAULT_APPGROUP;
 
         String appName = matched.substring(0, 1).toUpperCase() + matched.substring(1);
