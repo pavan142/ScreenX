@@ -14,7 +14,7 @@ import com.frankenstein.screenx.multithreading.GetScreensAsyncTask;
 
 import androidx.lifecycle.MutableLiveData;
 
-import static com.frankenstein.screenx.helper.AppHelper.getScreenFromFile;
+import static com.frankenstein.screenx.helper.AppHelper.GetScreenFromFile;
 
 public class ScreenFactory {
     private static ScreenFactory _instance;
@@ -130,7 +130,7 @@ public class ScreenFactory {
     public void onScreenAdded(Context context,String filepath) {
         _logger.log("ScreenFactory: onScreenAdded", filepath);
         File file = new File(filepath);
-        Screenshot screen = getScreenFromFile(context, file);
+        Screenshot screen = GetScreenFromFile(context, file);
         addScreen(screen);
 
         ArrayList<Screenshot> newScreenshots = screenshots.getValue();

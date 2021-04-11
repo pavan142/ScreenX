@@ -10,7 +10,7 @@ import com.frankenstein.screenx.models.Screenshot;
 import java.io.File;
 import java.util.ArrayList;
 
-import static com.frankenstein.screenx.helper.AppHelper.getScreenFromFile;
+import static com.frankenstein.screenx.helper.AppHelper.GetScreenFromFile;
 import static com.frankenstein.screenx.helper.FileHelper.getAllScreenshotFiles;
 
 public class GetScreensAsyncTask extends AsyncTask<Object, Void, ArrayList<Screenshot>> {
@@ -29,10 +29,9 @@ public class GetScreensAsyncTask extends AsyncTask<Object, Void, ArrayList<Scree
         final Context context = (Context) objects[0];
         ArrayList<Screenshot> screens = new ArrayList<>();
         try {
-
             ArrayList<File> files = getAllScreenshotFiles();
             for (File file : files) {
-                Screenshot screen = getScreenFromFile(context, file);
+                Screenshot screen = GetScreenFromFile(context, file);
                 screens.add(screen);
             }
             Long end = System.currentTimeMillis();
