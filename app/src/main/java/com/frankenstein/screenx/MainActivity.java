@@ -17,7 +17,6 @@ import android.widget.GridView;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
-import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.MutableLiveData;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
@@ -25,7 +24,6 @@ import java.util.ArrayList;
 
 import android.content.Intent;
 
-import com.frankenstein.screenx.helper.FileHelper;
 import com.frankenstein.screenx.helper.Logger;
 import com.frankenstein.screenx.helper.PermissionHelper;
 import com.frankenstein.screenx.models.AppGroup;
@@ -58,8 +56,6 @@ public class MainActivity extends AppCompatActivity {
     private View _mHomePageContentLayout;
     private View _mHomePageContentEmpty;
     private View _mHomePageDisplayContent;
-
-    private Toolbar _mToolbar;
 
     private MutableLiveData<HomePageState> _mState = new MutableLiveData<>();
     private HomePageState _mPrevState = HomePageState.REQUEST_PERMISSIONS;
