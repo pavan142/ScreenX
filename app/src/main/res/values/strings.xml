@@ -10,9 +10,9 @@
     // Search
     <string name="search_hint">Search</string>
 
-    <string name="storage_permission_text">Grant storage permissions</string>
-    <string name="usage_permission_text">Grant app usage permissions</string>
-    <string name="overlay_permission_text">Grant overlay permissions</string>
+    <string name="storage_permission_text">Grant Storage permissions</string>
+    <string name="usage_permission_text">Grant Usage permissions</string>
+    <string name="overlay_permission_text">Grant Overlay permissions</string>
     <string name="snackbar_disable">Screenshot feature disabled</string>
     <string name="snackbar_enable">Screenshot feature enabled</string>
     <string name="screenshot_feedback">Screenshot taken!</string>
