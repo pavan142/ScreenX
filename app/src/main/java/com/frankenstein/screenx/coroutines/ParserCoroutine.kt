@@ -81,7 +81,7 @@ class ParserCoroutine(): CoroutineScope {
 
     suspend fun saveToDatabase(filename: String, text: String) {
         withContext(Dispatchers.IO) {
-            ScreenXApplication.textHelper.putScreenIntoDB(filename, text);
+            ScreenXApplication.textHelper.updateScreenText(filename, text);
         }
     }
 

@@ -46,19 +46,13 @@ class UsageStatsHelper {
         }
 
         @JvmStatic
-        fun getArchivedFgEventTimeline(usm: UsageStatsManager): ArrayList<ForeGroundAppEvent> {
+        fun getFgEventTimeline(usm: UsageStatsManager, isLive: Boolean): ArrayList<ForeGroundAppEvent> {
             var calendar = Calendar.getInstance()
             val endTime = calendar.timeInMillis
-            calendar.add(Calendar.MONTH, -1)
-            val startTime = calendar.timeInMillis
-            return filterFgEvents(usm, startTime, endTime);
-        }
-
-        @JvmStatic
-        fun getLiveFgEventTimeline(usm: UsageStatsManager): ArrayList<ForeGroundAppEvent> {
-            var calendar = Calendar.getInstance()
-            val endTime = calendar.timeInMillis
-            calendar.add(Calendar.HOUR, -1)
+            if (isLive)
+                calendar.add(Calendar.HOUR, -1)
+            else
+                calendar.add(Calendar.MONTH, -1)
             val startTime = calendar.timeInMillis
             return filterFgEvents(usm, startTime, endTime);
         }

@@ -92,7 +92,7 @@ public class TextHelper {
                         _mLogger.log("Scanned the data using OCR", filename);
                         // AS OCR CALLBACKS ARE RUN ON MAIN/UI THREAD, DB OPERATIONS NEED TO BE POSTED ON TO SEPARATE THREAD
                         _mDBHandler.post(() -> {
-                            putScreenIntoDB(filename, ocrText);
+                            updateScreenText(filename, ocrText);
                         });
                         // AS OCR CALLBACKS ARE RUN ON MAIN/UI THREAD, DIRECTLY INVOKING THE UI LISTENER HERE IS OKAY
                         listener.onTextFetched(_file, ocrText);
@@ -196,7 +196,7 @@ public class TextHelper {
         });
     }
 
-    public boolean putScreenIntoDB(String filename, String text) {
+    public boolean updateScreenText(String filename, String text) {
         ScreenShotEntity entity = _mDBClient.screenShotDao().getScreenShotByName(filename);
         if (entity == null) {
             Screenshot screen = ScreenXApplication.screenFactory.findScreenByName(filename);
@@ -204,7 +204,7 @@ public class TextHelper {
                 _mLogger.log("Provided file name is not present with screenfactory, quitting", filename);
                 return false;
             }
-            _mLogger.log("Inserting Data into DB", filename);
+            _mLogger.log("Inserting Screenshot Entity", filename);
             entity = new ScreenShotEntity();
             entity.appname = screen.appName;
             entity.filename = filename;
@@ -213,9 +213,27 @@ public class TextHelper {
             _mCache.put(filename, text);
             return true;
         } else {
+            _mLogger.log("Updating text content of Screenshot Entity", filename);
             entity.textContent = text;
             _mDBClient.screenShotDao().updateSingleScreenshot(entity);
             return true;
+        }
+    }
+
+    public void updateScreenAppName(Screenshot screen) {
+        if (screen == null)
+            return;
+        ScreenShotEntity entity = _mDBClient.screenShotDao().getScreenShotByName(screen.name);
+        if (entity == null) {
+            _mLogger.log("Inserting Screenshot Entity", screen.name, screen.appName);
+            entity = new ScreenShotEntity();
+            entity.appname = screen.appName;
+            entity.filename = screen.name;
+            _mDBClient.screenShotDao().insertSingleScreenshot(entity);
+        } else {
+            _mLogger.log("Updating app Name of  Screenshot Entity", screen.name, screen.appName);
+            entity.appname = screen.appName;
+            _mDBClient.screenShotDao().updateSingleScreenshot(entity);
         }
     }
 
