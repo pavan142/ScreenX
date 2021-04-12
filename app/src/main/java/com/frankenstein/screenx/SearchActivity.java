@@ -79,7 +79,7 @@ public class SearchActivity extends MultipleSelectActivity {
                 newScreens.add(screen);
         }
         if (Same(newScreens, mScreens))
-
+            return;
         mScreens = newScreens;
         _mMatches = matches;
         _mLogger.log("Displaying grid with items = ", mScreens.size());
