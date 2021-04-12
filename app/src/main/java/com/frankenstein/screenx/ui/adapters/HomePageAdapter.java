@@ -12,6 +12,7 @@ import java.io.File;
 import java.util.ArrayList;
 
 import com.bumptech.glide.Glide;
+import com.frankenstein.screenx.ScreenXApplication;
 import com.frankenstein.screenx.helper.Logger;
 import com.frankenstein.screenx.R;
 import com.frankenstein.screenx.models.Screenshot;
@@ -50,7 +51,11 @@ public class HomePageAdapter extends BaseAdapter {
         Glide.with(_context).load(file).thumbnail(0.1f).into(imageView);
 
         TextView appNameView = convertView.findViewById(R.id.app_name);
-        appNameView.setText(screen.appName);
+        TextView numScreensView = convertView.findViewById(R.id.num_screenshots);
+        String numScreenshots = "" + ScreenXApplication.screenFactory.appgroups.get(screen.appName).screenshots.size();
+        String label = screen.appName;
+        appNameView.setText(label);
+        numScreensView.setText(numScreenshots);
         return convertView;
     }
 }
