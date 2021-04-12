@@ -34,6 +34,7 @@ import com.frankenstein.screenx.ui.PermissionComponentView;
 import com.frankenstein.screenx.ui.adapters.HomePageAdapter;
 
 import static com.frankenstein.screenx.Constants.PROGRESSBAR_TRANSITION;
+import static com.frankenstein.screenx.helper.ArrayHelper.Same;
 import static com.frankenstein.screenx.helper.FileHelper.CUSTOM_SCREENSHOT_DIR;
 import static com.frankenstein.screenx.helper.FileHelper.createIfNot;
 
@@ -59,6 +60,9 @@ public class MainActivity extends AppCompatActivity {
     private View _mHomePageContentLayout;
     private View _mHomePageContentEmpty;
     private View _mHomePageDisplayContent;
+
+    private ArrayList<Screenshot> _mAppgroupMascots = new ArrayList<>();
+    private ArrayList<Integer> _mAppgroupSizes = new ArrayList<>();
 
     private MutableLiveData<HomePageState> _mState = new MutableLiveData<>();
     private HomePageState _mPrevState = HomePageState.REQUEST_PERMISSIONS;
@@ -257,6 +261,7 @@ public class MainActivity extends AppCompatActivity {
     public void attachAdapter() {
         _mLogger.log("attaching adapter");
         ArrayList<Screenshot> mascots = new ArrayList<>();
+        ArrayList<Integer> appgroupSizes = new ArrayList<>();
         Utils.SortingCriterion criterion = (_mSortByDate) ? Utils.SortingCriterion.Date: Utils.SortingCriterion.Alphabetical;
         ArrayList<AppGroup> appgroups = ScreenXApplication.screenFactory.getAppGroups(criterion);
         if (appgroups.size() == 0) {
@@ -267,11 +272,16 @@ public class MainActivity extends AppCompatActivity {
 
         _mState.setValue(HomePageState.DISPLAY_CONTENT);
 
-        for (AppGroup ag : appgroups)
+        for (AppGroup ag : appgroups) {
             mascots.add(ag.mascot);
-//        for (Screenshot s : mascots)
-//            _mLogger.log(s.appName, s.name);
-        _adapter = new HomePageAdapter(getApplicationContext(), mascots);
+            appgroupSizes.add(ag.screenshots.size());
+        }
+
+        if (Same(mascots, _mAppgroupMascots) && Same(appgroupSizes, _mAppgroupSizes))
+            return;
+        _mAppgroupMascots = mascots;
+        _mAppgroupSizes = appgroupSizes;
+        _adapter = new HomePageAdapter(getApplicationContext(), _mAppgroupMascots);
         _mGridView.setAdapter(_adapter);
         _mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override

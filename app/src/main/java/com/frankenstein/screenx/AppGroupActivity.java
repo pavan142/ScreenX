@@ -14,6 +14,8 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import java.util.ArrayList;
 
+import static com.frankenstein.screenx.helper.ArrayHelper.Same;
+
 public class AppGroupActivity extends MultipleSelectActivity {
 
     private Logger _logger;
@@ -57,16 +59,7 @@ public class AppGroupActivity extends MultipleSelectActivity {
             finish();
             return;
         }
-        boolean sameData = ag.screenshots.size() == mScreens.size();
-        if (sameData) {
-            for (int i = 0; i < ag.screenshots.size(); i++) {
-                if (!ag.screenshots.get(i).name.equals(mScreens.get(i).name)) {
-                    sameData = false;
-                    break;
-                }
-            }
-        }
-        if (sameData)
+        if (Same(ag.screenshots, mScreens))
             return;
         mScreens = (ArrayList<Screenshot>) ag.screenshots.clone();
         _logger.log("Displaying Scrrens of Appgroup", _appName, mScreens.size());

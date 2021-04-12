@@ -15,6 +15,8 @@ import java.util.ArrayList;
 
 import androidx.lifecycle.LiveData;
 
+import static com.frankenstein.screenx.helper.ArrayHelper.Same;
+
 public class SearchActivity extends MultipleSelectActivity {
 
     private AppCompatAutoCompleteTextView _mSearch;
@@ -76,17 +78,7 @@ public class SearchActivity extends MultipleSelectActivity {
             if (screen != null)
                 newScreens.add(screen);
         }
-        boolean sameData = newScreens.size() == mScreens.size();
-        if (sameData) {
-            for (int i = 0; i < newScreens.size(); i++) {
-                if (!newScreens.get(i).name.equals(mScreens.get(i).name)) {
-                    sameData = false;
-                    break;
-                }
-            }
-        }
-        if (sameData)
-            return;
+        if (Same(newScreens, mScreens))
 
         mScreens = newScreens;
         _mMatches = matches;
