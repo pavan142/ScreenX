@@ -1,5 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE resources [
+    <!ENTITY appname "ScreenX">
+    <!ENTITY author "Pavan Tirumani">
+    ]>
+
 <resources>
-    <string name="app_name">ScreenX</string>
+    <string name="app_name">&appname;</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="nav_header_title">Android Studio</string>
@@ -17,16 +23,12 @@
     <string name="snackbar_enable">Screenshot feature enabled</string>
     <string name="screenshot_feedback">Screenshot taken!</string>
 
-    <!-- Notification: strings displayed on the notification to perform various actions -->
-    <string name="notification_action_capture">Tap to take screenshot</string>
-    <string name="notification_action_open">Open app</string>
+    <string name="notification_default_title">Screenshot sorting is on</string>
+    <string name="notification_display_text">Tap to view your screenshots.</string>
     <string name="notification_action_stop">Stop</string>
-    <!-- String displayed to inform users new screenshots captured -->
-    <string name="notification_action_collect_title">New screenshots captured</string>
-    <string name="notification_action_collect">Tap to sort your screenshots</string>
 
     <string name="miscellaneous_app_name">Miscellaneous</string>
-    <string name="service_description"> This service allows you to take screenshots with floatcing touch bar or through notification panel</string>
+    <string name="service_description"> This service helps you sort your screenshots</string>
 
     <!-- Usage Settings Dialog for devices that do not support usage setting intent-->
     <string name = "usage_settings_confirm">Go To Settings</string>

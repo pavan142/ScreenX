@@ -48,7 +48,6 @@ public class MainActivity extends AppCompatActivity {
     private View _mPermissionsDisplay;
     private PermissionComponentView _mStoragePermissionsView;
     private PermissionComponentView _mUsagePermissionsView;
-    private PermissionComponentView _mOverlayPermissionsView;
     private AlertDialog.Builder _mAlertBuilder;
 
     private boolean _mPermissionsGranted = false;
@@ -100,9 +99,6 @@ public class MainActivity extends AppCompatActivity {
 
         _mUsagePermissionsView = findViewById(R.id.usage_permissions);
         _mUsagePermissionsView.setOnClickListener(view -> goToUsageSettings());
-
-        _mOverlayPermissionsView = findViewById(R.id.overlay_permissions);
-        _mOverlayPermissionsView.setOnClickListener(view -> goToOverlaySettings());
 
         _mAlertBuilder = new AlertDialog.Builder(this);
         setupSearchBar();
@@ -201,7 +197,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void startScreenXService() {
         Intent intent = new Intent(this, ScreenXService.class);
-        intent.setAction(ScreenXService.ACTION_ENABLE_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             startForegroundService(intent);
         } else {
@@ -244,15 +239,6 @@ public class MainActivity extends AppCompatActivity {
                     startActivity(settingsIntent);
                 })
                 .show();
-    }
-
-    private void goToOverlaySettings() {
-        if (_mOverlayPermissionsView.hasPermission())
-            return;
-        Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
-        Uri uri = Uri.fromParts("package", getPackageName(), null);
-        intent.setData(uri);
-        startActivity(intent);
     }
 
     private void onScreenshotsChanged(ArrayList<Screenshot> screenshots) {
@@ -302,9 +288,8 @@ public class MainActivity extends AppCompatActivity {
     public void checkPermissions() {
         boolean storagePermissions = PermissionHelper.hasStoragePermission(this);
         boolean usagePermissions = PermissionHelper.hasUsagePermission(this);
-        boolean overlayPermissions = PermissionHelper.hasOverlayPermission(this);
 
-        if (storagePermissions && usagePermissions && overlayPermissions) {
+        if (storagePermissions && usagePermissions) {
             _mLogger.log("Has all the permissions");
             _mState.setValue(HomePageState.LOADING_PROGRESS_BAR);
             return;
@@ -312,9 +297,8 @@ public class MainActivity extends AppCompatActivity {
 
         _mStoragePermissionsView.onPermissionChanged(storagePermissions);
         _mUsagePermissionsView.onPermissionChanged(usagePermissions);
-        _mOverlayPermissionsView.onPermissionChanged(overlayPermissions);
 
-        _mLogger.log("Permissions Missing:: storage ->", storagePermissions, "  usage ->", usagePermissions, "overlay ->", overlayPermissions);
+        _mLogger.log("Permissions Missing:: storage ->", storagePermissions, "  usage ->", usagePermissions);
     }
 
     @Override

@@ -32,6 +32,9 @@ import com.frankenstein.screenx.helper.FileHelper.createIfNot
 import java.io.FileOutputStream
 import java.time.LocalDateTime
 
+interface ScreenCaptureListener {
+    fun onScreenShotTaken(path: String)
+}
 
 class ScreenCaptureManager(context: Context, private val screenCapturePermissionIntent: Intent, private val screenCaptureListener: ScreenCaptureListener) {
 
