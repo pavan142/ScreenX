@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.HandlerThread;
+import android.os.Looper;
 
 import com.frankenstein.screenx.ScreenXApplication;
 import com.frankenstein.screenx.database.DatabaseManager;
@@ -100,11 +101,12 @@ public class TextHelper {
     }
 
     public ArrayList<Screenshot> getUnParsedScreenshots() {
-        List<ScreenShotEntity> parsedScreenList = _mDBClient.screenShotDao().getAll();
-        _mLogger.log("Total Screenshots in database", parsedScreenList.size());
+        List<ScreenShotEntity> existingEntities = _mDBClient.screenShotDao().getAll();
+        _mLogger.log("Total Screenshots in database", existingEntities.size());
         Set<String> parsedScreens = new HashSet<String>();
-        for(ScreenShotEntity screen: parsedScreenList) {
-            parsedScreens.add(screen.filename);
+        for(ScreenShotEntity entity: existingEntities) {
+            if (entity.textContent != null)
+                parsedScreens.add(entity.filename);
         }
         ArrayList<Screenshot> allScreens = ScreenXApplication.screenFactory.screenshots.getValue();
         ArrayList<Screenshot> unParsedScreens = new ArrayList<>();
@@ -148,15 +150,62 @@ public class TextHelper {
         return screen.textContent;
     }
 
+    // TO BE INVOKED ONLY ON A BACKGROUND THREAD
+    public List<ScreenShotEntity> getAllScreenshotsInDatabase() {
+        if (Looper.myLooper() == Looper.getMainLooper()) {
+            _mLogger.log("This operation is not supported on main thread");
+            return null;
+        }
+        List<ScreenShotEntity> existingScreens = _mDBClient.screenShotDao().getAll();
+        return existingScreens;
+    }
+
+    public void updateAppNames(ArrayList<Screenshot> screens) {
+        _mHandler.post(() -> {
+            List<ScreenShotEntity> existingScreens = _mDBClient.screenShotDao().getAll();
+            Map<String, ScreenShotEntity> existingScreenMap = new HashMap<>();
+            for (ScreenShotEntity entity: existingScreens)
+                existingScreenMap.put(entity.filename, entity);
+
+            List<ScreenShotEntity> toBeUpdated = new ArrayList<>();
+            List<ScreenShotEntity> toBeInserted = new ArrayList<>();
+
+            for (Screenshot screen: screens) {
+                ScreenShotEntity entity = existingScreenMap.get(screen.name);
+                if (entity != null) {
+                    entity.appname = screen.appName;
+                    toBeUpdated.add(entity);
+                } else {
+                    entity = new ScreenShotEntity();
+                    entity.filename = screen.name;
+                    entity.appname = screen.appName;
+                    toBeInserted.add(entity);
+                }
+            }
+            _mDBClient.screenShotDao().insertScreenshots(toBeInserted);
+            _mDBClient.screenShotDao().updateScreenshots(toBeUpdated);
+        });
+    }
+
     public boolean putScreenIntoDB(String filename, String text) {
-        final ScreenShotEntity screen = _mDBClient.screenShotDao().getScreenShotByName(filename);
-        if (screen == null) {
+        ScreenShotEntity entity = _mDBClient.screenShotDao().getScreenShotByName(filename);
+        if (entity == null) {
+            Screenshot screen = ScreenXApplication.screenFactory.findScreenByName(filename);
+            if (screen == null) {
+                _mLogger.log("Provided file name is not present with screenfactory, quitting", filename);
+                return false;
+            }
             _mLogger.log("Inserting Data into DB", filename);
-            _mDBClient.screenShotDao().putScreenShot(filename, text, "");
+            entity = new ScreenShotEntity();
+            entity.appname = screen.appName;
+            entity.filename = filename;
+            entity.textContent = text;
+            _mDBClient.screenShotDao().insertSingleScreenshot(entity);
             _mCache.put(filename, text);
             return true;
         } else {
-            _mDBClient.screenShotDao().updateScreenShotText(filename, text);
+            entity.textContent = text;
+            _mDBClient.screenShotDao().updateSingleScreenshot(entity);
             return true;
         }
     }

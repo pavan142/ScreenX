@@ -10,4 +10,3 @@ public class FtsEntity {
     @ColumnInfo(name = "text_content")
     public String textContent;
 }
-

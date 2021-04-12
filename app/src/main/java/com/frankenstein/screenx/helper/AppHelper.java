@@ -115,21 +115,22 @@ public class AppHelper {
         return appName;
     }
 
-    public static ArrayList<Screenshot> GetMultipleScreens(Context context, ArrayList<File> files) {
-        ArrayList <Screenshot> screens = new ArrayList<>();
+    public static ArrayList<Screenshot> LabelMultipleScreens(ArrayList<Screenshot> screens, Context context, ArrayList<File> files) {
+        ArrayList <Screenshot> newlyLabelledScreens = new ArrayList<>();
         ArrayList <Screenshot> nullAppScreens = new ArrayList<>();
         for (File file: files) {
             String fileName = file.getName();
             String appName = getSourceApp(context, fileName);
             Screenshot screen = new Screenshot(fileName, file.getAbsolutePath(), appName);
             screens.add(screen);
+            newlyLabelledScreens.add(screen);
             if (appName == null) {
                 nullAppScreens.add(screen);
             }
         }
         _mLogger.log("NullAppScreens Length", nullAppScreens.size());
         assignAppNamesViaUsageEvents(context, nullAppScreens);
-        return screens;
+        return newlyLabelledScreens;
     }
 
 
