@@ -10,6 +10,9 @@ public class ScreenShotEntity {
     @PrimaryKey @NonNull
     public String filename;
 
+    @ColumnInfo(name="appname")
+    public String appname;
+
     @ColumnInfo(name="text_content")
     public String textContent;
 
