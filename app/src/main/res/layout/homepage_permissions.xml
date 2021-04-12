@@ -22,10 +22,4 @@
         android:id="@+id/usage_permissions"
         app:permission_text="@string/usage_permission_text"
         ></com.frankenstein.screenx.ui.PermissionComponentView>
-    <com.frankenstein.screenx.ui.PermissionComponentView
-        android:layout_height="wrap_content"
-        android:layout_width="match_parent"
-        android:id="@+id/overlay_permissions"
-        app:permission_text="@string/overlay_permission_text"
-        ></com.frankenstein.screenx.ui.PermissionComponentView>
 </LinearLayout>
