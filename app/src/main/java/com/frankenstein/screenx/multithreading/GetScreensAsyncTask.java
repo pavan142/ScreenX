@@ -4,8 +4,10 @@ import android.os.AsyncTask;
 import android.content.Context;
 
 import com.frankenstein.screenx.ScreenXApplication;
+import com.frankenstein.screenx.Utils;
 import com.frankenstein.screenx.database.ScreenShotEntity;
 import com.frankenstein.screenx.helper.Logger;
+import com.frankenstein.screenx.helper.TimeLogger;
 import com.frankenstein.screenx.models.Screenshot;
 
 import java.io.File;
@@ -20,7 +22,7 @@ import static com.frankenstein.screenx.helper.FileHelper.getAllScreenshotFiles;
 public class GetScreensAsyncTask extends AsyncTask<Object, Void, ArrayList<Screenshot>> {
 
     private Logger _mLogger = Logger.getInstance("GetScreensAsyncTask");;
-    private static final Logger _mTimeLogger = Logger.getInstance("TIME");
+    private static final Logger _mTimeLogger = TimeLogger.getInstance();
 
     public GetScreensAsyncTask() {
         super();
@@ -29,14 +31,16 @@ public class GetScreensAsyncTask extends AsyncTask<Object, Void, ArrayList<Scree
     @Override
     protected ArrayList<Screenshot> doInBackground(Object ...objects) {
         Long start = System.currentTimeMillis();
-        _mLogger.log("doInBackground", Thread.currentThread().toString());
+        _mTimeLogger.log("GetScreensAsyncTask: doInBackground");
         final Context context = (Context) objects[0];
         ArrayList<Screenshot> screens = new ArrayList<>();
         try {
             ArrayList<File> files = getAllScreenshotFiles();
+            _mTimeLogger.d("Scanned all screenshot files");
 
             List<ScreenShotEntity> existingEntities = ScreenXApplication.textHelper.getAllScreenshotsInDatabase();
             Map<String, ScreenShotEntity> existingEntitiesMap = new HashMap<>();
+            _mTimeLogger.d("Fetched all the existing screenshots from database");
             for (ScreenShotEntity entity: existingEntities)
                 existingEntitiesMap.put(entity.filename, entity);
 
@@ -51,9 +55,12 @@ public class GetScreensAsyncTask extends AsyncTask<Object, Void, ArrayList<Scree
                     screens.add(newSreen);
                 }
             }
+            _mTimeLogger.d("Sending unlabelled screens for labelling");
+
             ArrayList<Screenshot> newlyLabelledscreens = LabelMultipleScreens(screens, context, filesToBeLabeled);
+            _mTimeLogger.d("Finished labelling", Thread.currentThread().toString());
             Long end = System.currentTimeMillis();
-            _mLogger.log("Total Screens", screens.size(), "Existing Screens",
+            _mTimeLogger.log("Total Screens", screens.size(), "Existing Screens",
                     screens.size() - newlyLabelledscreens.size(),
                     "Newly Labelled Screens", newlyLabelledscreens.size());
             _mTimeLogger.log("Time taken for processing screenshot files in background =", (end-start));

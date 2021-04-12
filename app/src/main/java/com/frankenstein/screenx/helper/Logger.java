@@ -23,55 +23,39 @@ public class Logger {
         return instanceMap.get(tag);
     }
 
-    private Logger(String tag) {
+    protected Logger(String tag) {
         this.tag = tag;
     }
 
-    public void d(Object... args) {
+    protected String joinArgs(Object... args) {
         String message = "";
         for (int i = 0; i < args.length; i++) {
             message += args[i] + "\t";
-        }
-        Log.d(this.tag, message);
+        };
+        return message;
+    }
+
+    public void d(Object... args) {
+        Log.d(this.tag, joinArgs(args));
     }
 
     public void i(Object... args) {
-        String message = "";
-        for (int i = 0; i < args.length; i++) {
-            message += args[i] + "\t";
-        }
-        Log.i(this.tag, message);
+        Log.i(this.tag, joinArgs(args));
     }
 
     public void w(Object... args) {
-        String message = "";
-        for (int i = 0; i < args.length; i++) {
-            message += args[i] + "\t";
-        }
-        Log.w(this.tag, message);
+        Log.w(this.tag, joinArgs(args));
     }
 
     public void v(Object... args) {
-        String message = "";
-        for (int i = 0; i < args.length; i++) {
-            message += args[i] + "\t";
-        }
-        Log.v(this.tag, message);
+        Log.v(this.tag, joinArgs(args));
     }
 
     public void e(Object... args) {
-        String message = "";
-        for (int i = 0; i < args.length; i++) {
-            message += args[i] + "\t";
-        }
-        Log.e(this.tag, message);
+        Log.e(this.tag, joinArgs(args));
     }
 
     public void log(Object... args) {
-        String message = "";
-        for (int i = 0; i < args.length; i++) {
-            message += args[i] + "\t";
-        }
-        Log.i(this.tag, message);
+        Log.i(this.tag, joinArgs(args));
     }
 }

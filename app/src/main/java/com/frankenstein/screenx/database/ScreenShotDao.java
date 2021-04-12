@@ -2,6 +2,7 @@ package com.frankenstein.screenx.database;
 
 import java.util.List;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
@@ -13,6 +14,9 @@ public interface ScreenShotDao {
 
     @Query("SELECT * FROM ScreenShotEntity")
     List<ScreenShotEntity> getAll();
+
+    @Query("SELECT * FROM ScreenShotEntity")
+    LiveData<List<ScreenShotEntity>> getLiveAll();
 
     @Query ("SELECT * FROM ScreenShotEntity INNER JOIN fts ON ScreenShotEntity.`rowid` = fts.`rowid` WHERE fts.text_content MATCH :query")
     List<ScreenShotEntity> findByContent(String query);

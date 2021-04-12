@@ -60,6 +60,8 @@ public class AppHelper {
     }
 
     private static void assignAppNamesViaUsageEvents(Context context, ArrayList<Screenshot> screens) {
+        if (screens.size() == 0)
+            return;
         _mLogger.log("Starting assignAppNamesViaUsageEvents");
         UsageStatsManager usm = (UsageStatsManager) context.getSystemService(Context.USAGE_STATS_SERVICE);
         PackageManager pm = context.getPackageManager();

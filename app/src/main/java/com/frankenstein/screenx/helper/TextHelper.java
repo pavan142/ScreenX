@@ -20,7 +20,6 @@ import com.google.mlkit.vision.text.TextRecognition;
 import com.google.mlkit.vision.text.TextRecognizer;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -53,9 +52,11 @@ public class TextHelper {
     private ScreenShotDatabase _mDBClient;
     private Context _mContext;
     private Logger _mLogger;
-    private Handler _mHandler;
+    private Handler _mDBHandler;
+    private Handler _mMainHandler;
     private HandlerThread _mThread;
     private Map<String, String> _mCache = new HashMap<>();
+    private List<ScreenShotEntity> _mExistingEntities;
 
     private TextHelper(Context context) {
         _mOCRClient = TextRecognition.getClient();
@@ -64,14 +65,15 @@ public class TextHelper {
         _mDBClient = DatabaseManager.getInstance(_mContext);
          _mThread = new HandlerThread(DB_THREAD_NAME);
          _mThread.start();
-         _mHandler = new Handler(_mThread.getLooper());
+         _mDBHandler = new Handler(_mThread.getLooper());
+         _mMainHandler = new Handler(Looper.getMainLooper());
          // As this class is a singleton that lives as long as application is alive,
          // adding observer Forever
          ScreenXApplication.screenFactory.screenshots.observeForever(this::syncFromUI);
     }
 
     public void getDataForUIUpdate(File file, TextHelperListener listener) {
-        _mHandler.post(() -> {
+        _mDBHandler.post(() -> {
             String filename = file.getName();
             String text = _mCache.get(filename);
             if (text != null) {
@@ -89,7 +91,7 @@ public class TextHelper {
                         // THIS IS RUNNING IN MAIN/UI THREAD
                         _mLogger.log("Scanned the data using OCR", filename);
                         // AS OCR CALLBACKS ARE RUN ON MAIN/UI THREAD, DB OPERATIONS NEED TO BE POSTED ON TO SEPARATE THREAD
-                        _mHandler.post(() -> {
+                        _mDBHandler.post(() -> {
                             putScreenIntoDB(filename, ocrText);
                         });
                         // AS OCR CALLBACKS ARE RUN ON MAIN/UI THREAD, DIRECTLY INVOKING THE UI LISTENER HERE IS OKAY
@@ -126,7 +128,7 @@ public class TextHelper {
         MutableLiveData<ArrayList<String>> livescreens = new MutableLiveData<>();
         // This method is invoked by Main Thread, so we need to post the database operations
         // on to a separate thread
-        _mHandler.post(() -> {
+        _mDBHandler.post(() -> {
             // LIKE uses %query% format for pattern matching and
             // MATCH uses *query* format for pattern matching
             List<ScreenShotEntity> matchedList = _mDBClient.screenShotDao().findByContent("*"+text+"*");
@@ -156,12 +158,19 @@ public class TextHelper {
             _mLogger.log("This operation is not supported on main thread");
             return null;
         }
-        List<ScreenShotEntity> existingScreens = _mDBClient.screenShotDao().getAll();
-        return existingScreens;
+        if (_mExistingEntities == null) {
+            _mExistingEntities = _mDBClient.screenShotDao().getAll();
+            _mMainHandler.post(() -> {
+                _mDBClient.screenShotDao().getLiveAll().observeForever((data) -> {
+                    _mExistingEntities = data;
+                });
+            });
+        }
+        return _mExistingEntities;
     }
 
     public void updateAppNames(ArrayList<Screenshot> screens) {
-        _mHandler.post(() -> {
+        _mDBHandler.post(() -> {
             List<ScreenShotEntity> existingScreens = _mDBClient.screenShotDao().getAll();
             Map<String, ScreenShotEntity> existingScreenMap = new HashMap<>();
             for (ScreenShotEntity entity: existingScreens)
@@ -211,13 +220,13 @@ public class TextHelper {
     }
 
     public void deleteScreenshotListFromUI(ArrayList<String> deleteList) {
-        _mHandler.post(() -> {
+        _mDBHandler.post(() -> {
             _mDBClient.screenShotDao().deleteMultipleScreenShots(deleteList.toArray(new String[deleteList.size()]));
         });
     }
 
     public void deleteScreenshotFromUI(String filename) {
-        _mHandler.post(() -> {
+        _mDBHandler.post(() -> {
             _mDBClient.screenShotDao().deleteScreenShot(filename);
         });
     }
@@ -230,7 +239,7 @@ public class TextHelper {
             _mLogger.log("ScreensOnDevice is zero!!, has something gone wrong?");
             return;
         }
-        _mHandler.post(() -> {
+        _mDBHandler.post(() -> {
             List<ScreenShotEntity> screensOnDatabase = _mDBClient.screenShotDao().getAll();
             ArrayList<String> toBeDeleted = new ArrayList<>();
             for(ScreenShotEntity entity: screensOnDatabase) {
