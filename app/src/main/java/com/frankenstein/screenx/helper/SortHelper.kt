@@ -32,5 +32,12 @@ public class SortHelper {
             input.sortBy{it -> ScreenXApplication.screenFactory.findScreenByName(it).lastModified}
         }
 
+        @JvmStatic
+        fun processQuery(queryText: String): String {
+            return queryText
+                    .split("[ \"\\-*]".toRegex())
+                    .joinToString(" ", "", "*")
+        }
+
     }
 }

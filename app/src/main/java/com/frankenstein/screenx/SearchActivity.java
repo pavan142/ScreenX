@@ -8,20 +8,25 @@ import android.view.View;
 import android.widget.ImageButton;
 import androidx.appcompat.widget.AppCompatAutoCompleteTextView;
 
+import com.frankenstein.screenx.database.ScreenShotEntity;
 import com.frankenstein.screenx.helper.Logger;
+import com.frankenstein.screenx.helper.TimeLogger;
 import com.frankenstein.screenx.models.Screenshot;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import androidx.lifecycle.LiveData;
 
 import static com.frankenstein.screenx.helper.ArrayHelper.Same;
+import static com.frankenstein.screenx.helper.SortHelper.DESC_SCREENS_BY_TIME;
 
 public class SearchActivity extends MultipleSelectActivity {
 
     private AppCompatAutoCompleteTextView _mSearch;
     private final Logger _mLogger = Logger.getInstance("SearchActivity");
-    private LiveData<ArrayList<String>> _mLiveMatches = new LiveData<ArrayList<String>>() {};
+    private final Logger _mTimeLogger = TimeLogger.getInstance();
+    private LiveData<List<String>> _mLiveMatches;
     private ArrayList<String> _mMatches;
     private ImageButton _mClearSearch;
 
@@ -31,23 +36,22 @@ public class SearchActivity extends MultipleSelectActivity {
         super.onCreate(savedInstanceState);
         _mSearch = findViewById(R.id.automcomplete_search);
         _mClearSearch = findViewById(R.id.clear_search_bar);
+        _mLiveMatches = ScreenXApplication.textHelper.searchScreenshots("");
         _mSearch.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
                 _mLiveMatches.removeObservers(SearchActivity.this);
-                _mLogger.log("beforeTextChagned", s, start, count, after);
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                _mLogger.log("onTextChagned", s, start, before, count);
+                _mTimeLogger.log("requesting search");
                 _mLiveMatches = ScreenXApplication.textHelper.searchScreenshots(s.toString());
                 checkAndToggleClear(count);
             }
 
             @Override
             public void afterTextChanged(Editable s) {
-                _mLogger.log("afterTextChagned", s.toString());
                 _mLiveMatches.observe(SearchActivity.this, SearchActivity.this::onLiveMatches);
             }
         });
@@ -65,15 +69,22 @@ public class SearchActivity extends MultipleSelectActivity {
         }
     }
 
-    public void onLiveMatches(ArrayList<String> matches) {
-        _mLogger.log("number of matches", matches.size());
-        updateAdapter(matches);
+    public void onLiveMatches(List<String> matches) {
+        _mTimeLogger.log("Got matches", matches.size());
+        ArrayList<String> screens = new ArrayList<>();
+        _mLogger.log("Total matched screenshots by search = ", matches.size());
+        for (String name: matches) {
+            Screenshot screen = ScreenXApplication.screenFactory.findScreenByName(name);
+            if ( screen != null)
+                screens.add(name);
+        }
+        DESC_SCREENS_BY_TIME(screens);
+        updateAdapter(screens);
     }
 
     private void updateAdapter(ArrayList<String> matches) {
         ArrayList<Screenshot> newScreens = new ArrayList<>();
         for (int i = 0; i < matches.size(); i++) {
-            _mLogger.log("Matched", matches.get(i));
             Screenshot screen = ScreenXApplication.screenFactory.findScreenByName(matches.get(i));
             if (screen != null)
                 newScreens.add(screen);

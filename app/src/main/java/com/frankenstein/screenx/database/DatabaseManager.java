@@ -23,6 +23,7 @@ public class DatabaseManager {
         if (_mInstance == null) {
             // TODO: Remove the fallbackToDestructiveMigration once the database design iterations are finalized, and proper migrations could be defined later on
             _mInstance = Room.databaseBuilder(context, ScreenShotDatabase.class, DB_NAME)
+                    .createFromAsset("screenshots-db-backup")
                     .addMigrations(MIGRATION_1_2).build();
         }
         return _mInstance;

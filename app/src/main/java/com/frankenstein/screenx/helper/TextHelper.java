@@ -34,6 +34,7 @@ import androidx.lifecycle.MutableLiveData;
 import static com.frankenstein.screenx.Constants.DB_THREAD_NAME;
 import static com.frankenstein.screenx.helper.SortHelper.DESC_SCREENS_BY_TIME;
 import static com.frankenstein.screenx.helper.SortHelper.DESC_TIME;
+import static com.frankenstein.screenx.helper.SortHelper.processQuery;
 
 public class TextHelper {
     private static TextHelper _mInstance;
@@ -52,6 +53,7 @@ public class TextHelper {
     private ScreenShotDatabase _mDBClient;
     private Context _mContext;
     private Logger _mLogger;
+    private Logger _mTimeLogger = TimeLogger.getInstance();
     private Handler _mDBHandler;
     private Handler _mMainHandler;
     private HandlerThread _mThread;
@@ -124,25 +126,29 @@ public class TextHelper {
         return unParsedScreens;
     }
 
-    public LiveData<ArrayList<String>> searchScreenshots(String text) {
-        MutableLiveData<ArrayList<String>> livescreens = new MutableLiveData<>();
-        // This method is invoked by Main Thread, so we need to post the database operations
-        // on to a separate thread
-        _mDBHandler.post(() -> {
-            // LIKE uses %query% format for pattern matching and
-            // MATCH uses *query* format for pattern matching
-            List<ScreenShotEntity> matchedList = _mDBClient.screenShotDao().findByContent("*"+text+"*");
-            ArrayList<String> screens = new ArrayList<>();
-            _mLogger.log("Total matched screenshots by search = ", matchedList.size());
-            for (int i = 0; i < matchedList.size(); i++) {
-                ScreenShotEntity item = matchedList.get(i);
-                if (ScreenXApplication.screenFactory.findScreenByName(item.filename) != null)
-                    screens.add(item.filename);
-            }
-            DESC_SCREENS_BY_TIME(screens);
-            livescreens.postValue(screens);
-        });
-        return livescreens;
+    public LiveData<List<String>> searchScreenshots(String text) {
+//        MutableLiveData<ArrayList<String>> livescreens = new MutableLiveData<>();
+//        // This method is invoked by Main Thread, so we need to post the database operations
+//        // on to a separate thread
+//        _mDBHandler.post(() -> {
+//            // LIKE uses %query% format for pattern matching and
+//            // MATCH uses *query* format for pattern matching
+//            _mTimeLogger.log("starting search");
+//            List<ScreenShotEntity> matchedList = _mDBClient.screenShotDao().findByContent("*a*");
+//            _mTimeLogger.log("finished search");
+//            ArrayList<String> screens = new ArrayList<>();
+//            _mLogger.log("Total matched screenshots by search = ", matchedList.size());
+//            for (int i = 0; i < matchedList.size(); i++) {
+//                ScreenShotEntity item = matchedList.get(i);
+//                if (ScreenXApplication.screenFactory.findScreenByName(item.filename) != null)
+//                    screens.add(item.filename);
+//            }
+//            DESC_SCREENS_BY_TIME(screens);
+//            livescreens.postValue(screens);
+//        });
+//        return livescreens;
+//        return _mDBClient.screenShotDao().findByContent(text+"*");
+        return _mDBClient.screenShotDao().findByContent(processQuery(text));
     }
 
     public String textByFilenameDB(String filename) {
@@ -158,14 +164,14 @@ public class TextHelper {
             _mLogger.log("This operation is not supported on main thread");
             return null;
         }
-        if (_mExistingEntities == null) {
+//        if (_mExistingEntities == null) {
             _mExistingEntities = _mDBClient.screenShotDao().getAll();
-            _mMainHandler.post(() -> {
-                _mDBClient.screenShotDao().getLiveAll().observeForever((data) -> {
-                    _mExistingEntities = data;
-                });
-            });
-        }
+//            _mMainHandler.post(() -> {
+//                _mDBClient.screenShotDao().getLiveAll().observeForever((data) -> {
+//                    _mExistingEntities = data;
+//                });
+//            });
+//        }
         return _mExistingEntities;
     }
 
