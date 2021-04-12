@@ -11,21 +11,17 @@ import com.frankenstein.screenx.models.Screenshot;
 import com.frankenstein.screenx.helper.UsageStatsHelper.Companion.*;
 
 import java.io.File;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 
 import static com.frankenstein.screenx.Constants.SCREENSHOT_DEFAULT_APPGROUP;
-import static com.frankenstein.screenx.helper.SortHelper.ASC_TIME;
-import static com.frankenstein.screenx.helper.TimeHelper.getReadableTime;
 
 public class AppHelper {
     private static final Map<String, String> _packageToAppName = new HashMap<>();
-    private static final Logger _mLogger = Logger.getRawInstance("AppHelper");
+    private static final Logger _mLogger = Logger.getInstance("AppHelper");
 
     private static String getAppName(PackageManager _pm, String packageId) {
         if (!_packageToAppName.containsKey(packageId)) {
@@ -59,13 +55,15 @@ public class AppHelper {
         return appName;
     }
 
-    private static void assignAppNamesViaUsageEvents(Context context, ArrayList<Screenshot> screens) {
+    private static void labelSystemScreenshots(Context context, ArrayList<Screenshot> screens, Boolean isLive) {
         if (screens.size() == 0)
             return;
         _mLogger.log("Starting assignAppNamesViaUsageEvents");
         UsageStatsManager usm = (UsageStatsManager) context.getSystemService(Context.USAGE_STATS_SERVICE);
         PackageManager pm = context.getPackageManager();
-        ArrayList<ForeGroundAppEvent> fgEvents = UsageStatsHelper.getArchivedFgEventTimeline(usm);
+        ArrayList<ForeGroundAppEvent> fgEvents = UsageStatsHelper.getFgEventTimeline(usm, isLive);
+
+        _mLogger.log("Total Fg Events", fgEvents.size());
         ArrayList<CompoundEvent> allEvents = new ArrayList<>();
 
         for (Screenshot screen: screens)
@@ -82,15 +80,19 @@ public class AppHelper {
             return output;
         });
         ForeGroundAppEvent lastFgEvent = null;
-        for (int i = 0; i < allEvents.size(); i++) {
+        int labelled_screens = 0;
+        for (int i = 0; i < allEvents.size() && labelled_screens < screens.size(); i++) {
             CompoundEvent event = allEvents.get(i);
             if (!event.isScreen) {
                 lastFgEvent = event.fgEvent;
-            } else if (i > 0 && lastFgEvent != null) {
-                String lastSeenAppName = getAppName(pm, lastFgEvent.getMPackageName());
-                event.screen.appName = lastSeenAppName == null ? SCREENSHOT_DEFAULT_APPGROUP: lastSeenAppName;
             } else {
-                event.screen.appName = SCREENSHOT_DEFAULT_APPGROUP;
+                if (i > 0 && lastFgEvent != null) {
+                    String lastSeenAppName = getAppName(pm, lastFgEvent.getMPackageName());
+                    event.screen.appName = lastSeenAppName == null ? SCREENSHOT_DEFAULT_APPGROUP: lastSeenAppName;
+                } else {
+                    event.screen.appName = SCREENSHOT_DEFAULT_APPGROUP;
+                }
+                labelled_screens ++;
             }
         }
     }
@@ -119,7 +121,7 @@ public class AppHelper {
 
     public static ArrayList<Screenshot> LabelMultipleScreens(ArrayList<Screenshot> screens, Context context, ArrayList<File> files) {
         ArrayList <Screenshot> newlyLabelledScreens = new ArrayList<>();
-        ArrayList <Screenshot> nullAppScreens = new ArrayList<>();
+        ArrayList <Screenshot> systemScreens = new ArrayList<>();
         for (File file: files) {
             String fileName = file.getName();
             String appName = getSourceApp(context, fileName);
@@ -127,19 +129,29 @@ public class AppHelper {
             screens.add(screen);
             newlyLabelledScreens.add(screen);
             if (appName == null) {
-                nullAppScreens.add(screen);
+                systemScreens.add(screen);
             }
         }
-        _mLogger.log("NullAppScreens Length", nullAppScreens.size());
-        assignAppNamesViaUsageEvents(context, nullAppScreens);
+        _mLogger.log("Unlabelled SystemScreenshots Length", systemScreens.size());
+        labelSystemScreenshots(context, systemScreens, false);
         return newlyLabelledScreens;
     }
 
 
-    public static Screenshot GetScreenFromFile(Context context, File file) {
+    public static Screenshot processNewScreen(Context context, File file) {
         String fileName = file.getName();
         String appName = getSourceApp(context, fileName);
         Screenshot screen = new Screenshot(fileName, file.getAbsolutePath(), appName);
+        if (appName == null) {
+            // TODO: In the name of reusability of code, we have an ugly tmp single element array here
+            // Find a better way for it. but I guess we should leave it is it,
+            // Following the old adage of don't fix it if it's not broken
+            ArrayList<Screenshot> tmp = new ArrayList<>();
+            tmp.add(screen);
+            _mLogger.log("Must be an unlabelled system screenshot", fileName);
+            labelSystemScreenshots(context, tmp, true);
+        }
+        _mLogger.log("Labelled Screen", appName);
         return screen;
     }
 
