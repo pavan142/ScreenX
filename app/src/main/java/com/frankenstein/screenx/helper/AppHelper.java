@@ -115,6 +115,8 @@ public class AppHelper {
         }
         String packageId = filename.substring(startIndex, endIndex);
         String appName = getAppName(pm, packageId);
+        if (appName == null)
+            return null;
         appName = (appName.compareTo("") == 0) ? null : appName;
         return appName;
     }
@@ -144,7 +146,7 @@ public class AppHelper {
         Screenshot screen = new Screenshot(fileName, file.getAbsolutePath(), appName);
         if (appName == null) {
             // TODO: In the name of reusability of code, we have an ugly tmp single element array here
-            // Find a better way for it. but I guess we should leave it is it,
+            // Find a better way for it. but I guess we should leave it as it is,
             // Following the old adage of don't fix it if it's not broken
             ArrayList<Screenshot> tmp = new ArrayList<>();
             tmp.add(screen);
