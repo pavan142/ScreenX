@@ -14,6 +14,7 @@ import com.frankenstein.screenx.models.Screenshot;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.perf.metrics.AddTrace;
 import com.google.mlkit.vision.common.InputImage;
 import com.google.mlkit.vision.text.Text;
 import com.google.mlkit.vision.text.TextRecognition;
@@ -153,6 +154,7 @@ public class TextHelper {
     }
 
     // TO BE INVOKED ONLY ON A BACKGROUND THREAD
+    @AddTrace(name = "db_get_all_screens")
     public List<ScreenShotEntity> getAllScreenshotsInDatabase() {
         if (Looper.myLooper() == Looper.getMainLooper()) {
             _mLogger.log("This operation is not supported on main thread");

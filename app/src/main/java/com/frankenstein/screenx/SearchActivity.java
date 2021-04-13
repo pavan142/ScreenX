@@ -10,6 +10,8 @@ import androidx.appcompat.widget.AppCompatAutoCompleteTextView;
 
 import com.frankenstein.screenx.helper.Logger;
 import com.frankenstein.screenx.models.Screenshot;
+import com.google.firebase.perf.FirebasePerformance;
+import com.google.firebase.perf.metrics.Trace;
 
 import java.util.ArrayList;
 
@@ -24,6 +26,7 @@ public class SearchActivity extends MultipleSelectActivity {
     private LiveData<ArrayList<String>> _mLiveMatches = new LiveData<ArrayList<String>>() {};
     private ArrayList<String> _mMatches;
     private ImageButton _mClearSearch;
+    private Trace _mSearchTrace;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -35,19 +38,18 @@ public class SearchActivity extends MultipleSelectActivity {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
                 _mLiveMatches.removeObservers(SearchActivity.this);
-                _mLogger.log("beforeTextChagned", s, start, count, after);
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                _mLogger.log("onTextChagned", s, start, before, count);
+                _mSearchTrace = FirebasePerformance.getInstance().newTrace("search_time");
+                _mSearchTrace.start();
                 _mLiveMatches = ScreenXApplication.textHelper.searchScreenshots(s.toString());
                 checkAndToggleClear(count);
             }
 
             @Override
             public void afterTextChanged(Editable s) {
-                _mLogger.log("afterTextChagned", s.toString());
                 _mLiveMatches.observe(SearchActivity.this, SearchActivity.this::onLiveMatches);
             }
         });
@@ -66,6 +68,7 @@ public class SearchActivity extends MultipleSelectActivity {
     }
 
     public void onLiveMatches(ArrayList<String> matches) {
+        _mSearchTrace.stop();
         _mLogger.log("number of matches", matches.size());
         updateAdapter(matches);
     }

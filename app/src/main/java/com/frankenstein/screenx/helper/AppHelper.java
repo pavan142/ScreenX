@@ -9,6 +9,7 @@ import com.frankenstein.screenx.Constants;
 import com.frankenstein.screenx.interfaces.TimeSortable;
 import com.frankenstein.screenx.models.Screenshot;
 import com.frankenstein.screenx.helper.UsageStatsHelper.Companion.*;
+import com.google.firebase.perf.metrics.AddTrace;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -121,6 +122,7 @@ public class AppHelper {
         return appName;
     }
 
+    @AddTrace(name="label_all_screens")
     public static ArrayList<Screenshot> LabelMultipleScreens(ArrayList<Screenshot> screens, Context context, ArrayList<File> files) {
         ArrayList <Screenshot> newlyLabelledScreens = new ArrayList<>();
         ArrayList <Screenshot> systemScreens = new ArrayList<>();
