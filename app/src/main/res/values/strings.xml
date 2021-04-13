@@ -36,4 +36,11 @@
     <!-- Delete Dialog-->
     <string name="delete_confirm">Confirm</string>
     <string name="delete_cancel">Cancel</string>
+
+    <!-- Detail Page-->
+    <string name="detail_date">Date</string>
+    <string name="detail_appname">App</string>
+    <string name="detail_name">Name</string>
+    <string name="detail_path">Path</string>
+    <string name="detail_size">Size</string>
 </resources>

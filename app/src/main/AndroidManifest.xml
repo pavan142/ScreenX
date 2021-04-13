@@ -49,6 +49,11 @@
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
         <activity
+            android:name="com.frankenstein.screenx.DetailActivity"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
+        <activity
             android:name="com.frankenstein.screenx.capture.RequestCaptureActivity"
             android:excludeFromRecents="true"
             android:exported="false"

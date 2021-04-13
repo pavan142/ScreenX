@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
+        <androidx.appcompat.widget.Toolbar
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/white"
+                android:elevation="4dp"
+                app:navigationIcon="@drawable/back"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                app:layout_constraintTop_toTopOf="parent">
+            <TextView
+                android:id="@+id/detailpage_title"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="60dp"
+                android:background="@android:color/transparent"
+                android:selectAllOnFocus="true"
+                android:textSize="24dp"
+                android:text="Details"/>
+        </androidx.appcompat.widget.Toolbar>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            app:layout_constraintTop_toBottomOf="@id/toolbar"
+            android:orientation="vertical">
+            <com.frankenstein.screenx.ui.DetailComponentView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/date"
+                app:label="@string/detail_date"
+                app:data="11 April 2021 \n Sunday 19:53"></com.frankenstein.screenx.ui.DetailComponentView>
+            <com.frankenstein.screenx.ui.DetailComponentView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/app"
+                app:label="@string/detail_appname"
+                app:data="Wikipedia"></com.frankenstein.screenx.ui.DetailComponentView>
+            <com.frankenstein.screenx.ui.DetailComponentView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/name"
+                app:label="@string/detail_name"
+                app:data="IMG_20210411_195341.jpg"></com.frankenstein.screenx.ui.DetailComponentView>
+            <com.frankenstein.screenx.ui.DetailComponentView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/path"
+                app:label="@string/detail_path"
+                app:data="Internal Storage/Pictures/Screenshots/Screenshot_20210411_195341_org.wikipedia.jpg"></com.frankenstein.screenx.ui.DetailComponentView>
+            <com.frankenstein.screenx.ui.DetailComponentView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/size"
+                app:label="@string/detail_size"
+                app:data="300 KB"></com.frankenstein.screenx.ui.DetailComponentView>
+        </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
