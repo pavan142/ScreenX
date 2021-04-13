@@ -30,10 +30,8 @@ import java.util.Set;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 
 import static com.frankenstein.screenx.Constants.DB_THREAD_NAME;
-import static com.frankenstein.screenx.helper.SortHelper.DESC_SCREENS_BY_TIME;
 import static com.frankenstein.screenx.helper.SortHelper.DESC_TIME;
 
 public class TextHelper {
@@ -103,20 +101,20 @@ public class TextHelper {
         });
     }
 
+    @AddTrace(name = "text_all_unparsed")
     public ArrayList<Screenshot> getUnParsedScreenshots() {
-        List<ScreenShotEntity> existingEntities = _mDBClient.screenShotDao().getAll();
-        _mLogger.log("Total Screenshots in database", existingEntities.size());
-        Set<String> parsedScreens = new HashSet<String>();
-        for(ScreenShotEntity entity: existingEntities) {
-            if (entity.textContent != null)
-                parsedScreens.add(entity.filename);
+        List<ScreenShotEntity> parsedEntities = _mDBClient.screenShotDao().getAllParsed();
+        _mLogger.log("Total parsed screenshots in database", parsedEntities.size());
+        Set<String> parsedEntityMap = new HashSet<>();
+        for(ScreenShotEntity entity: parsedEntities) {
+            parsedEntityMap.add(entity.filename);
         }
         ArrayList<Screenshot> allScreens = ScreenXApplication.screenFactory.screenshots.getValue();
         ArrayList<Screenshot> unParsedScreens = new ArrayList<>();
         if (allScreens == null)
             return unParsedScreens;
         for(Screenshot screen: allScreens) {
-            if (!parsedScreens.contains(screen.name)) {
+            if (!parsedEntityMap.contains(screen.name)) {
                 unParsedScreens.add(screen);
             }
         }
@@ -264,7 +262,6 @@ public class TextHelper {
                 _mLogger.log("got null for file", file);
                 return;
             }
-//            _mLogger.log("OCR Starting for", file.getName());
             InputImage image = InputImage.fromFilePath(_mContext, Uri.fromFile(file));
             // PROCESS IMAGE IS RUN ON DIFFERENT THREAD
             Task<Text> result = _mOCRClient.process(image)
@@ -273,7 +270,6 @@ public class TextHelper {
                         @Override
                         public void onSuccess(Text text) {
                             String output = text.getText();
-//                            _mLogger.log("OCR Task Completed Succesfully for file", file.getName());
                             listener.onTextFetched(file, output);
                         }
                     })
