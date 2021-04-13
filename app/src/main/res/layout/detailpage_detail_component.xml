@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_marginTop="20dp"
+    android:layout_marginRight="30dp"
+    android:layout_marginLeft="30dp">
+
+    <TextView
+        android:id="@+id/label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="5dp"
+        android:textSize="@dimen/detail_compnent_text_size"
+        android:layout_alignParentTop="true"
+        android:layout_alignRight="@id/center_colon"
+        android:text="Path">
+    </TextView>
+    <TextView
+        android:id="@+id/center_colon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/detail_compnent_text_size"
+        android:text=":"
+        android:layout_marginLeft="50dp"
+        android:layout_alignParentTop="true">
+    </TextView>
+    <TextView
+        android:id="@+id/data"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:textSize="@dimen/detail_compnent_text_size"
+        android:layout_centerVertical="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignLeft="@id/center_colon"
+        android:text="SD Card/DCIM/Screenshots/ScreenX/IMG_20210411_195341.jpg">
+    </TextView>
+</RelativeLayout>

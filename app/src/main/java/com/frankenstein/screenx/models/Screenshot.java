@@ -1,9 +1,9 @@
 package com.frankenstein.screenx.models;
 
 import com.frankenstein.screenx.interfaces.TimeSortable;
-import com.frankenstein.screenx.overlay.Screen;
 
 import java.io.File;
+import java.util.Calendar;
 
 import androidx.annotation.Nullable;
 
@@ -12,6 +12,8 @@ public class Screenshot extends TimeSortable {
     public File file;
     public String appName;
     public String filePath;
+    public Calendar calendar;
+    public long size;
 
     public Screenshot(String name, String filePath, String appName) {
         this.name = name;
@@ -19,6 +21,9 @@ public class Screenshot extends TimeSortable {
         this.filePath = filePath;
         this.file = new File(filePath);
         this.lastModified = this.file.lastModified();
+        this.calendar = Calendar.getInstance();
+        this.calendar.setTimeInMillis(this.lastModified);
+        this.size = this.file.length();
     }
 
     @Override

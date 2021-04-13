@@ -3,4 +3,8 @@
     <declare-styleable name="PermissionComponentView">
         <attr name="permission_text" format="string"/>
     </declare-styleable>
+    <declare-styleable name="DetailComponentView">
+        <attr name="label" format="string"/>
+        <attr name="data" format="string"/>
+    </declare-styleable>
 </resources>

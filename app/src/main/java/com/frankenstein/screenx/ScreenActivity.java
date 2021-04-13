@@ -40,6 +40,7 @@ public class ScreenActivity extends ImmersiveActivity {
     private ArrayList<Screenshot> _screens;
     private ImageButton _deleteButton;
     private ImageButton _shareButton;
+    private ImageButton _infoButton;
     private LinearLayout _toolbar;
     private String _screenName;
     private int _currPosition;
@@ -65,6 +66,8 @@ public class ScreenActivity extends ImmersiveActivity {
         _deleteButton.setOnClickListener(view -> onDelete());
         _shareButton = findViewById(R.id.share);
         _shareButton.setOnClickListener(view -> onShare());
+        _infoButton = findViewById(R.id.info);
+        _infoButton.setOnClickListener(view -> onInfo());
         _toolbar.setAlpha(0);
         alignToolbarWithNavbar();
 
@@ -154,6 +157,15 @@ public class ScreenActivity extends ImmersiveActivity {
         intent.setType("image/*");
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_GRANT_READ_URI_PERMISSION);
         startActivity(Intent.createChooser(intent, "Share Image"));
+    }
+
+    private void onInfo() {
+        int position = _viewpager.getCurrentItem();
+        Screenshot screen = _screens.get(position);
+        _logger.log("Opening Details of screen", screen.name, screen.appName);
+        Intent intent = new Intent(getBaseContext(), DetailActivity.class);
+        intent.putExtra(DetailActivity.INTENT_SCREEN_NAME, screen.name);
+        startActivity(intent);
     }
 
     private void alignToolbarWithNavbar() {
