@@ -16,10 +16,10 @@ import android.provider.MediaStore;
 
 import com.frankenstein.screenx.helper.Logger;
 import com.frankenstein.screenx.helper.PermissionHelper;
-import com.frankenstein.screenx.helper.TimeLogger;
 import com.frankenstein.screenx.models.AppGroup;
 import com.frankenstein.screenx.models.Screenshot;
 import com.frankenstein.screenx.multithreading.GetScreensAsyncTask;
+import com.google.firebase.perf.metrics.AddTrace;
 
 import androidx.lifecycle.MutableLiveData;
 
@@ -38,7 +38,6 @@ public class ScreenFactory {
 
     private boolean _initialized = false;
     private final Logger _logger = Logger.getInstance("ScreenFactory");
-    private static final Logger _mTimeLogger = TimeLogger.getInstance();
     private boolean _monitoring = false;
     private Handler _monitorHandler;
     private Handler _mainHandler;
@@ -66,9 +65,8 @@ public class ScreenFactory {
         startMonitor();
     }
 
+    @AddTrace(name = "analyze_all_screens")
     public void analyzeScreens(ArrayList<Screenshot> screens) {
-        Long start = System.currentTimeMillis();
-        _logger.log("Analyzing screens", Thread.currentThread().toString());
         ArrayList<Screenshot> newScreenshots = new ArrayList<>();
         for (AppGroup ag: appgroups.values())
             ag.screenshots.clear();
@@ -79,8 +77,6 @@ public class ScreenFactory {
                 newScreenshots.add(screen);
             }
             sort();
-            Long end = System.currentTimeMillis();
-            _mTimeLogger.log("Posting Screenshots value to livedata on UI Thread, Time taken for analyze Screens is", (end-start));
             screenshots.postValue(newScreenshots);
         } catch (Exception e) {
             _logger.log("got an error: ", e.getMessage());

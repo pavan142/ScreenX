@@ -4,6 +4,7 @@ apply plugin: 'kotlin-android'
 // crash analytics
 apply plugin: 'com.google.gms.google-services'
 apply plugin: 'com.google.firebase.crashlytics'
+apply plugin: 'com.google.firebase.firebase-perf'
 
 android {
     compileSdkVersion 29
@@ -11,8 +12,8 @@ android {
         applicationId "com.frankenstein.screenx"
         minSdkVersion 21
         targetSdkVersion 29
-        versionCode 8
-        versionName "1.5.1"
+        versionCode 9
+        versionName "1.5.2-perf-baseline"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -78,6 +79,7 @@ dependencies {
     implementation platform('com.google.firebase:firebase-bom:26.7.0')
     implementation 'com.google.firebase:firebase-analytics'
     implementation 'com.google.firebase:firebase-crashlytics'
+    implementation 'com.google.firebase:firebase-perf'
 
     annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
     testImplementation 'junit:junit:4.12'
