@@ -18,9 +18,8 @@ public interface ScreenShotDao {
     @Query("SELECT * FROM ScreenShotEntity")
     LiveData<List<ScreenShotEntity>> getLiveAll();
 
-    @Query ("SELECT * FROM ScreenShotEntity INNER JOIN fts ON ScreenShotEntity.`rowid` = fts.`rowid` WHERE fts.text_content MATCH :query")
-    List<ScreenShotEntity> findByContent(String query);
-
+    @Query ("SELECT filename FROM ScreenShotEntity INNER JOIN fts ON ScreenShotEntity.`rowid` = fts.`rowid` WHERE fts.text_content MATCH :query")
+    LiveData<List<String>> findByContent(String query);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     public void insertScreenshots(List<ScreenShotEntity> screenShotEntityList);
