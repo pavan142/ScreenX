@@ -125,25 +125,8 @@ public class TextHelper {
         return unParsedScreens;
     }
 
-    public LiveData<ArrayList<String>> searchScreenshots(String text) {
-        MutableLiveData<ArrayList<String>> livescreens = new MutableLiveData<>();
-        // This method is invoked by Main Thread, so we need to post the database operations
-        // on to a separate thread
-        _mDBHandler.post(() -> {
-            // LIKE uses %query% format for pattern matching and
-            // MATCH uses *query* format for pattern matching
-            List<ScreenShotEntity> matchedList = _mDBClient.screenShotDao().findByContent("*"+text+"*");
-            ArrayList<String> screens = new ArrayList<>();
-            _mLogger.log("Total matched screenshots by search = ", matchedList.size());
-            for (int i = 0; i < matchedList.size(); i++) {
-                ScreenShotEntity item = matchedList.get(i);
-                if (ScreenXApplication.screenFactory.findScreenByName(item.filename) != null)
-                    screens.add(item.filename);
-            }
-            DESC_SCREENS_BY_TIME(screens);
-            livescreens.postValue(screens);
-        });
-        return livescreens;
+    public LiveData<List<String>> searchScreenshots(String text) {
+        return _mDBClient.screenShotDao().findByContent("*" + text + "*");
     }
 
     public String textByFilenameDB(String filename) {

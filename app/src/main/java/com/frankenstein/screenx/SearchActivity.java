@@ -14,6 +14,7 @@ import com.google.firebase.perf.FirebasePerformance;
 import com.google.firebase.perf.metrics.Trace;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import androidx.lifecycle.LiveData;
 
@@ -23,8 +24,8 @@ public class SearchActivity extends MultipleSelectActivity {
 
     private AppCompatAutoCompleteTextView _mSearch;
     private final Logger _mLogger = Logger.getInstance("SearchActivity");
-    private LiveData<ArrayList<String>> _mLiveMatches = new LiveData<ArrayList<String>>() {};
-    private ArrayList<String> _mMatches;
+    private LiveData<List<String>> _mLiveMatches = new LiveData<List<String>>() {};
+    private ArrayList<String> _mMatches = new ArrayList<>();
     private ImageButton _mClearSearch;
     private Trace _mSearchTrace;
 
@@ -67,24 +68,25 @@ public class SearchActivity extends MultipleSelectActivity {
         }
     }
 
-    public void onLiveMatches(ArrayList<String> matches) {
+    public void onLiveMatches(List<String> matches) {
         _mSearchTrace.stop();
         _mLogger.log("number of matches", matches.size());
         updateAdapter(matches);
     }
 
-    private void updateAdapter(ArrayList<String> matches) {
+    private void updateAdapter(List<String> matches) {
         ArrayList<Screenshot> newScreens = new ArrayList<>();
-        for (int i = 0; i < matches.size(); i++) {
-            _mLogger.log("Matched", matches.get(i));
-            Screenshot screen = ScreenXApplication.screenFactory.findScreenByName(matches.get(i));
-            if (screen != null)
+        _mMatches.clear();
+        for (String filename: matches) {
+            Screenshot screen = ScreenXApplication.screenFactory.findScreenByName(filename);
+            if (screen != null) {
                 newScreens.add(screen);
+                _mMatches.add(filename);
+            }
         }
         if (Same(newScreens, mScreens))
             return;
         mScreens = newScreens;
-        _mMatches = matches;
         _mLogger.log("Displaying grid with items = ", mScreens.size());
         super.updateAdapter();
     }
