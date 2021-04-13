@@ -30,7 +30,7 @@ public class GetScreensAsyncTask extends AsyncTask<Object, Void, ArrayList<Scree
 
     @Override
     protected ArrayList<Screenshot> doInBackground(Object ...objects) {
-        _mLogger.log("GetScreensAsyncTask: doInBackground");
+        _mLogger.log("doInBackground");
         final Context context = (Context) objects[0];
         ArrayList<Screenshot> screens = new ArrayList<>();
         try {
