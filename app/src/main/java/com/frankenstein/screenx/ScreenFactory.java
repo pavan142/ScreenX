@@ -143,6 +143,8 @@ public class ScreenFactory {
 
     public void onScreenAdded(Context context, String filepath) {
         _monitorHandler.post(() -> {
+            if (screenshots.getValue() == null)
+                return;
             _logger.log("ScreenFactory: onScreenAdded", filepath);
             File file = new File(filepath);
             if (nameToScreen.containsKey(file.getName())) {

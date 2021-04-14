@@ -21,6 +21,7 @@ import androidx.appcompat.widget.SearchView;
 import androidx.core.app.ActivityCompat;
 import androidx.lifecycle.MutableLiveData;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import androidx.viewpager2.widget.ViewPager2;
 
 import java.util.ArrayList;
 
@@ -30,13 +31,17 @@ import com.frankenstein.screenx.helper.Logger;
 import com.frankenstein.screenx.helper.PermissionHelper;
 import com.frankenstein.screenx.models.AppGroup;
 import com.frankenstein.screenx.models.Screenshot;
-import com.frankenstein.screenx.ui.PermissionComponentView;
 import com.frankenstein.screenx.ui.adapters.HomePageAdapter;
+import com.frankenstein.screenx.ui.adapters.PermissionPageAdapter;
+import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
 
 import static com.frankenstein.screenx.Constants.PROGRESSBAR_TRANSITION;
 import static com.frankenstein.screenx.helper.ArrayHelper.Same;
 import static com.frankenstein.screenx.helper.FileHelper.CUSTOM_SCREENSHOT_DIR;
 import static com.frankenstein.screenx.helper.FileHelper.createIfNot;
+import static com.frankenstein.screenx.ui.adapters.PermissionPageAdapter.STORAGE_PERMISSION;
+import static com.frankenstein.screenx.ui.adapters.PermissionPageAdapter.USAGE_PERMISSION;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -47,8 +52,7 @@ public class MainActivity extends AppCompatActivity {
     private SwipeRefreshLayout _pullToRefresh;
     private View _mProgressBar;
     private View _mPermissionsDisplay;
-    private PermissionComponentView _mStoragePermissionsView;
-    private PermissionComponentView _mUsagePermissionsView;
+    private PermissionPageAdapter _mPermissionPageAdapter;
     private AlertDialog.Builder _mAlertBuilder;
 
     private boolean _mPermissionsGranted = false;
@@ -98,12 +102,6 @@ public class MainActivity extends AppCompatActivity {
 
         _mPermissionsDisplay = findViewById(R.id.permissions_display);
 
-        _mStoragePermissionsView = findViewById(R.id.storage_permissions);
-        _mStoragePermissionsView.setOnClickListener(view -> goToStorageSettings());
-
-        _mUsagePermissionsView = findViewById(R.id.usage_permissions);
-        _mUsagePermissionsView.setOnClickListener(view -> goToUsageSettings());
-
         _mAlertBuilder = new AlertDialog.Builder(this);
         setupSearchBar();
         _mState.observeForever(this::onStateChange);
@@ -126,8 +124,6 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         });
     }
-
-
 
     private void onStateChange(HomePageState newState) {
         _mLogger.log("onStateChange", newState.toString());
@@ -208,12 +204,23 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void onPermissionRequested(String permissionName) {
+        switch (permissionName) {
+            case STORAGE_PERMISSION:
+                goToStorageSettings();
+                break;
+            case USAGE_PERMISSION:
+                goToUsageSettings();
+                break;
+        }
+    }
+
     private void goToStorageSettings() {
         ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_WRITE_STORAGE);
     }
 
     private void goToUsageSettings() {
-        if (_mUsagePermissionsView.hasPermission())
+        if (PermissionHelper.hasUsagePermission(this))
             return;
         try {
             Intent intent = new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS);
@@ -295,20 +302,32 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    public void checkPermissions() {
-        boolean storagePermissions = PermissionHelper.hasStoragePermission(this);
-        boolean usagePermissions = PermissionHelper.hasUsagePermission(this);
+    private void createPermissionAdapter() {
+        if (_mPermissionPageAdapter != null)
+            return;
+        ViewPager2 permissionViewPager = findViewById(R.id.permission_view_pager);
+        _mPermissionPageAdapter = new PermissionPageAdapter(this, this, this::onPermissionRequested);
+        permissionViewPager.setAdapter(_mPermissionPageAdapter);
+        TabLayout permissionTabLayout = findViewById(R.id.permission_tab_layout);
+        new TabLayoutMediator(permissionTabLayout, permissionViewPager, (tab, pos) -> {}).attach();
+    }
 
-        if (storagePermissions && usagePermissions) {
+    public void checkPermissions() {
+        boolean hasStoragePermission = PermissionHelper.hasStoragePermission(this);
+        boolean hasUsagePermission = PermissionHelper.hasUsagePermission(this);
+
+        if (hasStoragePermission && hasUsagePermission) {
             _mLogger.log("Has all the permissions");
             _mState.setValue(HomePageState.LOADING_PROGRESS_BAR);
             return;
         }
 
-        _mStoragePermissionsView.onPermissionChanged(storagePermissions);
-        _mUsagePermissionsView.onPermissionChanged(usagePermissions);
+        createPermissionAdapter();
 
-        _mLogger.log("Permissions Missing:: storage ->", storagePermissions, "  usage ->", usagePermissions);
+        _mPermissionPageAdapter.onPermissionChanged(STORAGE_PERMISSION, hasStoragePermission);
+        _mPermissionPageAdapter.onPermissionChanged(USAGE_PERMISSION, hasUsagePermission);
+
+        _mLogger.log("Permissions Missing:: storage ->", hasStoragePermission, "  usage ->", hasUsagePermission);
     }
 
     @Override

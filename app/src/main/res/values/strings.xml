@@ -16,9 +16,16 @@
     // Search
     <string name="search_hint">Search</string>
 
-    <string name="storage_permission_text">Grant Storage permissions</string>
-    <string name="usage_permission_text">Grant Usage permissions</string>
+    // Permissions
+    <string name="grant_permissions">Grant Permissions</string>
+    <string name="permissions_granted">Granted!</string>
+    <string name="storage_permission_title">Storage</string>
+    <string name="storage_permission_description">Storage permission is needed to access your screenshots.</string>
+    <string name="usage_permission_title">Usage Access</string>
+    <string name="usage_permission_description">Usage permission is needed to organize screenshots into app groups.</string>
+
     <string name="overlay_permission_text">Grant Overlay permissions</string>
+
     <string name="snackbar_disable">Screenshot feature disabled</string>
     <string name="snackbar_enable">Screenshot feature enabled</string>
     <string name="screenshot_feedback">Screenshot taken!</string>
