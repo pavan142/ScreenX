@@ -33,14 +33,14 @@ public class PermissionPageAdapter extends FragmentStateAdapter {
         detailsMap.put(STORAGE_PERMISSION,new PermissionDetail(
                 STORAGE_PERMISSION,
                 context.getResources().getString(R.string.storage_permission_title),
-                context.getResources().getDrawable(R.drawable.ic_storage),
+                context.getResources().getDrawable(R.drawable.ic_woman_on_photo),
                 context.getResources().getString(R.string.storage_permission_description),
                 listener
         ));
         detailsMap.put(USAGE_PERMISSION,new PermissionDetail(
                 USAGE_PERMISSION,
                 context.getResources().getString(R.string.usage_permission_title),
-                context.getResources().getDrawable(R.drawable.ic_usage),
+                context.getResources().getDrawable(R.drawable.ic_man_with_folders),
                 context.getResources().getString(R.string.usage_permission_description),
                 listener
         ));
