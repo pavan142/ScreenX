@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -7,19 +7,19 @@
     android:gravity="center"
     android:layout_centerHorizontal="true"
     android:id="@+id/permissions_display"
-    android:background="@android:color/white"
+    android:background="@color/white"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <com.frankenstein.screenx.ui.PermissionComponentView
-        android:layout_height="wrap_content"
+    <androidx.viewpager2.widget.ViewPager2
         android:layout_width="match_parent"
-        android:id="@+id/storage_permissions"
-        app:permission_text="@string/storage_permission_text"
-        ></com.frankenstein.screenx.ui.PermissionComponentView>
-    <com.frankenstein.screenx.ui.PermissionComponentView
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
+        android:id="@+id/permission_view_pager"/>
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/permission_tab_layout"
         android:layout_width="match_parent"
-        android:id="@+id/usage_permissions"
-        app:permission_text="@string/usage_permission_text"
-        ></com.frankenstein.screenx.ui.PermissionComponentView>
-</LinearLayout>
+        android:layout_height="wrap_content"
+        app:tabBackground="@drawable/tab_pager_selector"
+        app:tabGravity="center"
+        app:tabIndicatorHeight="0dp"
+        android:layout_gravity="bottom"/>
+</RelativeLayout>
