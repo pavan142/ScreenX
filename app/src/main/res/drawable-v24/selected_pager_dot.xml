@@ -7,7 +7,7 @@
             android:shape="ring"
             android:thickness="@dimen/tab_dot_size"
             android:useLevel="false">
-            <solid android:color="@color/permission_granted_shadow_dark"/>
+            <solid android:color="@color/base_color"/>
         </shape>
     </item>
 </layer-list>
