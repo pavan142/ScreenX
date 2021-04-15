@@ -19,7 +19,8 @@
 
     <!-- Permission Button Colors-->
     <color name="permission_granted_background">#00c8d7</color>
-    <color name="permission_granted_shadow_dark">#00a8b7</color>
+<!--    <color name="permission_granted_shadow_dark">#00a8b7</color>-->
+    <color name="base_color">#00a8b7</color>
 
     <color name="permission_awaiting_background">#00c8d7</color>
     <color name="permission_awaiting_shadow_dark">#9900c8d7</color>

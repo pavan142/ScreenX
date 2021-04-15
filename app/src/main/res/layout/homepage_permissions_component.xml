@@ -44,7 +44,7 @@
                     android:layout_alignLeft="@id/permission_title"
                     android:layout_alignRight="@id/permission_title"
                     android:layout_alignBottom="@id/permission_title"
-                    android:background="@color/permission_granted_shadow_dark">
+                    android:background="@color/base_color">
                 </View>
                 <TextView
                     android:layout_width="wrap_content"
@@ -54,7 +54,7 @@
                     android:paddingBottom="18dp"
                     android:layout_marginBottom="16dp"
                     android:layout_centerHorizontal="true"
-                    android:textColor="@color/permission_granted_shadow_dark"
+                    android:textColor="@color/base_color"
                     android:text="@string/usage_permission_title">
                 </TextView>
 
@@ -77,7 +77,7 @@
                 app:neumorph_shadowElevation="3dp"
                 app:neumorph_lightSource="leftTop"
                 app:neumorph_shapeType="flat"
-                app:neumorph_backgroundColor="@color/permission_granted_shadow_dark"
+                app:neumorph_backgroundColor="@color/base_color"
                 android:layout_centerHorizontal="true"
                 android:layout_marginBottom="80dp"
                 android:layout_alignParentBottom="true">
