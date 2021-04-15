@@ -19,6 +19,7 @@ import java.util.List;
 import androidx.lifecycle.LiveData;
 
 import static com.frankenstein.screenx.helper.ArrayHelper.Same;
+import static com.frankenstein.screenx.helper.SortHelper.DESC_SCREENS_BY_TIME;
 
 public class SearchActivity extends MultipleSelectActivity {
 
@@ -71,6 +72,7 @@ public class SearchActivity extends MultipleSelectActivity {
     public void onLiveMatches(List<String> matches) {
         _mSearchTrace.stop();
         _mLogger.log("number of matches", matches.size());
+        DESC_SCREENS_BY_TIME(matches);
         updateAdapter(matches);
     }
 
