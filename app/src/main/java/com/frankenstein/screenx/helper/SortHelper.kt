@@ -23,7 +23,7 @@ public class SortHelper {
         }
 
         @JvmStatic
-        fun DESC_SCREENS_BY_TIME(input: ArrayList<String>) {
+        fun DESC_SCREENS_BY_TIME(input: MutableList<String>) {
             input.sortByDescending{it -> ScreenXApplication.screenFactory.findScreenByName(it).lastModified}
         }
 
