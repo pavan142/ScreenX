@@ -15,6 +15,7 @@ import com.bumptech.glide.Glide;
 import com.frankenstein.screenx.ScreenXApplication;
 import com.frankenstein.screenx.helper.Logger;
 import com.frankenstein.screenx.R;
+import com.frankenstein.screenx.models.AppGroup;
 import com.frankenstein.screenx.models.Screenshot;
 
 public class HomePageAdapter extends BaseAdapter {
@@ -52,7 +53,10 @@ public class HomePageAdapter extends BaseAdapter {
 
         TextView appNameView = convertView.findViewById(R.id.app_name);
         TextView numScreensView = convertView.findViewById(R.id.num_screenshots);
-        String numScreenshots = "" + ScreenXApplication.screenFactory.appgroups.get(screen.appName).screenshots.size();
+        AppGroup ag = ScreenXApplication.screenFactory.appgroups.get(screen.appName);
+        if (ag == null)
+            return convertView;
+        String numScreenshots = "" + ag.screenshots.size();
         String label = screen.appName;
         appNameView.setText(label);
         numScreensView.setText(numScreenshots);
